@@ -1,0 +1,14 @@
+# Google authentication - NEVER PUBLISH
+credentials.json
+token.json
+
+# Personal configuration
+config.json
+.env
+
+# Python temporary files
+__pycache__/
+*.py[cod]
+
+# Logs and temporary files
+*.log
