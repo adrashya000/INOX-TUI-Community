@@ -401,7 +401,7 @@ def main():
 
     finally:
 
-        server.shutdown()
+        
         server.server_close()
 
         print("Server stopped.")
