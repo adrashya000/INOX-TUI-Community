@@ -3,7 +3,9 @@
 A terminal-based personal video library that streams videos directly from Google Drive using VLC Media Player.
 
 INOX-TUI lets you browse your Google Drive video collection, organise videos by category, search by filename and play videos without downloading the entire file.
+## Screenshot
 
+![INOX-TUI Screenshot](inox-tui.png)
 ## Features
 
 - Browse all videos from Google Drive.
