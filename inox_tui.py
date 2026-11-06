@@ -1,7 +1,8 @@
+
+import asyncio
 import json
 import os
-import sys
-import asyncio
+import shutil
 import subprocess
 import threading
 from pathlib import Path
@@ -13,8 +14,14 @@ from googleapiclient.discovery import build
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import (
-    Header, Footer, Static, Button,
-    Input, ListView, ListItem, Label
+    Header,
+    Footer,
+    Static,
+    Button,
+    Input,
+    ListView,
+    ListItem,
+    Label,
 )
 
 # ==========================================
@@ -23,38 +30,61 @@ from textual.widgets import (
 
 BASE_DIR = Path(__file__).resolve().parent
 TOKEN_PATH = BASE_DIR / "token.json"
+CONFIG_PATH = BASE_DIR / "config.json"
 
 PORT = 8080
+SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
-def load_folders():
-    config_path = BASE_DIR / "config.json"
-
-    if not config_path.exists():
-        raise RuntimeError(
-            "config.json not found. "
-            "Copy config.example.json to config.json "
-            "and enter your Google Drive folder IDs."
-        )
-
-    with open(config_path, "r", encoding="utf-8") as file:
-        config = json.load(file)
-
-    folders = config.get("folders", {})
-
-    required = ["Movies", "Animation", "Video song", "Web_Series"]
-
-    for name in required:
-        folder_id = folders.get(name)
-
-        if not folder_id or folder_id.startswith("YOUR_"):
-            raise RuntimeError(
-                f"Please configure the Google Drive folder ID for {name}."
-            )
-
-    return folders
+REQUIRED_FOLDERS = [
+    "Movies",
+    "Animation",
+    "Video song",
+    "Web_Series",
+]
 
 SERVICE = None
 SERVICE_LOCK = threading.Lock()
+
+
+# ==========================================
+# CONFIGURATION
+# ==========================================
+
+def load_folders():
+    if not CONFIG_PATH.exists():
+        raise FileNotFoundError(
+            "config.json not found.\n"
+            "Run 'py inox_drive_test.py' to configure Google Drive."
+        )
+
+    try:
+        with CONFIG_PATH.open("r", encoding="utf-8") as file:
+            config = json.load(file)
+    except json.JSONDecodeError as error:
+        raise RuntimeError(
+            "config.json contains invalid JSON."
+        ) from error
+
+    folders = config.get("folders", {})
+
+    if not isinstance(folders, dict):
+        raise RuntimeError(
+            "The 'folders' section in config.json is invalid."
+        )
+
+    for name in REQUIRED_FOLDERS:
+        folder_id = folders.get(name)
+
+        if (
+            not isinstance(folder_id, str)
+            or not folder_id.strip()
+            or folder_id.startswith("YOUR_")
+        ):
+            raise RuntimeError(
+                f"Google Drive folder ID missing for: {name}"
+            )
+
+    return folders
 
 
 # ==========================================
@@ -62,63 +92,77 @@ SERVICE_LOCK = threading.Lock()
 # ==========================================
 
 def get_drive_service():
-
     global SERVICE
 
     with SERVICE_LOCK:
-
         if SERVICE is not None:
             return SERVICE
 
         if not TOKEN_PATH.exists():
-            raise RuntimeError("token.json not found.")
-
-        creds = Credentials.from_authorized_user_file(
-            str(TOKEN_PATH),
-            ["https://www.googleapis.com/auth/drive.readonly"]
-        )
-
-        if creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-            TOKEN_PATH.write_text(
-                creds.to_json(),
-                encoding="utf-8"
+            raise RuntimeError(
+                "token.json not found. "
+                "Run 'py inox_drive_test.py' first."
             )
 
-        if not creds.valid:
-            raise RuntimeError("Google login expired.")
+        try:
+            creds = Credentials.from_authorized_user_file(
+                str(TOKEN_PATH),
+                SCOPES,
+            )
 
-        SERVICE = build(
-            "drive",
-            "v3",
-            credentials=creds,
-            cache_discovery=False
-        )
+            if creds.expired and creds.refresh_token:
+                creds.refresh(Request())
 
-        return SERVICE
+                TOKEN_PATH.write_text(
+                    creds.to_json(),
+                    encoding="utf-8",
+                )
+
+            if not creds.valid:
+                raise RuntimeError(
+                    "Google login is invalid. "
+                    "Run 'py inox_drive_test.py' again."
+                )
+
+            SERVICE = build(
+                "drive",
+                "v3",
+                credentials=creds,
+                cache_discovery=False,
+            )
+
+            return SERVICE
+
+        except Exception as error:
+            raise RuntimeError(
+                f"Google Drive connection failed: {error}"
+            ) from error
 
 
 def fetch_drive_files(category):
-
     service = get_drive_service()
     all_folders = load_folders()
 
-folders = all_folders if category == "all" else {
-    category: all_folders[category]
-}
+    if category == "all":
+        folders = all_folders
+    else:
+        if category not in all_folders:
+            raise RuntimeError(
+                f"Unknown category: {category}"
+            )
+
+        folders = {category: all_folders[category]}
 
     videos = []
 
     for category_name, folder_id in folders.items():
-
         page_token = None
 
         while True:
-
             result = service.files().list(
                 q=(
                     f"'{folder_id}' in parents "
-                    "and trashed=false "
+                    "and trashed = false "
                     "and mimeType contains 'video/'"
                 ),
                 pageSize=1000,
@@ -129,7 +173,7 @@ folders = all_folders if category == "all" else {
                 fields=(
                     "nextPageToken,"
                     "files(id,name,mimeType,size,modifiedTime)"
-                )
+                ),
             ).execute()
 
             for video in result.get("files", []):
@@ -149,39 +193,41 @@ folders = all_folders if category == "all" else {
 # ==========================================
 
 def find_vlc():
+    vlc_path = shutil.which("vlc")
 
-    import shutil
-
-    path = shutil.which("vlc")
-
-    if path:
-        return path
+    if vlc_path:
+        return vlc_path
 
     possible_paths = [
         r"C:\Program Files\VideoLAN\VLC\vlc.exe",
-        r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
+        r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe",
     ]
 
     for path in possible_paths:
-        if os.path.exists(path):
+        if os.path.isfile(path):
             return path
 
     return None
 
 
 def play_video(video):
-
     vlc = find_vlc()
 
     if not vlc:
-        raise RuntimeError("VLC not found on this computer.")
+        raise RuntimeError(
+            "VLC Media Player was not found. "
+            "Please install VLC."
+        )
 
-    url = (
+    stream_url = (
         f"http://127.0.0.1:{PORT}/"
         f"?id={video['id']}"
     )
 
-    subprocess.Popen([vlc, url])
+    subprocess.Popen(
+        [vlc, stream_url],
+        close_fds=True,
+    )
 
 
 # ==========================================
@@ -191,11 +237,9 @@ def play_video(video):
 class VideoItem(ListItem):
 
     def __init__(self, video):
-
         super().__init__(
             Label(
-                f"  {video['name']}  "
-                f"[{video['category']}]"
+                f"{video['name']}  [{video['category']}]"
             )
         )
 
@@ -262,17 +306,12 @@ class InoxApp(App):
     current_category = "all"
 
     def compose(self) -> ComposeResult:
-
         yield Header()
 
         with Horizontal(id="main"):
 
             with Vertical(id="sidebar"):
-
-                yield Static(
-                    "       INOX",
-                    id="heading"
-                )
+                yield Static("       INOX", id="heading")
 
                 yield Button("Home / All Videos", id="home")
                 yield Button("Movies", id="movies")
@@ -284,38 +323,32 @@ class InoxApp(App):
                 yield Static("Select a category")
 
             with Vertical(id="content"):
-
-                yield Static(
-                    "WELCOME TO INOX",
-                    id="heading"
-                )
+                yield Static("WELCOME TO INOX", id="heading")
 
                 yield Input(
                     placeholder="Search videos...",
-                    id="search"
+                    id="search",
                 )
 
                 yield ListView(id="videos")
 
                 yield Static(
                     "Connecting to Google Drive...",
-                    id="status"
+                    id="status",
                 )
 
         yield Footer()
 
     async def on_mount(self):
-
         await self.load_category("all")
 
     async def on_button_pressed(self, event):
-
         categories = {
             "home": "all",
             "movies": "Movies",
             "animation": "Animation",
             "video_song": "Video song",
-            "web_series": "Web_Series"
+            "web_series": "Web_Series",
         }
 
         category = categories.get(event.button.id)
@@ -325,18 +358,15 @@ class InoxApp(App):
             await self.load_category(category)
 
     async def load_category(self, category):
-
         self.current_category = category
 
         status = self.query_one("#status", Static)
-
         status.update("Loading videos from Google Drive...")
 
         try:
-
             files = await asyncio.to_thread(
                 fetch_drive_files,
-                category
+                category,
             )
 
             self.current_files = files
@@ -353,11 +383,12 @@ class InoxApp(App):
             )
 
         except Exception as error:
+            self.current_files = []
+            await self.display_files([])
 
             status.update(f"Error: {error}")
 
     async def display_files(self, files):
-
         video_list = self.query_one("#videos", ListView)
 
         await video_list.clear()
@@ -371,7 +402,6 @@ class InoxApp(App):
             )
 
     async def on_input_submitted(self, event):
-
         if event.input.id != "search":
             return
 
@@ -389,14 +419,12 @@ class InoxApp(App):
         )
 
     async def on_list_view_selected(self, event):
-
         if not isinstance(event.item, VideoItem):
             return
 
         video = event.item.video
 
         try:
-
             play_video(video)
 
             self.query_one("#status", Static).update(
@@ -404,7 +432,6 @@ class InoxApp(App):
             )
 
         except Exception as error:
-
             self.query_one("#status", Static).update(
                 f"Playback error: {error}"
             )
@@ -415,10 +442,12 @@ class InoxApp(App):
 # ==========================================
 
 if __name__ == "__main__":
-
     try:
         InoxApp().run()
 
+    except KeyboardInterrupt:
+        pass
+
     except Exception as error:
-        print("INOX-TUI error:", error)
-        input("Press Enter to exit...")
+        print("\nINOX-TUI error:", error)
+        input("\nPress Enter to exit...")
