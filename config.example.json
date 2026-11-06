@@ -1,8 +1,9 @@
+
 {
-  "folders": {
-    "Movies": "YOUR_MOVIES_FOLDER_ID",
-    "Animation": "YOUR_ANIMATION_FOLDER_ID",
-    "Video song": "YOUR_VIDEO_SONG_FOLDER_ID",
-    "Web_Series": "YOUR_WEB_SERIES_FOLDER_ID"
-  }
+    "folders": {
+        "Movies": "YOUR_MOVIES_FOLDER_ID",
+        "Animation": "YOUR_ANIMATION_FOLDER_ID",
+        "Video song": "YOUR_VIDEO_SONG_FOLDER_ID",
+        "Web_Series": "YOUR_WEB_SERIES_FOLDER_ID"
+    }
 }
