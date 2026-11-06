@@ -1,14 +1,21 @@
-# Google authentication - NEVER PUBLISH
+
+# Google OAuth credentials - NEVER UPLOAD
 credentials.json
 token.json
 
-# Personal configuration
+# Personal Google Drive configuration
 config.json
-.env
 
-# Python temporary files
+# Python cache and temporary files
 __pycache__/
 *.py[cod]
-
-# Logs and temporary files
 *.log
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE settings
+.vscode/
+.idea/
