@@ -1,59 +1,96 @@
 
-import os
 import re
-import json
 import threading
 import requests
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlparse, parse_qs
+
 from pathlib import Path
 from functools import lru_cache
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import urlparse, parse_qs
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
+# ==========================================
+# INOX STREAM SERVER CONFIGURATION
+# ==========================================
+
 PORT = 8080
+
 BASE_DIR = Path(__file__).resolve().parent
 TOKEN_PATH = BASE_DIR / "token.json"
-SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
+
+SCOPES = [
+    "https://www.googleapis.com/auth/drive.readonly"
+]
 
 credentials_lock = threading.Lock()
-metadata_cache = {}
 
+
+# ==========================================
+# GOOGLE AUTHENTICATION
+# ==========================================
 
 def get_credentials():
+
     with credentials_lock:
+
+        if not TOKEN_PATH.exists():
+            raise RuntimeError(
+                "token.json not found. "
+                "Run py inox_drive_test.py first."
+            )
+
         creds = Credentials.from_authorized_user_file(
-            str(TOKEN_PATH), SCOPES
+            str(TOKEN_PATH),
+            SCOPES
         )
 
         if creds.expired and creds.refresh_token:
+
             creds.refresh(Request())
-            TOKEN_PATH.write_text(creds.to_json(), encoding="utf-8")
+
+            TOKEN_PATH.write_text(
+                creds.to_json(),
+                encoding="utf-8"
+            )
 
         if not creds.valid:
-            raise RuntimeError("Google login expired. Run the connection test again.")
+            raise RuntimeError(
+                "Google login expired. "
+                "Run py inox_drive_test.py again."
+            )
 
         return creds
 
 
+# ==========================================
+# GOOGLE DRIVE METADATA
+# ==========================================
+
+@lru_cache(maxsize=256)
 def get_metadata(file_id):
-    if file_id not in metadata_cache:
-        service = build(
-            "drive", "v3",
-            credentials=get_credentials(),
-            cache_discovery=False
-        )
 
-        metadata_cache[file_id] = service.files().get(
-            fileId=file_id,
-            supportsAllDrives=True,
-            fields="id,name,size,mimeType"
-        ).execute()
+    service = build(
+        "drive",
+        "v3",
+        credentials=get_credentials(),
+        cache_discovery=False
+    )
 
-    return metadata_cache[file_id]
+    metadata = service.files().get(
+        fileId=file_id,
+        supportsAllDrives=True,
+        fields="id,name,size,mimeType"
+    ).execute()
 
+    return metadata
+
+
+# ==========================================
+# STREAMING SERVER
+# ==========================================
 
 class DriveHandler(BaseHTTPRequestHandler):
 
@@ -63,7 +100,10 @@ class DriveHandler(BaseHTTPRequestHandler):
         pass
 
     def get_file_id(self):
-        return parse_qs(urlparse(self.path).query).get("id", [None])[0]
+
+        return parse_qs(
+            urlparse(self.path).query
+        ).get("id", [None])[0]
 
     def do_HEAD(self):
         self.handle_stream(head_only=True)
@@ -72,138 +112,312 @@ class DriveHandler(BaseHTTPRequestHandler):
         self.handle_stream(head_only=False)
 
     def handle_stream(self, head_only=False):
+
         file_id = self.get_file_id()
 
         if not file_id:
-            self.send_error(400, "Missing Google Drive file ID")
+            self.send_error(
+                400,
+                "Missing Google Drive file ID"
+            )
             return
 
         upstream = None
 
         try:
+
             metadata = get_metadata(file_id)
+
             file_size = int(metadata["size"])
-            mime_type = metadata.get("mimeType", "video/mp4")
+
+            mime_type = metadata.get(
+                "mimeType",
+                "application/octet-stream"
+            )
 
             headers = {
-                "Authorization": f"Bearer {get_credentials().token}"
+                "Authorization": (
+                    f"Bearer {get_credentials().token}"
+                )
             }
 
             range_header = self.headers.get("Range")
 
-            # Validate a single byte range.
+            start = 0
+            end = file_size - 1
+
             if range_header:
+
                 match = re.fullmatch(
-                    r"bytes=(\d*)-(\d*)", range_header.strip()
+                    r"bytes=(\d*)-(\d*)",
+                    range_header.strip()
                 )
 
-                if not match or (not match.group(1) and not match.group(2)):
-                    self.send_error(400, "Invalid Range header")
+                if (
+                    not match
+                    or (
+                        not match.group(1)
+                        and not match.group(2)
+                    )
+                    or "," in range_header
+                ):
+                    self.send_error(
+                        400,
+                        "Invalid Range header"
+                    )
                     return
 
                 first, last = match.groups()
 
                 if first:
+
                     start = int(first)
-                    end = int(last) if last else file_size - 1
+
+                    end = (
+                        int(last)
+                        if last
+                        else file_size - 1
+                    )
+
                 else:
+
                     suffix = int(last)
-                    start = max(0, file_size - suffix)
+
+                    if suffix <= 0:
+                        self.send_error(
+                            416,
+                            "Invalid Range"
+                        )
+                        return
+
+                    start = max(
+                        0,
+                        file_size - suffix
+                    )
+
                     end = file_size - 1
 
-                if start >= file_size or start > end:
+                if (
+                    file_size == 0
+                    or start >= file_size
+                    or start > end
+                ):
+
                     self.send_response(416)
+
                     self.send_header(
-                        "Content-Range", f"bytes */{file_size}"
+                        "Content-Range",
+                        f"bytes */{file_size}"
                     )
-                    self.send_header("Content-Length", "0")
+
+                    self.send_header(
+                        "Content-Length",
+                        "0"
+                    )
+
                     self.end_headers()
                     return
 
-                end = min(end, file_size - 1)
-                headers["Range"] = f"bytes={start}-{end}"
+                end = min(
+                    end,
+                    file_size - 1
+                )
 
+                headers["Range"] = (
+                    f"bytes={start}-{end}"
+                )
+
+            # HEAD request: return metadata without
+            # downloading video content.
             if head_only:
-                self.send_response(200)
-                self.send_header("Content-Type", mime_type)
-                self.send_header("Content-Length", str(file_size))
-                self.send_header("Accept-Ranges", "bytes")
+
+                status = 206 if range_header else 200
+
+                self.send_response(status)
+
+                self.send_header(
+                    "Content-Type",
+                    mime_type
+                )
+
+                self.send_header(
+                    "Content-Length",
+                    str(end - start + 1)
+                )
+
+                self.send_header(
+                    "Accept-Ranges",
+                    "bytes"
+                )
+
+                if range_header:
+
+                    self.send_header(
+                        "Content-Range",
+                        f"bytes {start}-{end}/{file_size}"
+                    )
+
                 self.end_headers()
                 return
 
-            # Progressive streaming: do not load the entire video into RAM.
+            # ==================================
+            # PROGRESSIVE GOOGLE DRIVE STREAMING
+            # ==================================
+
             upstream = requests.get(
-                f"https://www.googleapis.com/drive/v3/files/{file_id}",
-                params={"alt": "media"},
+                (
+                    "https://www.googleapis.com/"
+                    f"drive/v3/files/{file_id}"
+                ),
+                params={
+                    "alt": "media"
+                },
                 headers=headers,
                 stream=True,
                 timeout=(20, 120)
             )
 
             if upstream.status_code not in (200, 206):
+
                 self.send_error(
-                    502, f"Google Drive error: HTTP {upstream.status_code}"
+                    502,
+                    "Google Drive streaming failed. "
+                    f"HTTP {upstream.status_code}"
                 )
+
                 return
 
-            self.send_response(upstream.status_code)
+            self.send_response(
+                upstream.status_code
+            )
+
             self.send_header(
                 "Content-Type",
-                upstream.headers.get("Content-Type", mime_type)
+                upstream.headers.get(
+                    "Content-Type",
+                    mime_type
+                )
             )
-            self.send_header("Accept-Ranges", "bytes")
 
-            for header in ("Content-Length", "Content-Range"):
+            self.send_header(
+                "Accept-Ranges",
+                "bytes"
+            )
+
+            for header in (
+                "Content-Length",
+                "Content-Range"
+            ):
+
                 value = upstream.headers.get(header)
-                if value:
-                    self.send_header(header, value)
 
-            self.send_header("Cache-Control", "no-store")
+                if value:
+                    self.send_header(
+                        header,
+                        value
+                    )
+
+            self.send_header(
+                "Cache-Control",
+                "no-store"
+            )
+
             self.end_headers()
 
-            # Transfer small chunks progressively to VLC.
-            for chunk in upstream.iter_content(chunk_size=256 * 1024):
+            # Send video progressively to VLC.
+            for chunk in upstream.iter_content(
+                chunk_size=256 * 1024
+            ):
+
                 if chunk:
+
                     self.wfile.write(chunk)
                     self.wfile.flush()
 
-        except (BrokenPipeError, ConnectionResetError):
+        except (
+            BrokenPipeError,
+            ConnectionResetError
+        ):
+            # VLC closed or restarted the stream.
             pass
 
         except Exception as error:
-            print("Streaming error:", error)
+
+            print(
+                "\nStreaming error:",
+                error
+            )
+
+            # Avoid attempting a second HTTP response
+            # after streaming headers have been sent.
+
+            if not self.wfile.closed:
+                try:
+                    self.close_connection = True
+                except Exception:
+                    pass
 
         finally:
+
             if upstream is not None:
                 upstream.close()
 
 
+# ==========================================
+# START SERVER
+# ==========================================
+
 def main():
-    if not TOKEN_PATH.exists():
-        print("token.json not found. Run inox_drive_test.py first.")
-        return
-
-    # Verify Google authentication before starting.
-    get_credentials()
-
-    server = ThreadingHTTPServer(
-        ("127.0.0.1", PORT), DriveHandler
-    )
 
     print("\n======================================")
     print("       INOX DRIVE STREAM SERVER")
-    print("======================================")
-    print(f"Running at: http://127.0.0.1:{PORT}")
-    print("Direct Google Drive streaming enabled.")
-    print("Press Ctrl+C to stop.\n")
+    print("======================================\n")
+
+    # Verify authentication before starting.
+    get_credentials()
+
+    server = ThreadingHTTPServer(
+        ("127.0.0.1", PORT),
+        DriveHandler
+    )
+
+    server.daemon_threads = True
+
+    print(
+        f"Streaming server: http://127.0.0.1:{PORT}"
+    )
+
+    print("Google Drive streaming enabled.")
+    print("VLC seeking support enabled.")
+    print("Press Ctrl+C to stop the server.\n")
 
     try:
+
         server.serve_forever()
+
     except KeyboardInterrupt:
-        print("\nStopping server...")
+
+        print("\nStopping INOX streaming server...")
+
     finally:
+
+        server.shutdown()
         server.server_close()
+
+        print("Server stopped.")
 
 
 if __name__ == "__main__":
-    main()
+
+    try:
+        main()
+
+    except KeyboardInterrupt:
+        pass
+
+    except Exception as error:
+
+        print("\nSERVER ERROR:")
+        print(error)
+
+        input("\nPress Enter to exit...")
