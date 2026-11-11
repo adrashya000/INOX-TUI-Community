@@ -1,376 +1,215 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101010">
 <title>INOX | My Movie Library</title>
-
 <style>
-* { box-sizing: border-box; }
-
-body {
-    margin: 0;
-    background: #101010;
-    color: white;
-    font-family: Arial, sans-serif;
-}
-
-header {
-    background: #080808;
-    padding: 20px 5%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.logo {
-    color: #e50914;
-    font-size: 32px;
-    font-weight: bold;
-    letter-spacing: 2px;
-}
-
-#search {
-    padding: 12px 16px;
-    width: 260px;
-    max-width: 100%;
-    background: #222;
-    border: 1px solid #555;
-    border-radius: 5px;
-    color: white;
-    font-size: 15px;
-}
-
-.hero {
-    padding: 35px 5% 15px;
-}
-
-.hero h1 {
-    margin: 0 0 8px;
-    font-size: 30px;
-}
-
-.hero p {
-    color: #aaa;
-    margin: 0;
-}
-
-.categories {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    padding: 20px 5%;
-}
-
-.category {
-    background: #292929;
-    color: white;
-    border: 0;
-    border-radius: 20px;
-    padding: 10px 18px;
-    cursor: pointer;
-}
-
-.category.active {
-    background: #e50914;
-}
-
-#status {
-    padding: 5px 5%;
-    color: #aaa;
-    font-size: 14px;
-}
-
-.movies {
-    padding: 15px 5% 40px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
-    gap: 22px;
-}
-
-.card {
-    background: #1d1d1d;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.2s;
-}
-
-.card:hover {
-    transform: scale(1.04);
-}
-
-.poster {
-    width: 100%;
-    aspect-ratio: 2 / 3;
-    object-fit: cover;
-    background: #333;
-    display: block;
-}
-
-.info {
-    padding: 12px;
-}
-
-.movie-title {
-    font-size: 14px;
-    font-weight: bold;
-    height: 38px;
-    line-height: 19px;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow-wrap: anywhere;
-}
-
-.movie-category {
-    font-size: 12px;
-    color: #aaa;
-    margin: 7px 0 12px;
-}
-
-.action {
-    width: 100%;
-    padding: 9px 5px;
-    margin-top: 7px;
-    border: 0;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.play {
-    background: #e50914;
-    color: white;
-}
-
-.vlc {
-    background: #333;
-    color: white;
-}
-
-.empty {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 50px 10px;
-    color: #aaa;
-}
-
-footer {
-    text-align: center;
-    color: #666;
-    padding: 25px;
-    font-size: 12px;
-}
-
-@media (max-width: 500px) {
-    header { padding: 16px 4%; }
-    .movies {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-    }
-}
+*{box-sizing:border-box}
+body{margin:0;background:#101010;color:#fff;font-family:Arial,sans-serif}
+header{background:#080808;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.logo{color:#e50914;font-size:32px;font-weight:bold;letter-spacing:2px}
+#search{padding:12px 16px;width:260px;max-width:100%;background:#222;border:1px solid #555;border-radius:5px;color:#fff;font-size:15px}
+.hero{padding:32px 5% 12px}.hero h1{margin:0 0 8px;font-size:29px}.hero p{margin:0;color:#aaa}
+.categories{display:flex;gap:10px;flex-wrap:wrap;padding:18px 5%}
+.category{background:#292929;color:#fff;border:0;border-radius:20px;padding:10px 18px;cursor:pointer}
+.category.active{background:#e50914}
+#status{padding:4px 5%;color:#aaa;font-size:14px;min-height:24px}
+.movies{padding:15px 5% 40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:22px}
+.card{background:#1d1d1d;border-radius:8px;overflow:hidden;transition:transform .2s}
+.card:hover{transform:translateY(-3px)}
+.poster{width:100%;aspect-ratio:2/3;object-fit:cover;background:#333;display:block}
+.info{padding:12px}.movie-title{font-size:14px;font-weight:bold;min-height:36px;line-height:18px;overflow-wrap:anywhere}
+.movie-category{font-size:12px;color:#aaa;margin:7px 0 12px}
+.action{width:100%;padding:10px 5px;margin-top:5px;border:0;border-radius:4px;cursor:pointer;font-weight:bold}
+.play{background:#e50914;color:#fff}.empty{grid-column:1/-1;text-align:center;padding:50px 10px;color:#aaa;line-height:1.6}
+footer{text-align:center;color:#666;padding:25px;font-size:12px}
+.player-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:1000;padding:16px;align-items:center;justify-content:center}
+.player-backdrop.open{display:flex}
+.player-shell{width:min(1100px,100%);display:flex;flex-direction:column;gap:10px}
+.player-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#player-title{font-weight:bold;font-size:16px;overflow-wrap:anywhere}
+#close-player{background:#e50914;color:white;border:0;border-radius:5px;padding:10px 15px;font-weight:bold;cursor:pointer}
+.player-frame-wrap{width:100%;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden}
+#drive-player{width:100%;height:100%;border:0}
+.player-note{color:#aaa;font-size:12px;line-height:1.5}
+@media(max-width:500px){header{padding:15px 4%}#search{width:100%}.movies{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.hero{padding:25px 4% 10px}.categories{padding:16px 4%}.player-backdrop{padding:8px}.player-frame-wrap{aspect-ratio:16/9}}
 </style>
 </head>
-
 <body>
-
 <header>
-    <div class="logo">INOX</div>
-    <input id="search" type="search" placeholder="Search movies...">
+  <div class="logo">INOX</div>
+  <input id="search" type="search" placeholder="Search movies..." aria-label="Search movies">
 </header>
-
 <section class="hero">
-    <h1>My Movie Library</h1>
-    <p>Your personal entertainment collection</p>
+  <h1>My Movie Library</h1>
+  <p>Your personal entertainment collection</p>
 </section>
-
-<nav class="categories">
-    <button class="category active" data-category="all">All</button>
-    <button class="category" data-category="Movies">Movies</button>
-    <button class="category" data-category="Animation">Animation</button>
-    <button class="category" data-category="Video song">Video Songs</button>
-    <button class="category" data-category="Web_Series">Web Series</button>
+<nav class="categories" aria-label="Movie categories">
+  <button class="category active" data-category="all">All</button>
+  <button class="category" data-category="Movies">Movies</button>
+  <button class="category" data-category="Animation">Animation</button>
+  <button class="category" data-category="Video song">Video Songs</button>
+  <button class="category" data-category="Web_Series">Web Series</button>
 </nav>
-
-<div id="status">Connecting to Google Drive...</div>
-
-<main class="movies" id="movies">
-    <div class="empty">Loading your library...</div>
-</main>
-
+<div id="status" role="status">Loading your library...</div>
+<main class="movies" id="movies"><div class="empty">Loading your library...</div></main>
 <footer>INOX · Your Personal Movie Library</footer>
 
-<script>
-const API = "";
-const STREAM_URL = "http://127.0.0.1:8080/";
+<div class="player-backdrop" id="player-modal" role="dialog" aria-modal="true" aria-label="Video player">
+  <div class="player-shell">
+    <div class="player-top">
+      <div id="player-title">Now Playing</div>
+      <button id="close-player" type="button">✕ Close</button>
+    </div>
+    <div class="player-frame-wrap">
+      <iframe id="drive-player"
+        src="about:blank"
+        allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+        allowfullscreen
+        referrerpolicy="no-referrer"></iframe>
+    </div>
+    <div class="player-note">Playback is provided by Google Drive. Availability, supported formats, seeking and playback limits are controlled by Google Drive.</div>
+  </div>
+</div>
 
+<script>
+const CATALOG_URL = "./movies.json";
 let allMovies = [];
 let activeCategory = "all";
-
 const movieGrid = document.getElementById("movies");
 const statusText = document.getElementById("status");
 const searchInput = document.getElementById("search");
+const modal = document.getElementById("player-modal");
+const drivePlayer = document.getElementById("drive-player");
+const playerTitle = document.getElementById("player-title");
 
-function setStatus(message) {
-    statusText.textContent = message;
+function extractDriveId(value) {
+  if (!value) return "";
+  const input = String(value).trim();
+  // Accept a raw Drive file ID or common Google Drive share URLs.
+  if (/^[a-zA-Z0-9_-]{20,}$/.test(input)) return input;
+  const patterns = [
+    /\/file\/d\/([a-zA-Z0-9_-]+)/,
+    /[?&]id=([a-zA-Z0-9_-]+)/,
+    /\/uc\?.*?[?&]id=([a-zA-Z0-9_-]+)/
+  ];
+  for (const pattern of patterns) {
+    const match = input.match(pattern);
+    if (match) return match[1];
+  }
+  return "";
 }
+
+function openPlayer(movie) {
+  const fileId = extractDriveId(movie.driveUrl || movie.id);
+  if (!fileId) {
+    alert("This movie does not have a valid Google Drive file ID. Please check movies.json.");
+    return;
+  }
+  playerTitle.textContent = movie.name || "Now Playing";
+  drivePlayer.src = "https://drive.google.com/file/d/" + encodeURIComponent(fileId) + "/preview";
+  modal.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closePlayer() {
+  modal.classList.remove("open");
+  drivePlayer.src = "about:blank";
+  document.body.style.overflow = "";
+}
+
+document.getElementById("close-player").addEventListener("click", closePlayer);
+modal.addEventListener("click", event => { if (event.target === modal) closePlayer(); });
+document.addEventListener("keydown", event => { if (event.key === "Escape" && modal.classList.contains("open")) closePlayer(); });
 
 function renderMovies() {
-    const search = searchInput.value.trim().toLowerCase();
-
-    const filtered = allMovies.filter(movie => {
-        const categoryMatch =
-            activeCategory === "all" ||
-            movie.category === activeCategory;
-
-        const searchMatch =
-            movie.name.toLowerCase().includes(search);
-
-        return categoryMatch && searchMatch;
-    });
-
-    movieGrid.replaceChildren();
-
-    if (filtered.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = "No videos found.";
-        movieGrid.appendChild(empty);
-        return;
-    }
-
-    filtered.forEach(movie => {
-        const card = document.createElement("article");
-        card.className = "card";
-
-        const poster = document.createElement("img");
-        poster.className = "poster";
-        poster.alt = movie.name;
-        poster.loading = "lazy";
-        poster.src = movie.poster || "";
-        poster.onerror = () => {
-            poster.onerror = null;
-            poster.src = "data:image/svg+xml," +
-                encodeURIComponent(
-                    '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450"><rect width="100%" height="100%" fill="#333"/><text x="50%" y="50%" fill="white" text-anchor="middle" font-size="24">INOX</text></svg>'
-                );
-        };
-
-        const info = document.createElement("div");
-        info.className = "info";
-
-        const title = document.createElement("div");
-        title.className = "movie-title";
-        title.textContent = movie.name;
-
-        const category = document.createElement("div");
-        category.className = "movie-category";
-        category.textContent = movie.category;
-
-        const playButton = document.createElement("button");
-        playButton.className = "action play";
-        playButton.textContent = "▶ Play in Browser";
-        playButton.addEventListener("click", () => {
-            window.open(
-                STREAM_URL + "?id=" + encodeURIComponent(movie.id),
-                "_blank"
-            );
-        });
-
-        const vlcButton = document.createElement("button");
-        vlcButton.className = "action vlc";
-        vlcButton.textContent = "▶ Open with VLC";
-        vlcButton.addEventListener("click", () => openVLC(movie.id));
-
-        info.append(title, category, playButton, vlcButton);
-        card.append(poster, info);
-        movieGrid.appendChild(card);
-    });
+  const search = searchInput.value.trim().toLowerCase();
+  const filtered = allMovies.filter(movie => {
+    const categoryMatch = activeCategory === "all" || movie.category === activeCategory;
+    const searchMatch = (movie.name || "").toLowerCase().includes(search);
+    return categoryMatch && searchMatch;
+  });
+  movieGrid.replaceChildren();
+  if (!filtered.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = allMovies.length
+      ? "No videos found in this category."
+      : "Your movie list is ready for setup. Add your Google Drive movie links to movies.json.";
+    movieGrid.appendChild(empty);
+    return;
+  }
+  filtered.forEach(movie => {
+    const card = document.createElement("article");
+    card.className = "card";
+    const poster = document.createElement("img");
+    poster.className = "poster";
+    poster.alt = movie.name || "Movie poster";
+    poster.loading = "lazy";
+    poster.src = movie.poster || "";
+    poster.onerror = () => {
+      poster.onerror = null;
+      poster.src = "data:image/svg+xml," + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="450"><rect width="100%" height="100%" fill="#333"/><text x="50%" y="50%" fill="white" text-anchor="middle" font-size="24">INOX</text></svg>'
+      );
+    };
+    const info = document.createElement("div");
+    info.className = "info";
+    const title = document.createElement("div");
+    title.className = "movie-title";
+    title.textContent = movie.name || "Untitled";
+    const category = document.createElement("div");
+    category.className = "movie-category";
+    category.textContent = movie.category || "Uncategorised";
+    const play = document.createElement("button");
+    play.className = "action play";
+    play.type = "button";
+    play.textContent = "▶ Play";
+    play.addEventListener("click", () => openPlayer(movie));
+    info.append(title, category, play);
+    card.append(poster, info);
+    movieGrid.appendChild(card);
+  });
 }
 
-async function openVLC(id) {
-    try {
-        const response = await fetch(
-            "/api/open-vlc?id=" + encodeURIComponent(id)
-        );
-
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-            throw new Error(result.error || "Could not open VLC");
-        }
-
-        setStatus("Opening movie in VLC...");
-    } catch (error) {
-        alert("VLC error: " + error.message);
-    }
-}
-
-async function loadMovies(category = "all") {
-    activeCategory = category;
-    setStatus("Loading videos from Google Drive...");
-
-    movieGrid.replaceChildren();
-
-    const loading = document.createElement("div");
-    loading.className = "empty";
-    loading.textContent = "Please wait...";
-    movieGrid.appendChild(loading);
-
-    try {
-        const response = await fetch(
-            "/api/videos?category=" + encodeURIComponent(category)
-        );
-
-        if (!response.ok) {
-            throw new Error("Server returned HTTP " + response.status);
-        }
-
-        const data = await response.json();
-
-        allMovies = Array.isArray(data) ? data : (data.videos || []);
-
-        allMovies = allMovies.map(movie => ({
-            ...movie,
-            name: movie.name || movie.title || "Untitled",
-            poster: movie.poster || "",
-            category: movie.category || ""
-        }));
-
-        setStatus(allMovies.length + " videos loaded from Google Drive");
-        renderMovies();
-
-    } catch (error) {
-        setStatus("Unable to load Google Drive videos.");
-        movieGrid.replaceChildren();
-
-        const message = document.createElement("div");
-        message.className = "empty";
-        message.textContent = error.message;
-        movieGrid.appendChild(message);
-    }
+async function loadMovies() {
+  try {
+    const response = await fetch(CATALOG_URL + "?v=" + Date.now(), {cache:"no-store"});
+    if (!response.ok) throw new Error("Could not load movies.json (HTTP " + response.status + ").");
+    const data = await response.json();
+    allMovies = Array.isArray(data) ? data : (data.videos || []);
+    allMovies = allMovies.map(movie => ({
+      ...movie,
+      name: movie.name || movie.title || "Untitled",
+      category: movie.category || "",
+      poster: movie.poster || "",
+      driveUrl: movie.driveUrl || movie.url || movie.id || ""
+    }));
+    statusText.textContent = allMovies.length + " videos loaded";
+    renderMovies();
+  } catch (error) {
+    statusText.textContent = "Library setup needed";
+    movieGrid.innerHTML = "";
+    const message = document.createElement("div");
+    message.className = "empty";
+    message.textContent = error.message + " Upload movies.json in the same GitHub folder as index.html.";
+    movieGrid.appendChild(message);
+  }
 }
 
 document.querySelectorAll(".category").forEach(button => {
-    button.addEventListener("click", () => {
-        document.querySelectorAll(".category").forEach(item => {
-            item.classList.remove("active");
-        });
-
-        button.classList.add("active");
-        searchInput.value = "";
-        loadMovies(button.dataset.category);
-    });
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".category").forEach(item => item.classList.remove("active"));
+    button.classList.add("active");
+    activeCategory = button.dataset.category;
+    searchInput.value = "";
+    renderMovies();
+  });
 });
-
 searchInput.addEventListener("input", renderMovies);
-
 loadMovies();
 </script>
-
 </body>
 </html>
