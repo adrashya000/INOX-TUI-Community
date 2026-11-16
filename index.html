@@ -4,37 +4,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADARSHYA INOX | Unlimited Entertainment</title>
+<title>ADARSHYA INOX - Unlimited Entertainment</title>
 
 <style>
 :root {
   --bg: #080808;
-  --panel: #171717;
+  --card: #181818;
   --text: #ffffff;
   --muted: #aaaaaa;
   --accent: #e50914;
-  --header: rgba(8,8,8,.94);
-}
-
-body.light {
-  --bg: #f4f4f4;
-  --panel: #ffffff;
-  --text: #171717;
-  --muted: #666666;
-  --header: rgba(255,255,255,.95);
 }
 
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: Arial, Helvetica, sans-serif;
-  transition: background .25s, color .25s;
+  font-family: Arial, sans-serif;
   overflow-x: hidden;
 }
 
@@ -42,13 +32,12 @@ header {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: var(--header);
-  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 17px 4%;
-  border-bottom: 1px solid rgba(128,128,128,.15);
+  justify-content: space-between;
+  gap: 15px;
+  padding: 17px 5%;
+  background: rgba(8,8,8,.96);
 }
 
 .logo {
@@ -59,169 +48,108 @@ header {
   white-space: nowrap;
 }
 
-nav {
-  display: flex;
-  gap: 18px;
-  align-items: center;
-}
-
-nav button, .header-btn {
-  border: none;
-  background: transparent;
-  color: var(--text);
-  cursor: pointer;
-  font-size: 14px;
-}
-
-nav button:hover {
-  color: var(--accent);
+.tagline {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 4px;
+  letter-spacing: 2px;
 }
 
 .header-right {
-  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-#search {
-  width: 190px;
+.search {
+  width: 220px;
   padding: 10px 13px;
+  border: 1px solid #555;
   border-radius: 5px;
-  border: 1px solid #777;
-  background: var(--panel);
-  color: var(--text);
+  background: #171717;
+  color: white;
   outline: none;
 }
 
-.header-btn {
-  background: var(--panel);
-  border: 1px solid #777;
-  padding: 9px 12px;
-  border-radius: 5px;
-}
-
-.hero {
-  min-height: 440px;
-  padding: 100px 5% 65px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background:
-    linear-gradient(90deg, rgba(0,0,0,.95), rgba(0,0,0,.45), rgba(0,0,0,.1)),
-    linear-gradient(0deg, var(--bg), transparent 45%),
-    radial-gradient(circle at 75% 30%, #6c2020, #171717 55%, #080808);
-}
-
-.hero-content {
-  max-width: 650px;
-}
-
-.hero-label {
-  color: #ff4545;
-  font-weight: bold;
-  letter-spacing: 3px;
-  margin-bottom: 15px;
-}
-
-.hero h1 {
-  font-size: clamp(36px, 6vw, 65px);
-  font-weight: 900;
-  margin-bottom: 14px;
-  line-height: 1.05;
-}
-
-.hero p {
-  color: #dddddd;
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 24px;
-}
-
-.primary-btn {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 13px 25px;
-  font-size: 15px;
-  font-weight: bold;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.primary-btn:hover {
-  background: #b20710;
-}
-
-main {
-  width: 100%;
-  padding: 25px 4%;
-}
-
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-bottom: 25px;
-}
-
-.toolbar h2 {
-  font-size: 23px;
-}
-
-.filters {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.filter-btn {
-  background: var(--panel);
-  color: var(--text);
-  border: 1px solid #777;
-  border-radius: 20px;
-  padding: 8px 15px;
-  cursor: pointer;
-}
-
-.filter-btn.active {
-  background: var(--accent);
-  color: white;
+.search:focus {
   border-color: var(--accent);
 }
 
-.section {
-  margin: 30px 0 38px;
+.theme-btn {
+  background: #333;
+  border: 0;
+  color: white;
+  padding: 10px 13px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.section h2 {
-  font-size: 21px;
+.hero {
+  min-height: 390px;
+  padding: 100px 6% 60px;
+  display: flex;
+  align-items: center;
+  background:
+    linear-gradient(90deg, #080808 5%, rgba(8,8,8,.85) 45%, rgba(8,8,8,.15)),
+    linear-gradient(0deg, #080808, transparent 60%),
+    radial-gradient(circle at 75% 30%, #612020, #151515 60%);
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero h1 {
+  font-size: clamp(35px, 6vw, 65px);
+  margin-bottom: 15px;
+  font-weight: 900;
+}
+
+.hero p {
+  color: #ddd;
+  font-size: 17px;
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+
+.hero button {
+  padding: 13px 25px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--accent);
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+main {
+  padding: 10px 0 50px;
+}
+
+.category-section {
+  margin: 25px 0 35px;
+}
+
+.category-title {
+  padding: 0 5%;
+  font-size: 23px;
   margin-bottom: 15px;
 }
 
 .movie-row {
   display: flex;
-  gap: 15px;
+  gap: 13px;
   overflow-x: auto;
-  padding: 4px 2px 18px;
-  scroll-behavior: smooth;
-}
-
-.movie-row::-webkit-scrollbar {
-  height: 6px;
-}
-
-.movie-row::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 10px;
+  padding: 5px 5% 18px;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #151515;
 }
 
 .movie-card {
   flex: 0 0 175px;
   cursor: pointer;
-  transition: transform .2s;
+  transition: transform .25s;
 }
 
 .movie-card:hover {
@@ -229,13 +157,11 @@ main {
 }
 
 .poster {
-  width: 100%;
-  aspect-ratio: 2 / 3;
+  height: 245px;
   position: relative;
   overflow: hidden;
   border-radius: 7px;
-  background: var(--panel);
-  box-shadow: 0 5px 15px rgba(0,0,0,.25);
+  background: #242424;
 }
 
 .poster img {
@@ -261,31 +187,56 @@ main {
   overflow-wrap: anywhere;
 }
 
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.25);
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.movie-card:hover .play-overlay {
+  opacity: 1;
+}
+
+.play-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23px;
+}
+
 .movie-title {
-  margin-top: 9px;
   font-size: 14px;
   font-weight: bold;
+  margin-top: 9px;
   line-height: 1.4;
 }
 
 .movie-category {
+  font-size: 11px;
   color: var(--muted);
-  font-size: 12px;
   margin-top: 4px;
 }
 
-.status {
+.empty-message {
   color: var(--muted);
-  padding: 35px 10px;
-  text-align: center;
+  padding: 12px 5%;
 }
 
-footer {
+.status {
   text-align: center;
-  padding: 35px 15px;
+  padding: 30px;
   color: var(--muted);
-  border-top: 1px solid rgba(128,128,128,.2);
-  margin-top: 30px;
 }
 
 /* Video player */
@@ -305,66 +256,98 @@ footer {
 }
 
 .player-box {
-  width: min(100%, 1050px);
+  width: min(1100px, 100%);
+  height: min(650px, 85vh);
+  position: relative;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.player-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: white;
-  margin-bottom: 12px;
-  gap: 15px;
-}
-
-.player-top h2 {
-  font-size: 18px;
+.player-box iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .close-btn {
-  background: #333;
+  position: absolute;
+  z-index: 5;
+  top: 12px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,.8);
   color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
+  font-size: 25px;
   cursor: pointer;
 }
 
-video {
-  width: 100%;
-  max-height: 75vh;
-  background: black;
-  border-radius: 6px;
+.player-message {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 4;
+  color: white;
+  font-size: 12px;
+  pointer-events: none;
 }
 
-@media(max-width:700px) {
+footer {
+  border-top: 1px solid #292929;
+  text-align: center;
+  padding: 25px;
+  color: #777;
+  font-size: 12px;
+}
+
+body.light {
+  --bg: #f2f2f2;
+  --card: #ffffff;
+  --text: #151515;
+  --muted: #666666;
+}
+
+body.light header {
+  background: rgba(245,245,245,.97);
+}
+
+body.light .search {
+  background: white;
+  color: black;
+}
+
+body.light .hero {
+  background: linear-gradient(90deg, #222, #555);
+}
+
+body.light .hero p {
+  color: white;
+}
+
+@media(max-width:600px) {
   header {
-    flex-wrap: wrap;
-    gap: 12px;
     padding: 13px 4%;
+    flex-wrap: wrap;
   }
 
   .logo {
-    font-size: 23px;
-  }
-
-  nav {
-    order: 3;
-    width: 100%;
-    overflow-x: auto;
-    padding: 5px 0;
+    font-size: 22px;
   }
 
   .header-right {
-    gap: 7px;
+    width: 100%;
   }
 
-  #search {
-    width: 125px;
+  .search {
+    flex: 1;
+    width: 100%;
   }
 
   .hero {
-    min-height: 350px;
+    min-height: 300px;
     padding: 65px 5%;
   }
 
@@ -372,8 +355,20 @@ video {
     flex-basis: 135px;
   }
 
-  main {
-    padding: 20px 4%;
+  .poster {
+    height: 195px;
+  }
+
+  .category-title {
+    font-size: 19px;
+  }
+
+  .modal {
+    padding: 5px;
+  }
+
+  .player-box {
+    height: 55vh;
   }
 }
 </style>
@@ -382,106 +377,95 @@ video {
 <body>
 
 <header>
-  <div class="logo">ADARSHYA INOX</div>
-
-  <nav>
-    <button onclick="showCategory('All')">Home</button>
-    <button onclick="showCategory('Movies')">Movies</button>
-    <button onclick="showCategory('Web Series')">Web Series</button>
-    <button onclick="showCategory('Animation')">Animation</button>
-  </nav>
+  <div>
+    <div class="logo">ADARSHYA INOX</div>
+    <div class="tagline">UNLIMITED ENTERTAINMENT</div>
+  </div>
 
   <div class="header-right">
-    <input id="search" type="search" placeholder="Search titles..." oninput="searchMovies()">
-    <button class="header-btn" onclick="toggleTheme()">☀ / ☾</button>
+    <input
+      type="search"
+      id="searchBox"
+      class="search"
+      placeholder="Search movies..."
+      autocomplete="off"
+    >
+    <button class="theme-btn" id="themeBtn">☀ / ☾</button>
   </div>
 </header>
 
 <section class="hero">
   <div class="hero-content">
-    <div class="hero-label">ADARSHYA INOX ORIGINAL EXPERIENCE</div>
-    <h1 id="heroTitle">Unlimited Entertainment</h1>
-    <p id="heroDescription">
-      Discover your favourite movies, web series and animation — all in one place.
+    <h1>Unlimited Entertainment</h1>
+    <p>
+      Discover your favourite movies, web series and animation
+      in one place.
     </p>
-    <button class="primary-btn" id="heroPlay" onclick="playFeatured()">
-      ▶ Explore Now
-    </button>
+    <button id="exploreBtn">Explore Now ▶</button>
   </div>
 </section>
 
 <main>
-  <div class="toolbar">
-    <h2>Explore Your Library</h2>
-    <div class="filters">
-      <button class="filter-btn active" onclick="showCategory('All',this)">All Titles</button>
-      <button class="filter-btn" onclick="showCategory('Movies',this)">Movies</button>
-      <button class="filter-btn" onclick="showCategory('Web Series',this)">Web Series</button>
-      <button class="filter-btn" onclick="showCategory('Animation',this)">Animation</button>
-    </div>
-  </div>
-
   <div id="catalogue">
-    <div class="status">Connecting to ADARSHYA INOX library...</div>
+    <div class="status">Loading your entertainment library...</div>
   </div>
 </main>
 
-<footer>
-  <div class="logo">ADARSHYA INOX</div>
-  <p style="margin-top:10px">Unlimited Entertainment</p>
-  <p style="margin-top:8px;font-size:12px">Your personal entertainment library</p>
-</footer>
-
 <div class="modal" id="playerModal">
-  <div class="player-box">
-    <div class="player-top">
-      <h2 id="playerTitle">Now Playing</h2>
-      <button class="close-btn" onclick="closePlayer()">✕ Close</button>
-    </div>
-    <video id="videoPlayer" controls playsinline></video>
-    <p id="playerMessage" style="color:#ccc;margin-top:10px"></p>
+  <div class="player-box" id="playerBox">
+    <button class="close-btn" id="closePlayer" aria-label="Close player">×</button>
+    <div class="player-message" id="playerMessage"></div>
   </div>
 </div>
 
+<footer>
+  ADARSHYA INOX · Unlimited Entertainment
+</footer>
+
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzismKAUniBCM3f9G3kyIMaDBz7KKE0YvZE6kgQcCWCNFBruBEczDej6EiWLE8WvQeB/exec";
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbzismKAUniBCM3f9G3kyIMaDBz7KKE0YvZE6kgQcCWCNFBruBEczDej6EiWLE8WvQeB/exec";
+
+const CATEGORIES = ["Movies", "Web Series", "Animation"];
 
 let allMovies = [];
-let filteredMovies = [];
-let featuredMovie = null;
-let currentCategory = "All";
+let selectedMovie = null;
 
+// Load library using JSONP
 function loadMovies() {
-  document.getElementById("catalogue").innerHTML =
-    '<div class="status">Loading your Google Drive library...</div>';
+  const callbackName = "inoxCallback";
 
-  const callback = "inoxCallback";
-
-  window[callback] = function(data) {
-    if (!data || !data.success || !Array.isArray(data.movies)) {
-      showError("The API returned an unexpected response.");
-      return;
+  window[callbackName] = function(data) {
+    try {
+      if (data && Array.isArray(data.movies)) {
+        allMovies = data.movies;
+        renderCatalogue(allMovies);
+      } else {
+        showError("The API returned an unexpected response.");
+      }
+    } catch (error) {
+      showError("Unable to display the movie library.");
     }
 
-    allMovies = data.movies;
-    filteredMovies = allMovies;
+    delete window[callbackName];
 
-    if (allMovies.length > 0) {
-      featuredMovie = allMovies[0];
-      document.getElementById("heroTitle").textContent =
-        featuredMovie.title.replace(/\.[^/.]+$/, "");
-      document.getElementById("heroDescription").textContent =
-        "Now available in your " + featuredMovie.category + " collection.";
-    }
-
-    renderCatalogue();
+    const script = document.getElementById("inoxApiScript");
+    if (script) script.remove();
   };
 
+  const oldScript = document.getElementById("inoxApiScript");
+  if (oldScript) oldScript.remove();
+
   const script = document.createElement("script");
-  script.src = API_URL + "?callback=" + callback + "&t=" + Date.now();
+  script.id = "inoxApiScript";
+  script.src = API_URL +
+    "?callback=" + callbackName +
+    "&t=" + Date.now();
 
   script.onerror = function() {
-    showError("Unable to connect to the library. Please check your internet connection and API deployment.");
+    showError("Unable to connect to Google Drive API. Please refresh.");
+    delete window[callbackName];
+    script.remove();
   };
 
   document.body.appendChild(script);
@@ -493,199 +477,239 @@ function showError(message) {
 }
 
 function escapeHTML(value) {
-  return String(value || "").replace(/[&<>"']/g, function(ch) {
+  return String(value ?? "").replace(/[&<>"']/g, function(char) {
     return {
-      "&":"&amp;",
-      "<":"&lt;",
-      ">":"&gt;",
-      '"':"&quot;",
-      "'":"&#39;"
-    }[ch];
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char];
   });
 }
 
-function cleanTitle(title) {
-  return String(title || "").replace(/\.[^/.]+$/, "");
-}
+function renderCatalogue(movies) {
+  const catalogue = document.getElementById("catalogue");
+  catalogue.innerHTML = "";
 
-function renderCatalogue() {
-  const container = document.getElementById("catalogue");
-  container.innerHTML = "";
+  if (!movies.length) {
+    catalogue.innerHTML =
+      '<div class="status">No videos found in your Google Drive folders.</div>';
+    return;
+  }
 
-  const categories = ["Movies", "Web Series", "Animation"];
-  let hasResults = false;
+  CATEGORIES.forEach(category => {
+    const categoryMovies = movies.filter(movie =>
+      String(movie.category || "").toLowerCase() === category.toLowerCase()
+    );
 
-  categories.forEach(category => {
-    const items = filteredMovies.filter(movie => movie.category === category);
-
-    if (items.length === 0) return;
-
-    hasResults = true;
+    if (!categoryMovies.length) return;
 
     const section = document.createElement("section");
-    section.className = "section";
+    section.className = "category-section";
 
     const heading = document.createElement("h2");
+    heading.className = "category-title";
     heading.textContent = category;
-    section.appendChild(heading);
 
     const row = document.createElement("div");
     row.className = "movie-row";
 
-    items.forEach(movie => {
+    categoryMovies.forEach(movie => {
       row.appendChild(createMovieCard(movie));
     });
 
+    section.appendChild(heading);
     section.appendChild(row);
-    container.appendChild(section);
+    catalogue.appendChild(section);
   });
 
-  if (!hasResults) {
-    container.innerHTML =
-      '<div class="status">No titles found in this category.</div>';
-  }
+  // Show any additional categories returned by the API
+  const otherCategories = [...new Set(
+    movies
+      .map(movie => movie.category || "Other")
+      .filter(category =>
+        !CATEGORIES.some(item =>
+          item.toLowerCase() === String(category).toLowerCase()
+        )
+      )
+  )];
+
+  otherCategories.forEach(category => {
+    const categoryMovies = movies.filter(movie =>
+      (movie.category || "Other") === category
+    );
+
+    const section = document.createElement("section");
+    section.className = "category-section";
+
+    const heading = document.createElement("h2");
+    heading.className = "category-title";
+    heading.textContent = category;
+
+    const row = document.createElement("div");
+    row.className = "movie-row";
+
+    categoryMovies.forEach(movie => {
+      row.appendChild(createMovieCard(movie));
+    });
+
+    section.appendChild(heading);
+    section.appendChild(row);
+    catalogue.appendChild(section);
+  });
 }
 
 function createMovieCard(movie) {
   const card = document.createElement("div");
   card.className = "movie-card";
+  card.tabIndex = 0;
 
   const poster = document.createElement("div");
   poster.className = "poster";
 
   const placeholder = document.createElement("div");
   placeholder.className = "poster-placeholder";
-  placeholder.textContent = cleanTitle(movie.title);
+  placeholder.textContent = movie.title || "Movie";
   poster.appendChild(placeholder);
 
   if (movie.thumbnail) {
     const img = document.createElement("img");
     img.src = movie.thumbnail;
-    img.alt = cleanTitle(movie.title);
+    img.alt = movie.title || "Movie poster";
     img.loading = "lazy";
+
     img.onerror = function() {
-      this.remove();
+      img.remove();
     };
+
     poster.appendChild(img);
   }
 
+  const overlay = document.createElement("div");
+  overlay.className = "play-overlay";
+
+  const playIcon = document.createElement("div");
+  playIcon.className = "play-icon";
+  playIcon.textContent = "▶";
+
+  overlay.appendChild(playIcon);
+  poster.appendChild(overlay);
+
   const title = document.createElement("div");
   title.className = "movie-title";
-  title.textContent = cleanTitle(movie.title);
+  title.textContent = movie.title || "Untitled";
 
   const category = document.createElement("div");
   category.className = "movie-category";
-  category.textContent = movie.category;
+  category.textContent = movie.category || "";
 
   card.appendChild(poster);
   card.appendChild(title);
   card.appendChild(category);
 
-  card.onclick = function() {
-    openPlayer(movie);
-  };
+  card.addEventListener("click", () => playMovie(movie));
+
+  card.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      playMovie(movie);
+    }
+  });
 
   return card;
 }
 
-function showCategory(category, button) {
-  currentCategory = category;
-
-  filteredMovies = category === "All"
-    ? allMovies
-    : allMovies.filter(movie => movie.category === category);
-
-  document.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.classList.remove("active");
-  });
-
-  if (button) button.classList.add("active");
-
-  renderCatalogue();
-}
-
-function searchMovies() {
-  const query = document.getElementById("search").value.toLowerCase().trim();
-
-  filteredMovies = allMovies.filter(movie => {
-    const matchesCategory =
-      currentCategory === "All" || movie.category === currentCategory;
-
-    const matchesSearch =
-      movie.title.toLowerCase().includes(query);
-
-    return matchesCategory && matchesSearch;
-  });
-
-  renderCatalogue();
-}
-
-function toggleTheme() {
-  document.body.classList.toggle("light");
-
-  localStorage.setItem(
-    "inoxTheme",
-    document.body.classList.contains("light") ? "light" : "dark"
-  );
-}
-
-function openPlayer(movie) {
-  if (!movie.streamUrl) {
-    alert("No streaming link is available for this title.");
+// Google Drive embedded video player
+function playMovie(movie) {
+  if (!movie.id) {
+    alert("Movie ID is missing.");
     return;
   }
 
-  const video = document.getElementById("videoPlayer");
+  selectedMovie = movie;
 
-  document.getElementById("playerTitle").textContent =
-    cleanTitle(movie.title);
+  const modal = document.getElementById("playerModal");
+  const playerBox = document.getElementById("playerBox");
+  const message = document.getElementById("playerMessage");
 
-  document.getElementById("playerMessage").textContent =
-    "If playback does not start, press the Play button or check the file's Google Drive sharing permissions.";
+  const oldFrame = document.getElementById("drivePlayer");
+  if (oldFrame) oldFrame.remove();
 
-  video.pause();
-  video.src = movie.streamUrl;
-  video.load();
+  message.textContent = "Loading " + (movie.title || "movie") + "...";
 
-  document.getElementById("playerModal").classList.add("show");
+  const iframe = document.createElement("iframe");
+  iframe.id = "drivePlayer";
+  iframe.src =
+    "https://drive.google.com/file/d/" +
+    encodeURIComponent(movie.id) +
+    "/preview";
 
-  video.play().catch(() => {
-    document.getElementById("playerMessage").textContent =
-      "Press Play to start the video.";
-  });
+  iframe.allow = "autoplay; fullscreen";
+  iframe.allowFullscreen = true;
+  iframe.title = movie.title || "Movie player";
+
+  playerBox.appendChild(iframe);
+  modal.classList.add("show");
+
+  document.body.style.overflow = "hidden";
+
+  // Remove loading message after a short delay.
+  // The embedded Google player controls actual playback.
+  setTimeout(() => {
+    message.textContent = "";
+  }, 5000);
 }
 
 function closePlayer() {
-  const video = document.getElementById("videoPlayer");
-  video.pause();
-  video.removeAttribute("src");
-  video.load();
+  const modal = document.getElementById("playerModal");
+  const iframe = document.getElementById("drivePlayer");
 
-  document.getElementById("playerModal").classList.remove("show");
+  if (iframe) iframe.remove();
+
+  modal.classList.remove("show");
+  document.body.style.overflow = "";
+  selectedMovie = null;
 }
 
-function playFeatured() {
-  if (featuredMovie) {
-    openPlayer(featuredMovie);
-  } else {
-    document.getElementById("catalogue").scrollIntoView({
-      behavior: "smooth"
-    });
-  }
-}
+document.getElementById("closePlayer")
+  .addEventListener("click", closePlayer);
 
-document.getElementById("playerModal").addEventListener("click", function(event) {
-  if (event.target === this) closePlayer();
-});
+document.getElementById("playerModal")
+  .addEventListener("click", function(event) {
+    if (event.target === this) closePlayer();
+  });
 
 document.addEventListener("keydown", function(event) {
   if (event.key === "Escape") closePlayer();
 });
 
-if (localStorage.getItem("inoxTheme") === "light") {
-  document.body.classList.add("light");
-}
+// Search all categories
+document.getElementById("searchBox")
+  .addEventListener("input", function() {
+    const query = this.value.trim().toLowerCase();
 
+    const filtered = allMovies.filter(movie =>
+      String(movie.title || "").toLowerCase().includes(query)
+    );
+
+    renderCatalogue(filtered);
+  });
+
+// Theme toggle
+document.getElementById("themeBtn")
+  .addEventListener("click", function() {
+    document.body.classList.toggle("light");
+  });
+
+// Explore button
+document.getElementById("exploreBtn")
+  .addEventListener("click", function() {
+    document.getElementById("catalogue")
+      .scrollIntoView({ behavior: "smooth" });
+  });
+
+// Start
 loadMovies();
 </script>
 
