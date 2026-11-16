@@ -87,8 +87,10 @@ header {
 /* HERO SLIDESHOW */
 
 .hero {
-  min-height: 500px;
-  padding: 100px 6% 80px;
+  height: 480px;
+  min-height: 480px;
+  max-height: 480px;
+  padding: 70px 6% 80px;
   display: flex;
   align-items: center;
   position: relative;
@@ -137,10 +139,16 @@ header {
 }
 
 .hero h1 {
-  font-size: clamp(35px, 6vw, 68px);
+  font-size: clamp(25px, 3.2vw, 40px);
   margin-bottom: 15px;
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1.15;
+  min-height: 2.3em;
+  max-width: 650px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   text-shadow: 0 2px 12px #000;
 }
 
@@ -416,9 +424,16 @@ body.light .hero {
   }
 
   .hero {
-    min-height: 350px;
-    padding: 65px 5% 80px;
+    height: 380px;
+    min-height: 380px;
+    max-height: 380px;
+    padding: 55px 5% 75px;
     background-position: center;
+  }
+
+  .hero h1 {
+    font-size: clamp(24px, 7vw, 32px);
+    min-height: 2.3em;
   }
 
   .hero p {
@@ -683,22 +698,56 @@ function createMovieCard(movie) {
 }
 
 // HERO SLIDESHOW
+// Change these three names whenever you want to feature different movies.
+const FEATURED_MOVIES = [
+  "Aadu 3",
+  "Akka",
+  "Aakhri Sawal"
+];
+
+// Compare titles without being affected by capital letters or video extensions.
+function normalizeMovieTitle(title) {
+  return String(title || "")
+    .trim()
+    .replace(/\\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
+    .toLowerCase();
+}
+
 function startHeroSlideshow() {
-  heroMovies = allMovies.filter(movie => movie.id);
-
-  if (!heroMovies.length) return;
-
-  // Randomise the order of all movies
-  heroMovies.sort(() => Math.random() - 0.5);
-
-  heroIndex = 0;
-  showHeroSlide(heroIndex);
+  heroMovies = FEATURED_MOVIES
+    .map(featuredTitle => {
+      const wantedTitle = normalizeMovieTitle(featuredTitle);
+      return allMovies.find(movie =>
+        normalizeMovieTitle(movie.title) === wantedTitle && movie.id
+      );
+    })
+    .filter(Boolean);
 
   if (heroTimer) clearInterval(heroTimer);
 
+  heroIndex = 0;
+
+  if (!heroMovies.length) {
+    document.getElementById("heroTitle").textContent =
+      "Featured movies not found";
+    document.getElementById("heroDescription").textContent =
+      "Check that the three featured titles match the movie names in Google Drive.";
+    document.getElementById("heroCounter").textContent = "0 / 0";
+    return;
+  }
+
+  showHeroSlide(0);
+
   heroTimer = setInterval(() => {
-    showHeroSlide(heroIndex + 1);
+    showHeroSlide((heroIndex + 1) % heroMovies.length);
   }, 5000);
+
+  if (heroMovies.length < FEATURED_MOVIES.length) {
+    console.warn(
+      "Some featured movies were not found. Check FEATURED_MOVIES names:",
+      FEATURED_MOVIES
+    );
+  }
 }
 
 function showHeroSlide(index) {
