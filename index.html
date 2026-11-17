@@ -87,14 +87,27 @@ header {
 /* HERO SLIDESHOW */
 .hero {
   min-height: 390px;
-  padding: 45px 7%;
+  padding: 38px 7%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 35px;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(90deg, #080808 0%, #151515 100%);
+  isolation: isolate;
+  background-color: #101010;
+  background-size: cover;
+  background-position: center 30%;
+  transition: background-image .35s ease;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, rgba(0,0,0,.88) 0%, rgba(0,0,0,.62) 48%, rgba(0,0,0,.35) 100%),
+              linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.18));
 }
 
 .hero-content {
@@ -105,12 +118,29 @@ header {
 }
 
 .hero h1 {
-  font-size: clamp(28px, 4vw, 48px);
-  font-weight: 900;
-  line-height: 1.15;
-  max-width: 650px;
+  font-size: clamp(19px, 2.4vw, 29px);
+  font-weight: 800;
+  line-height: 1.2;
+  max-width: 520px;
   overflow-wrap: anywhere;
+  text-shadow: 0 2px 12px rgba(0,0,0,.8);
 }
+
+.hero-watch-btn {
+  margin-top: 17px;
+  border: 0;
+  border-radius: 4px;
+  padding: 10px 19px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,.3);
+}
+
+.hero-watch-btn:hover { background: #b80710; }
+.hero-watch-btn:disabled { opacity: .55; cursor: not-allowed; }
 
 .hero-poster-wrap {
   flex: 0 0 auto;
@@ -351,7 +381,13 @@ body.light .hero {
   }
 
   .hero h1 {
-    font-size: clamp(22px, 6vw, 32px);
+    font-size: clamp(17px, 4.5vw, 22px);
+  }
+
+  .hero-watch-btn {
+    margin-top: 12px;
+    padding: 8px 14px;
+    font-size: 12px;
   }
 
   .hero-poster-wrap {
@@ -406,6 +442,7 @@ body.light .hero {
 <section class="hero" id="hero">
   <div class="hero-content">
     <h1 id="heroTitle">ADRASHYA INOX</h1>
+    <button class="hero-watch-btn" id="heroWatchBtn" type="button">▶ WATCH NOW</button>
   </div>
   <div class="hero-poster-wrap">
     <img class="hero-poster" id="heroPoster" alt="Featured movie poster">
@@ -690,16 +727,26 @@ function showHeroSlide(index) {
   const movie = heroMovies[heroIndex];
 
   document.getElementById("heroTitle").textContent = getDisplayTitle(movie) || "Untitled";
+  const hero = document.getElementById("hero");
   const poster = document.getElementById("heroPoster");
   if (movie.thumbnail) {
+    // Use the same poster as a full hero background and as the poster on the right.
+    hero.style.backgroundImage = `url("${String(movie.thumbnail).replace(/"/g, '%22')}")`;
     poster.src = movie.thumbnail;
     poster.alt = getDisplayTitle(movie) + " poster";
     poster.classList.remove("hidden");
   } else {
+    hero.style.backgroundImage = "none";
     poster.removeAttribute("src");
     poster.classList.add("hidden");
   }
 }
+
+// Play the currently featured slideshow item.
+document.getElementById("heroWatchBtn").addEventListener("click", function() {
+  const movie = heroMovies[heroIndex];
+  if (movie) playMovie(movie);
+});
 
 // GOOGLE DRIVE VIDEO PLAYER
 function playMovie(movie) {
