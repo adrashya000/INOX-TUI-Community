@@ -85,6 +85,7 @@ header {
 }
 
 /* HERO SLIDESHOW */
+
 .hero {
   min-height: 390px;
   padding: 38px 7%;
@@ -143,8 +144,14 @@ header {
   box-shadow: 0 4px 14px rgba(0,0,0,.3);
 }
 
-.hero-watch-btn:hover { background: #b80710; }
-.hero-watch-btn:disabled { opacity: .55; cursor: not-allowed; }
+.hero-watch-btn:hover {
+  background: #b80710;
+}
+
+.hero-watch-btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
 
 .hero-poster-wrap {
   position: relative;
@@ -165,7 +172,9 @@ header {
   object-fit: cover;
 }
 
-.hero-poster.hidden { display: none; }
+.hero-poster.hidden {
+  display: none;
+}
 
 /* MOVIE SECTIONS */
 
@@ -241,9 +250,18 @@ main {
   transition: opacity .2s;
 }
 
-.row-shell:hover .row-arrow, .row-arrow:focus { opacity: 1; }
-.row-arrow.left { left: 5px; }
-.row-arrow.right { right: 5px; }
+.row-shell:hover .row-arrow,
+.row-arrow:focus {
+  opacity: 1;
+}
+
+.row-arrow.left {
+  left: 5px;
+}
+
+.row-arrow.right {
+  right: 5px;
+}
 
 .movie-card {
   flex: 0 0 175px;
@@ -322,7 +340,6 @@ main {
   line-height: 1.4;
 }
 
-
 .status {
   text-align: center;
   padding: 30px;
@@ -330,6 +347,7 @@ main {
 }
 
 /* MOVIE SELECTION POPUP */
+
 .selection-box {
   position: relative;
   width: min(760px, 96%);
@@ -338,13 +356,51 @@ main {
   border-radius: 10px;
   padding: 28px 55px;
 }
-.selection-content { display: flex; align-items: center; gap: 25px; }
-.selection-poster { width: 180px; height: 260px; object-fit: cover; border-radius: 7px; background: #333; }
-.selection-info { min-width: 0; }
-.selection-info h2 { font-size: 21px; line-height: 1.4; overflow-wrap: anywhere; }
-.selection-nav { position: absolute; top: 45%; border: 0; background: #333; color: white; border-radius: 5px; width: 35px; height: 50px; font-size: 28px; cursor: pointer; }
-.selection-nav.prev { left: 10px; }
-.selection-nav.next { right: 10px; }
+
+.selection-content {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.selection-poster {
+  width: 180px;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 7px;
+  background: #333;
+}
+
+.selection-info {
+  min-width: 0;
+}
+
+.selection-info h2 {
+  font-size: 21px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.selection-nav {
+  position: absolute;
+  top: 45%;
+  border: 0;
+  background: #333;
+  color: white;
+  border-radius: 5px;
+  width: 35px;
+  height: 50px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.selection-nav.prev {
+  left: 10px;
+}
+
+.selection-nav.next {
+  right: 10px;
+}
 
 /* VIDEO PLAYER */
 
@@ -472,7 +528,11 @@ body.light .hero {
     height: 185px;
   }
 
-  .row-arrow { opacity: .85; width: 30px; height: 48px; }
+  .row-arrow {
+    opacity: .85;
+    width: 30px;
+    height: 48px;
+  }
 
   .movie-card {
     flex-basis: 135px;
@@ -486,10 +546,24 @@ body.light .hero {
     font-size: 19px;
   }
 
-  .selection-box { padding: 55px 38px 25px; }
-  .selection-content { flex-direction: column; text-align: center; gap: 15px; }
-  .selection-poster { width: 135px; height: 195px; }
-  .selection-info h2 { font-size: 16px; }
+  .selection-box {
+    padding: 55px 38px 25px;
+  }
+
+  .selection-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .selection-poster {
+    width: 135px;
+    height: 195px;
+  }
+
+  .selection-info h2 {
+    font-size: 16px;
+  }
 
   .modal {
     padding: 5px;
@@ -523,11 +597,15 @@ body.light .hero {
 </header>
 
 <!-- HERO SLIDESHOW -->
+
 <section class="hero" id="hero">
   <div class="hero-content">
     <h1 id="heroTitle">ADRASHYA INOX</h1>
-    <button class="hero-watch-btn" id="heroWatchBtn" type="button">▶ WATCH NOW</button>
+    <button class="hero-watch-btn" id="heroWatchBtn" type="button">
+      ▶ WATCH NOW
+    </button>
   </div>
+
   <div class="hero-poster-wrap">
     <img class="hero-poster" id="heroPoster" alt="Featured movie poster">
   </div>
@@ -540,22 +618,29 @@ body.light .hero {
 </main>
 
 <!-- MOVIE DETAILS / SELECTION MODAL -->
+
 <div class="modal" id="selectionModal">
   <div class="selection-box">
     <button class="close-btn" id="closeSelection" aria-label="Close details">×</button>
     <button class="selection-nav prev" id="selectionPrev" aria-label="Previous movie">‹</button>
+
     <div class="selection-content">
       <img id="selectionPoster" class="selection-poster" alt="Movie poster">
+
       <div class="selection-info">
         <h2 id="selectionTitle"></h2>
-        <button class="hero-watch-btn" id="selectionPlay" type="button">▶ PLAY</button>
+        <button class="hero-watch-btn" id="selectionPlay" type="button">
+          ▶ PLAY
+        </button>
       </div>
     </div>
+
     <button class="selection-nav next" id="selectionNext" aria-label="Next movie">›</button>
   </div>
 </div>
 
 <!-- PLAYER MODAL -->
+
 <div class="modal" id="playerModal">
   <div class="player-box" id="playerBox">
     <button class="close-btn" id="closePlayer" aria-label="Close player">×</button>
@@ -579,6 +664,7 @@ let heroIndex = 0;
 let heroTimer = null;
 
 // Load Google Drive library
+
 function loadMovies() {
   const callbackName = "inoxCallback";
 
@@ -629,7 +715,45 @@ function escapeHTML(value) {
   });
 }
 
+/*
+  CATEGORY NORMALIZATION
+
+  This ensures that different spellings of the same category
+  are treated as one category.
+
+  Examples:
+  Movies, movies, MOVIES  -> Movies
+  Web_Series, Web Series  -> Web Series
+  Animation, Cartoon Movies -> Animation
+*/
+
+function normalizeCategory(value) {
+  const key = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
+
+  if (key === "movie" || key === "movies") {
+    return "Movies";
+  }
+
+  if (key === "webseries" || key === "series") {
+    return "Web Series";
+  }
+
+  if (
+    key === "animation" ||
+    key === "animations" ||
+    key === "cartoonmovies"
+  ) {
+    return "Animation";
+  }
+
+  return String(value || "Other").trim() || "Other";
+}
+
 // Display two independent Netflix-style rows in each category.
+
 function renderCatalogue(movies) {
   const catalogue = document.getElementById("catalogue");
   catalogue.innerHTML = "";
@@ -639,9 +763,10 @@ function renderCatalogue(movies) {
     return;
   }
 
+  // Create one unique entry for each normalized category.
   const categories = [...new Set([
     ...CATEGORIES,
-    ...movies.map(movie => movie.category || "Other")
+    ...movies.map(movie => normalizeCategory(movie.category))
   ])];
 
   function createMovieRow(rowMovies, label) {
@@ -669,10 +794,15 @@ function renderCatalogue(movies) {
     leftArrow.type = "button";
     leftArrow.textContent = "‹";
     leftArrow.setAttribute("aria-label", "Scroll left");
+
     leftArrow.addEventListener("click", event => {
       event.preventDefault();
       event.stopPropagation();
-      row.scrollBy({ left: -Math.max(220, row.clientWidth * 0.8), behavior: "smooth" });
+
+      row.scrollBy({
+        left: -Math.max(220, row.clientWidth * 0.8),
+        behavior: "smooth"
+      });
     });
 
     const rightArrow = document.createElement("button");
@@ -680,21 +810,30 @@ function renderCatalogue(movies) {
     rightArrow.type = "button";
     rightArrow.textContent = "›";
     rightArrow.setAttribute("aria-label", "Scroll right");
+
     rightArrow.addEventListener("click", event => {
       event.preventDefault();
       event.stopPropagation();
-      row.scrollBy({ left: Math.max(220, row.clientWidth * 0.8), behavior: "smooth" });
+
+      row.scrollBy({
+        left: Math.max(220, row.clientWidth * 0.8),
+        behavior: "smooth"
+      });
     });
 
     rowShell.append(leftArrow, row, rightArrow);
     rowBlock.append(rowHeading, rowShell);
+
     return rowBlock;
   }
 
+  // Build each category only once.
+
   categories.forEach(category => {
     const categoryMovies = movies.filter(movie =>
-      String(movie.category || "Other").toLowerCase() === String(category).toLowerCase()
+      normalizeCategory(movie.category) === category
     );
+
     if (!categoryMovies.length) return;
 
     const section = document.createElement("section");
@@ -704,31 +843,40 @@ function renderCatalogue(movies) {
     heading.className = "category-title";
     heading.textContent = category;
 
-    const firstLabel = category === "Movies" ? "Trending Movies"
-      : category === "Web Series" ? "Popular Series"
-      : category === "Animation" ? "Popular Animation"
-      : "Featured " + category;
+    const firstLabel =
+      category === "Movies" ? "Trending Movies" :
+      category === "Web Series" ? "Popular Series" :
+      category === "Animation" ? "Popular Animation" :
+      "Featured " + category;
 
-    const secondLabel = category === "Movies" ? "All Movies"
-      : category === "Web Series" ? "All Web Series"
-      : category === "Animation" ? "All Animation"
-      : "All " + category;
+    const secondLabel =
+      category === "Movies" ? "All Movies" :
+      category === "Web Series" ? "All Web Series" :
+      category === "Animation" ? "All Animation" :
+      "All " + category;
 
-    // First row shows the first 10 titles; second row shows the complete collection.
     section.appendChild(heading);
-    section.appendChild(createMovieRow(categoryMovies.slice(0, 10), firstLabel));
-    section.appendChild(createMovieRow(categoryMovies, secondLabel));
+
+    // First row: first 10 titles.
+    section.appendChild(
+      createMovieRow(categoryMovies.slice(0, 10), firstLabel)
+    );
+
+    // Second row: complete category collection.
+    section.appendChild(
+      createMovieRow(categoryMovies, secondLabel)
+    );
+
     catalogue.appendChild(section);
   });
 }
 
 // Clean display names without changing original Drive filenames or IDs.
+
 function cleanBaseTitle(value) {
   return String(value || "")
     .replace(/\.[^.]+$/, "")
-    // Remove common release/quality and language tags from display names only.
     .replace(/\b(?:2160p|1080p|720p|480p|4k|uhd|fhd|hd|web[- ]?dl|webrip|bluray|blu[- ]?ray|hdtv|hdrip|dvdrip|x264|x265|hevc|h\.?264|h\.?265|aac|esub|dual audio|multi audio|hindi|english|quality|completed|complete)\b/ig, " ")
-    // Remove years whether written in brackets or separated by underscores/spaces.
     .replace(/[([]?\b(?:19|20)\d{2}\b[)\]]?/g, " ")
     .replace(/[_.]+/g, " ")
     .replace(/\s*[-–|]+\s*/g, " ")
@@ -742,6 +890,7 @@ function getDisplayTitle(movie) {
 }
 
 // Movie poster card
+
 function createMovieCard(movie, categoryMovies = [movie], index = 0) {
   const card = document.createElement("div");
   card.className = "movie-card";
@@ -800,6 +949,7 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
 
 // HERO SLIDESHOW
 // Change these four original Drive titles to select different featured items.
+
 const FEATURED_MOVIES = [
   "Aadu 3_2026_720p WEB-DL",
   "Aakhri Sawal (2026)",
@@ -818,6 +968,7 @@ function startHeroSlideshow() {
   heroMovies = FEATURED_MOVIES
     .map(featuredTitle => {
       const wantedTitle = normalizeMovieTitle(featuredTitle);
+
       return allMovies.find(movie =>
         normalizeMovieTitle(movie.title) === wantedTitle && movie.id
       );
@@ -834,26 +985,36 @@ function startHeroSlideshow() {
   }
 
   showHeroSlide(0);
+
   heroTimer = setInterval(() => {
     showHeroSlide((heroIndex + 1) % heroMovies.length);
   }, 5000);
 
   if (heroMovies.length < FEATURED_MOVIES.length) {
-    console.warn("Some featured titles were not found. Check FEATURED_MOVIES:", FEATURED_MOVIES);
+    console.warn(
+      "Some featured titles were not found. Check FEATURED_MOVIES:",
+      FEATURED_MOVIES
+    );
   }
 }
 
 function showHeroSlide(index) {
   if (!heroMovies.length) return;
+
   heroIndex = (index + heroMovies.length) % heroMovies.length;
+
   const movie = heroMovies[heroIndex];
 
-  document.getElementById("heroTitle").textContent = getDisplayTitle(movie) || "Untitled";
+  document.getElementById("heroTitle").textContent =
+    getDisplayTitle(movie) || "Untitled";
+
   const hero = document.getElementById("hero");
   const poster = document.getElementById("heroPoster");
+
   if (movie.thumbnail) {
-    // Use the same poster as a full hero background and as the poster on the right.
-    hero.style.backgroundImage = `url("${String(movie.thumbnail).replace(/"/g, '%22')}")`;
+    hero.style.backgroundImage =
+      `url("${String(movie.thumbnail).replace(/"/g, '%22')}")`;
+
     poster.src = movie.thumbnail;
     poster.alt = getDisplayTitle(movie) + " poster";
     poster.classList.remove("hidden");
@@ -865,12 +1026,15 @@ function showHeroSlide(index) {
 }
 
 // Play the currently featured slideshow item.
+
 document.getElementById("heroWatchBtn").addEventListener("click", function() {
   const movie = heroMovies[heroIndex];
+
   if (movie) playMovie(movie);
 });
 
 // MOVIE SELECTION POPUP
+
 let selectionMovies = [];
 let selectionIndex = 0;
 let touchStartX = 0;
@@ -878,58 +1042,97 @@ let touchStartX = 0;
 function openSelection(list, index) {
   selectionMovies = list || [];
   selectionIndex = index || 0;
+
   showSelection();
+
   document.getElementById("selectionModal").classList.add("show");
   document.body.style.overflow = "hidden";
 }
 
 function showSelection() {
   if (!selectionMovies.length) return;
+
   const movie = selectionMovies[selectionIndex];
+
   const poster = document.getElementById("selectionPoster");
+
   poster.src = movie.thumbnail || "";
   poster.style.visibility = movie.thumbnail ? "visible" : "hidden";
   poster.alt = movie.title || "Movie poster";
-  document.getElementById("selectionTitle").textContent = getDisplayTitle(movie);
+
+  document.getElementById("selectionTitle").textContent =
+    getDisplayTitle(movie);
 }
 
 function moveSelection(step) {
   if (!selectionMovies.length) return;
-  selectionIndex = (selectionIndex + step + selectionMovies.length) % selectionMovies.length;
+
+  selectionIndex =
+    (selectionIndex + step + selectionMovies.length) % selectionMovies.length;
+
   showSelection();
 }
 
 function closeSelection() {
   document.getElementById("selectionModal").classList.remove("show");
+
   if (!document.getElementById("playerModal").classList.contains("show")) {
     document.body.style.overflow = "";
   }
 }
 
-document.getElementById("selectionPrev").addEventListener("click", () => moveSelection(-1));
-document.getElementById("selectionNext").addEventListener("click", () => moveSelection(1));
-document.getElementById("closeSelection").addEventListener("click", closeSelection);
-document.getElementById("selectionPlay").addEventListener("click", () => {
-  const movie = selectionMovies[selectionIndex];
-  if (movie) { closeSelection(); playMovie(movie); }
-});
-document.getElementById("selectionModal").addEventListener("click", event => {
-  if (event.target.id === "selectionModal") closeSelection();
-});
-document.getElementById("selectionModal").addEventListener("touchstart", event => {
-  touchStartX = event.changedTouches[0].screenX;
-}, { passive: true });
-document.getElementById("selectionModal").addEventListener("touchend", event => {
-  const delta = event.changedTouches[0].screenX - touchStartX;
-  if (Math.abs(delta) > 55) moveSelection(delta < 0 ? 1 : -1);
-}, { passive: true });
+document.getElementById("selectionPrev")
+  .addEventListener("click", () => moveSelection(-1));
+
+document.getElementById("selectionNext")
+  .addEventListener("click", () => moveSelection(1));
+
+document.getElementById("closeSelection")
+  .addEventListener("click", closeSelection);
+
+document.getElementById("selectionPlay")
+  .addEventListener("click", () => {
+    const movie = selectionMovies[selectionIndex];
+
+    if (movie) {
+      closeSelection();
+      playMovie(movie);
+    }
+  });
+
+document.getElementById("selectionModal")
+  .addEventListener("click", event => {
+    if (event.target.id === "selectionModal") {
+      closeSelection();
+    }
+  });
+
+document.getElementById("selectionModal")
+  .addEventListener("touchstart", event => {
+    touchStartX = event.changedTouches[0].screenX;
+  }, { passive: true });
+
+document.getElementById("selectionModal")
+  .addEventListener("touchend", event => {
+    const delta =
+      event.changedTouches[0].screenX - touchStartX;
+
+    if (Math.abs(delta) > 55) {
+      moveSelection(delta < 0 ? 1 : -1);
+    }
+  }, { passive: true });
+
 document.addEventListener("keydown", event => {
-  if (!document.getElementById("selectionModal").classList.contains("show")) return;
+  if (!document.getElementById("selectionModal").classList.contains("show")) {
+    return;
+  }
+
   if (event.key === "ArrowLeft") moveSelection(-1);
   if (event.key === "ArrowRight") moveSelection(1);
 });
 
 // GOOGLE DRIVE VIDEO PLAYER
+
 function playMovie(movie) {
   if (!movie.id) {
     alert("Movie ID is missing.");
@@ -941,6 +1144,7 @@ function playMovie(movie) {
   const message = document.getElementById("playerMessage");
 
   const oldFrame = document.getElementById("drivePlayer");
+
   if (oldFrame) oldFrame.remove();
 
   message.textContent = "Loading " + (movie.title || "movie") + "...";
@@ -948,6 +1152,7 @@ function playMovie(movie) {
   const iframe = document.createElement("iframe");
 
   iframe.id = "drivePlayer";
+
   iframe.src =
     "https://drive.google.com/file/d/" +
     encodeURIComponent(movie.id) +
@@ -990,6 +1195,7 @@ document.addEventListener("keydown", function(event) {
 });
 
 // SEARCH
+
 document.getElementById("searchBox")
   .addEventListener("input", function() {
     const query = this.value.trim().toLowerCase();
@@ -1002,13 +1208,16 @@ document.getElementById("searchBox")
   });
 
 // THEME
+
 document.getElementById("themeBtn")
   .addEventListener("click", function() {
     document.body.classList.toggle("light");
   });
 
 // START
+
 loadMovies();
+
 </script>
 
 </body>
