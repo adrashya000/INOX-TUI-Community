@@ -745,49 +745,25 @@ function normalizeCategory(value) {
 /*
   TRENDING / POPULAR RELEASES
 
-  Automatically selects titles from the current year
-  and previous year, then sorts newest year first.
-
-  Example in 2026:
-  2026 titles first, followed by 2025 titles.
-
-  If no current/previous-year titles are found,
-  it falls back to the latest year available.
+  Each category is sorted independently.
+  Newest available year appears first.
+  Older years automatically fill the remaining places.
+  Maximum 10 titles per category.
 */
 
 function getTrendingMovies(categoryMovies) {
-  const currentYear = new Date().getFullYear();
-  const previousYear = currentYear - 1;
-
   function getYear(movie) {
-    const match = String(movie.title || "").match(/\b(20\d{2})\b/);
+    const match = String(movie.title || "").match(/\b(19\d{2}|20\d{2})\b/);
     return match ? Number(match[1]) : 0;
   }
 
-  let trending = categoryMovies.filter(movie => {
-    const year = getYear(movie);
-    return year === currentYear || year === previousYear;
+  // Sort all titles by year, newest first.
+  const sortedMovies = [...categoryMovies].sort((a, b) => {
+    return getYear(b) - getYear(a);
   });
 
-  trending.sort((a, b) => getYear(b) - getYear(a));
-
-  if (!trending.length) {
-    const years = categoryMovies
-      .map(getYear)
-      .filter(year => year > 0);
-
-    const latestYear = years.length ? Math.max(...years) : 0;
-
-    if (latestYear > 0) {
-      trending = categoryMovies.filter(movie =>
-        getYear(movie) === latestYear
-      );
-    } else {
-      trending = categoryMovies;
-    }
-  }
-
-  return trending;
+  // Select up to 10 titles, filling from older years if needed.
+  return sortedMovies.slice(0, 10);
 }
 
 // Display two independent Netflix-style rows in each category.
@@ -895,7 +871,7 @@ function renderCatalogue(movies) {
 
     section.appendChild(heading);
 
-    // First row: current-year and previous-year titles.
+    // First row: up to 10 newest available titles.
     const trendingMovies = getTrendingMovies(categoryMovies);
 
     const trendingRow = createMovieRow(trendingMovies, firstLabel);
