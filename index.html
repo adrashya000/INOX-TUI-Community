@@ -715,17 +715,7 @@ function escapeHTML(value) {
   });
 }
 
-/*
-  CATEGORY NORMALIZATION
-
-  This ensures that different spellings of the same category
-  are treated as one category.
-
-  Examples:
-  Movies, movies, MOVIES  -> Movies
-  Web_Series, Web Series  -> Web Series
-  Animation, Cartoon Movies -> Animation
-*/
+/* CATEGORY NORMALIZATION */
 
 function normalizeCategory(value) {
   const key = String(value || "")
@@ -750,6 +740,54 @@ function normalizeCategory(value) {
   }
 
   return String(value || "Other").trim() || "Other";
+}
+
+/*
+  TRENDING / POPULAR RELEASES
+
+  Automatically selects titles from the current year
+  and previous year, then sorts newest year first.
+
+  Example in 2026:
+  2026 titles first, followed by 2025 titles.
+
+  If no current/previous-year titles are found,
+  it falls back to the latest year available.
+*/
+
+function getTrendingMovies(categoryMovies) {
+  const currentYear = new Date().getFullYear();
+  const previousYear = currentYear - 1;
+
+  function getYear(movie) {
+    const match = String(movie.title || "").match(/\b(20\d{2})\b/);
+    return match ? Number(match[1]) : 0;
+  }
+
+  let trending = categoryMovies.filter(movie => {
+    const year = getYear(movie);
+    return year === currentYear || year === previousYear;
+  });
+
+  trending.sort((a, b) => getYear(b) - getYear(a));
+
+  if (!trending.length) {
+    const years = categoryMovies
+      .map(getYear)
+      .filter(year => year > 0);
+
+    const latestYear = years.length ? Math.max(...years) : 0;
+
+    if (latestYear > 0) {
+      trending = categoryMovies.filter(movie =>
+        getYear(movie) === latestYear
+      );
+    } else {
+      trending = categoryMovies;
+    }
+  }
+
+  return trending;
 }
 
 // Display two independent Netflix-style rows in each category.
@@ -857,21 +895,21 @@ function renderCatalogue(movies) {
 
     section.appendChild(heading);
 
-    // First row: first 10 titles.
-    section.appendChild(
-      createMovieRow(categoryMovies.slice(0, 10), firstLabel)
-    );
+    // First row: current-year and previous-year titles.
+    const trendingMovies = getTrendingMovies(categoryMovies);
+
+    const trendingRow = createMovieRow(trendingMovies, firstLabel);
+    if (trendingRow) section.appendChild(trendingRow);
 
     // Second row: complete category collection.
-    section.appendChild(
-      createMovieRow(categoryMovies, secondLabel)
-    );
+    const allRow = createMovieRow(categoryMovies, secondLabel);
+    if (allRow) section.appendChild(allRow);
 
     catalogue.appendChild(section);
   });
 }
 
-// Clean display names without changing original Drive filenames or IDs.
+// Keep original Drive filenames and IDs unchanged.
 
 function cleanBaseTitle(value) {
   return String(value || "")
@@ -885,7 +923,6 @@ function cleanBaseTitle(value) {
 }
 
 function getDisplayTitle(movie) {
-  // Keep the exact original filename supplied by Google Drive.
   return String(movie.title || "Untitled");
 }
 
@@ -948,7 +985,6 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
 }
 
 // HERO SLIDESHOW
-// Change these four original Drive titles to select different featured items.
 
 const FEATURED_MOVIES = [
   "Aadu 3_2026_720p WEB-DL",
