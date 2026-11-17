@@ -757,16 +757,14 @@ function getTrendingMovies(categoryMovies) {
     return match ? Number(match[1]) : 0;
   }
 
-  // Sort all titles by year, newest first.
   const sortedMovies = [...categoryMovies].sort((a, b) => {
     return getYear(b) - getYear(a);
   });
 
-  // Select up to 10 titles, filling from older years if needed.
   return sortedMovies.slice(0, 10);
 }
 
-// Display two independent Netflix-style rows in each category.
+// Display category rows.
 
 function renderCatalogue(movies) {
   const catalogue = document.getElementById("catalogue");
@@ -777,7 +775,6 @@ function renderCatalogue(movies) {
     return;
   }
 
-  // Create one unique entry for each normalized category.
   const categories = [...new Set([
     ...CATEGORIES,
     ...movies.map(movie => normalizeCategory(movie.category))
@@ -841,8 +838,6 @@ function renderCatalogue(movies) {
     return rowBlock;
   }
 
-  // Build each category only once.
-
   categories.forEach(category => {
     const categoryMovies = movies.filter(movie =>
       normalizeCategory(movie.category) === category
@@ -857,27 +852,41 @@ function renderCatalogue(movies) {
     heading.className = "category-title";
     heading.textContent = category;
 
+    section.appendChild(heading);
+
+    // ANIMATION: Only one row showing all animation movies.
+
+    if (category === "Animation") {
+      const allAnimationRow = createMovieRow(
+        categoryMovies,
+        "All Animation"
+      );
+
+      if (allAnimationRow) {
+        section.appendChild(allAnimationRow);
+      }
+
+      catalogue.appendChild(section);
+      return;
+    }
+
+    // MOVIES AND WEB SERIES: Keep two rows.
+
     const firstLabel =
       category === "Movies" ? "Trending Movies" :
       category === "Web Series" ? "Popular Series" :
-      category === "Animation" ? "Popular Animation" :
       "Featured " + category;
 
     const secondLabel =
       category === "Movies" ? "All Movies" :
       category === "Web Series" ? "All Web Series" :
-      category === "Animation" ? "All Animation" :
       "All " + category;
 
-    section.appendChild(heading);
-
-    // First row: up to 10 newest available titles.
     const trendingMovies = getTrendingMovies(categoryMovies);
 
     const trendingRow = createMovieRow(trendingMovies, firstLabel);
     if (trendingRow) section.appendChild(trendingRow);
 
-    // Second row: complete category collection.
     const allRow = createMovieRow(categoryMovies, secondLabel);
     if (allRow) section.appendChild(allRow);
 
