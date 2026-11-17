@@ -275,6 +275,121 @@ main {
   color: var(--muted);
 }
 
+/* MOVIE SELECTION / BROWSE POPUP */
+.selection-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0,0,0,.88);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.selection-modal.show { display: flex; }
+.selection-box {
+  width: min(760px, 100%);
+  min-height: 330px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 28px 62px;
+  border: 1px solid #333;
+  border-radius: 12px;
+  background: #171717;
+  box-shadow: 0 18px 60px rgba(0,0,0,.65);
+}
+.selection-poster {
+  width: 190px;
+  height: 275px;
+  flex: 0 0 190px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #292929;
+}
+.selection-poster.hidden { display: none; }
+.selection-copy { min-width: 0; flex: 1; }
+.selection-title {
+  color: #fff;
+  font-size: clamp(19px, 3vw, 27px);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  margin-bottom: 22px;
+}
+.selection-play {
+  border: 0;
+  border-radius: 5px;
+  padding: 12px 25px;
+  background: var(--accent);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.selection-play:hover { background: #b80710; }
+.selection-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 52px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(255,255,255,.13);
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+}
+.selection-nav:hover { background: var(--accent); }
+.selection-prev { left: 10px; }
+.selection-next { right: 10px; }
+.selection-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,.55);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+.row-shell { position: relative; }
+.row-arrow {
+  position: absolute;
+  z-index: 4;
+  top: 38%;
+  width: 38px;
+  height: 62px;
+  border: 0;
+  border-radius: 5px;
+  background: rgba(0,0,0,.78);
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.row-shell:hover .row-arrow, .row-arrow:focus { opacity: 1; }
+.row-arrow.left { left: 5px; }
+.row-arrow.right { right: 5px; }
+.movie-row { scroll-behavior: smooth; scroll-snap-type: x proximity; touch-action: pan-x; }
+.movie-card { scroll-snap-align: start; }
+@media(max-width:700px) {
+  .selection-modal { padding: 10px; }
+  .selection-box { min-height: 0; padding: 55px 48px 24px; gap: 15px; }
+  .selection-poster { width: 120px; height: 180px; flex-basis: 120px; }
+  .selection-title { font-size: 18px; margin-bottom: 16px; }
+  .selection-play { padding: 10px 17px; font-size: 12px; }
+  .selection-nav { width: 32px; height: 48px; font-size: 22px; }
+  .selection-prev { left: 5px; }
+  .selection-next { right: 5px; }
+  .row-arrow { opacity: .85; width: 30px; height: 48px; }
+}
+
 /* VIDEO PLAYER */
 
 .modal {
@@ -461,6 +576,20 @@ body.light .hero {
   </div>
 </main>
 
+<!-- MOVIE SELECTION MODAL: title + poster + browse + play only -->
+<div class="selection-modal" id="selectionModal" aria-hidden="true">
+  <div class="selection-box" id="selectionBox" role="dialog" aria-modal="true" aria-label="Selected title">
+    <button class="selection-close" id="closeSelection" aria-label="Close">×</button>
+    <button class="selection-nav selection-prev" id="previousMovie" aria-label="Previous movie">‹</button>
+    <img class="selection-poster" id="selectionPoster" alt="Selected title poster">
+    <div class="selection-copy">
+      <h2 class="selection-title" id="selectionTitle"></h2>
+      <button class="selection-play" id="selectionPlay" type="button">▶ PLAY</button>
+    </div>
+    <button class="selection-nav selection-next" id="nextMovie" aria-label="Next movie">›</button>
+  </div>
+</div>
+
 <!-- PLAYER MODAL -->
 <div class="modal" id="playerModal">
   <div class="player-box" id="playerBox">
@@ -483,6 +612,9 @@ let allMovies = [];
 let heroMovies = [];
 let heroIndex = 0;
 let heroTimer = null;
+let selectedMovies = [];
+let selectedMovieIndex = 0;
+
 
 // Load Google Drive library
 function loadMovies() {
@@ -578,13 +710,39 @@ function renderCatalogue(movies) {
     heading.className = "category-title";
     heading.textContent = category;
 
+    const rowShell = document.createElement("div");
+    rowShell.className = "row-shell";
+
     const row = document.createElement("div");
     row.className = "movie-row";
 
-    categoryMovies.forEach(movie => row.appendChild(createMovieCard(movie)));
+    categoryMovies.forEach((movie, index) =>
+      row.appendChild(createMovieCard(movie, categoryMovies, index))
+    );
 
+    const leftArrow = document.createElement("button");
+    leftArrow.className = "row-arrow left";
+    leftArrow.type = "button";
+    leftArrow.textContent = "‹";
+    leftArrow.setAttribute("aria-label", "Scroll left");
+    leftArrow.addEventListener("click", () =>
+      row.scrollBy({ left: -row.clientWidth * 0.8, behavior: "smooth" })
+    );
+
+    const rightArrow = document.createElement("button");
+    rightArrow.className = "row-arrow right";
+    rightArrow.type = "button";
+    rightArrow.textContent = "›";
+    rightArrow.setAttribute("aria-label", "Scroll right");
+    rightArrow.addEventListener("click", () =>
+      row.scrollBy({ left: row.clientWidth * 0.8, behavior: "smooth" })
+    );
+
+    rowShell.appendChild(leftArrow);
+    rowShell.appendChild(row);
+    rowShell.appendChild(rightArrow);
     section.appendChild(heading);
-    section.appendChild(row);
+    section.appendChild(rowShell);
     catalogue.appendChild(section);
   });
 }
@@ -659,7 +817,7 @@ function getDisplayTitle(movie) {
 }
 
 // Movie poster card
-function createMovieCard(movie) {
+function createMovieCard(movie, categoryMovies, index) {
   const card = document.createElement("div");
   card.className = "movie-card";
   card.tabIndex = 0;
@@ -703,17 +861,86 @@ function createMovieCard(movie) {
   card.appendChild(poster);
   card.appendChild(title);
 
-  card.addEventListener("click", () => playMovie(movie));
+  card.setAttribute("role", "button");
+  card.setAttribute("aria-label", "Select " + getDisplayTitle(movie));
+  card.addEventListener("click", () => openSelection(categoryMovies, index));
 
   card.addEventListener("keydown", event => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      playMovie(movie);
+      openSelection(categoryMovies, index);
     }
   });
 
   return card;
 }
+
+// SELECT A TITLE, BROWSE LEFT/RIGHT, THEN PLAY
+function openSelection(movieList, index) {
+  if (!Array.isArray(movieList) || !movieList.length) return;
+  selectedMovies = movieList;
+  selectedMovieIndex = index;
+  updateSelection();
+  const modal = document.getElementById("selectionModal");
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
+function updateSelection() {
+  if (!selectedMovies.length) return;
+  selectedMovieIndex = (selectedMovieIndex + selectedMovies.length) % selectedMovies.length;
+  const movie = selectedMovies[selectedMovieIndex];
+  const title = getDisplayTitle(movie) || "Untitled";
+  const poster = document.getElementById("selectionPoster");
+  document.getElementById("selectionTitle").textContent = title;
+
+  if (movie.thumbnail) {
+    poster.src = movie.thumbnail;
+    poster.alt = title + " poster";
+    poster.classList.remove("hidden");
+  } else {
+    poster.removeAttribute("src");
+    poster.alt = "No poster available";
+    poster.classList.add("hidden");
+  }
+}
+
+function browseSelection(direction) {
+  if (!selectedMovies.length) return;
+  selectedMovieIndex += direction;
+  updateSelection();
+}
+
+function closeSelection() {
+  const modal = document.getElementById("selectionModal");
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+document.getElementById("previousMovie").addEventListener("click", () => browseSelection(-1));
+document.getElementById("nextMovie").addEventListener("click", () => browseSelection(1));
+document.getElementById("closeSelection").addEventListener("click", closeSelection);
+document.getElementById("selectionModal").addEventListener("click", function(event) {
+  if (event.target === this) closeSelection();
+});
+document.getElementById("selectionPlay").addEventListener("click", function() {
+  const movie = selectedMovies[selectedMovieIndex];
+  if (movie) playMovie(movie);
+});
+
+// Swipe left/right on the selected title popup on touch screens.
+let selectionTouchStartX = null;
+document.getElementById("selectionBox").addEventListener("touchstart", function(event) {
+  selectionTouchStartX = event.changedTouches[0].clientX;
+}, { passive: true });
+document.getElementById("selectionBox").addEventListener("touchend", function(event) {
+  if (selectionTouchStartX === null) return;
+  const delta = event.changedTouches[0].clientX - selectionTouchStartX;
+  if (Math.abs(delta) > 55) browseSelection(delta < 0 ? 1 : -1);
+  selectionTouchStartX = null;
+}, { passive: true });
 
 // HERO SLIDESHOW
 // Change these four original Drive titles to select different featured items.
@@ -832,7 +1059,8 @@ function closePlayer() {
   if (iframe) iframe.remove();
 
   modal.classList.remove("show");
-  document.body.style.overflow = "";
+  const selectionOpen = document.getElementById("selectionModal").classList.contains("show");
+  document.body.style.overflow = selectionOpen ? "hidden" : "";
 }
 
 document.getElementById("closePlayer")
@@ -844,7 +1072,24 @@ document.getElementById("playerModal")
   });
 
 document.addEventListener("keydown", function(event) {
-  if (event.key === "Escape") closePlayer();
+  const playerOpen = document.getElementById("playerModal").classList.contains("show");
+  const selectionOpen = document.getElementById("selectionModal").classList.contains("show");
+
+  if (playerOpen && event.key === "Escape") {
+    closePlayer();
+    return;
+  }
+  if (selectionOpen && !playerOpen) {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      browseSelection(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      browseSelection(1);
+    } else if (event.key === "Escape") {
+      closeSelection();
+    }
+  }
 });
 
 // SEARCH
