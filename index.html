@@ -85,38 +85,37 @@ header {
 }
 
 /* HERO SLIDESHOW */
-
 .hero {
   min-height: 390px;
-  padding: 42px 7%;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 230px;
+  padding: 45px 7%;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 35px;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(115deg, #080808 0%, #171717 65%, #080808 100%);
+  background: linear-gradient(90deg, #080808 0%, #151515 100%);
 }
 
 .hero-content {
+  flex: 1;
+  min-width: 0;
   position: relative;
   z-index: 2;
-  min-width: 0;
 }
 
 .hero h1 {
-  font-size: clamp(27px, 4vw, 48px);
+  font-size: clamp(28px, 4vw, 48px);
   font-weight: 900;
   line-height: 1.15;
-  max-width: 700px;
+  max-width: 650px;
   overflow-wrap: anywhere;
-  text-shadow: 0 2px 12px #000;
 }
 
 .hero-poster-wrap {
-  width: 230px;
-  height: 325px;
-  justify-self: end;
+  flex: 0 0 auto;
+  width: 220px;
+  height: 315px;
   border-radius: 9px;
   overflow: hidden;
   background: #242424;
@@ -124,15 +123,13 @@ header {
 }
 
 .hero-poster {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
   object-fit: cover;
 }
 
-.hero-poster.hidden {
-  display: none;
-}
+.hero-poster.hidden { display: none; }
 
 /* MOVIE SECTIONS */
 
@@ -235,6 +232,7 @@ main {
   line-height: 1.4;
 }
 
+
 .status {
   text-align: center;
   padding: 30px;
@@ -323,6 +321,10 @@ body.light .search {
   color: black;
 }
 
+body.light .hero {
+  background-color: #333;
+}
+
 @media(max-width:600px) {
   header {
     padding: 13px 4%;
@@ -343,14 +345,13 @@ body.light .search {
   }
 
   .hero {
-    min-height: 250px;
-    padding: 28px 5%;
-    grid-template-columns: minmax(0, 1fr) 125px;
-    gap: 15px;
+    min-height: 280px;
+    padding: 30px 5%;
+    gap: 18px;
   }
 
   .hero h1 {
-    font-size: clamp(21px, 6vw, 30px);
+    font-size: clamp(22px, 6vw, 32px);
   }
 
   .hero-poster-wrap {
@@ -401,19 +402,13 @@ body.light .search {
   </div>
 </header>
 
-<!-- HERO -->
+<!-- HERO SLIDESHOW -->
 <section class="hero" id="hero">
   <div class="hero-content">
-    <h1 id="heroTitle">Unlimited Entertainment</h1>
+    <h1 id="heroTitle">ADRASHYA INOX</h1>
   </div>
-
   <div class="hero-poster-wrap">
-    <img
-      class="hero-poster"
-      id="heroPoster"
-      src=""
-      alt="Featured movie poster"
-    >
+    <img class="hero-poster" id="heroPoster" alt="Featured movie poster">
   </div>
 </section>
 
@@ -446,9 +441,7 @@ let heroMovies = [];
 let heroIndex = 0;
 let heroTimer = null;
 
-
-// LOAD GOOGLE DRIVE LIBRARY
-
+// Load Google Drive library
 function loadMovies() {
   const callbackName = "inoxCallback";
 
@@ -470,7 +463,6 @@ function loadMovies() {
 
   const script = document.createElement("script");
   script.id = "inoxApiScript";
-
   script.src = API_URL +
     "?callback=" + callbackName +
     "&t=" + Date.now();
@@ -484,11 +476,9 @@ function loadMovies() {
   document.body.appendChild(script);
 }
 
-
 function showError(message) {
   document.getElementById("catalogue").textContent = message;
 }
-
 
 function escapeHTML(value) {
   return String(value ?? "").replace(/[&<>"']/g, function(char) {
@@ -502,82 +492,7 @@ function escapeHTML(value) {
   });
 }
 
-
-// CLEAN DISPLAY TITLES
-
-function cleanBaseTitle(rawTitle) {
-  let title = String(rawTitle || "");
-
-  // Remove file extension
-  title = title.replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "");
-
-  // Replace underscores and dots with spaces
-  title = title.replace(/[_.]+/g, " ");
-
-  // Remove year
-  title = title.replace(/\s*\(\d{4}\)\s*/g, " ");
-  title = title.replace(/\b(19|20)\d{2}\b/g, " ");
-
-  // Remove common video quality and release tags
-  title = title.replace(
-    /\b(480p|720p|1080p|1440p|2160p|4k|8k|hd|fhd|uhd|hdr|hevc|x264|x265|h264|h265|web[- ]?dl|webrip|bluray|brrip|dvdrip|esub|aac|ddp\d?\.?\d?|proper|repack|quality)\b/gi,
-    " "
-  );
-
-  // Remove language and file description tags
-  title = title.replace(
-    /\b(hindi|english|dual audio|multi audio|completed|complete|web series|movie|animation)\b/gi,
-    " "
-  );
-
-  title = title.replace(/[()[\]{}]+/g, " ");
-
-  return title
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/[-_:]+$/g, "")
-    .trim();
-}
-
-
-function getDisplayTitle(movie) {
-  const raw = String(movie.title || "");
-  const category = String(movie.category || "").toLowerCase();
-
-  // WEB SERIES
-  if (category.includes("web")) {
-    const base = cleanBaseTitle(raw);
-
-    const seasonMatch = raw.match(
-      /\b(?:S|Season[\s._-]*)(\d{1,2})\b/i
-    );
-
-    const episodeMatch = raw.match(
-      /\b(?:E|Ep|Episode[\s._-]*)(\d{1,3})\b/i
-    );
-
-    if (seasonMatch && episodeMatch) {
-      return base +
-        " – S" + String(seasonMatch[1]).padStart(2, "0") +
-        " E" + String(episodeMatch[1]).padStart(2, "0");
-    }
-
-    if (seasonMatch) {
-      return base +
-        " – Season " + Number(seasonMatch[1]) +
-        " (Complete)";
-    }
-
-    return base || raw;
-  }
-
-  // MOVIES AND ANIMATION
-  return cleanBaseTitle(raw) || raw;
-}
-
-
-// DISPLAY ALL MOVIE CATEGORIES
-
+// Display all movie categories
 function renderCatalogue(movies) {
   const catalogue = document.getElementById("catalogue");
   catalogue.innerHTML = "";
@@ -624,30 +539,68 @@ function renderCatalogue(movies) {
   });
 }
 
+// Clean display names without changing original Drive filenames or IDs.
+function cleanBaseTitle(value) {
+  return String(value || "")
+    .replace(/\.[^.]+$/, "")
+    .replace(/\b(?:2160p|1080p|720p|480p|4k|uhd|fhd|hd|web[- ]?dl|webrip|bluray|blu[- ]?ray|hdtv|hdrip|dvdrip|x264|x265|hevc|h\.?264|h\.?265|aac|esub|dual audio|hindi|english|multi audio|completed|complete)\b/ig, " ")
+    .replace(/[_.]+/g, " ")
+    .replace(/\s*[-–|]+\s*/g, " ")
+    .replace(/\s*\(\s*\d{4}\s*\)/g, " ")
+    .replace(/\s*\[\s*\d{4}\s*\]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
-// MOVIE POSTER CARD
+function getDisplayTitle(movie) {
+  const raw = String(movie.title || "");
+  const category = String(movie.category || "").toLowerCase();
 
+  if (category.includes("web")) {
+    // Supports S1 E02, S01E02, Season 1 Episode 2, etc.
+    const combined = raw.match(/\bS(?:eason)?[\s._-]*(\d{1,2})\s*[-._ ]*E(?:p(?:isode)?)?[\s._-]*(\d{1,3})\b/i);
+    const season = combined || raw.match(/\bS(?:eason)?[\s._-]*(\d{1,2})(?=\s*E|\b)/i);
+    const episode = combined ? null : raw.match(/\b(?:E|Ep|Episode)[\s._-]*(\d{1,3})\b/i);
+    const seasonNumber = season ? Number(season[1]) : null;
+    const episodeNumber = combined ? Number(combined[2]) : (episode ? Number(episode[1]) : null);
+
+    const baseRaw = raw
+      .replace(/\bS(?:eason)?[\s._-]*\d{1,2}(?=\s*E|\b)/ig, " ")
+      .replace(/\b(?:E|Ep|Episode)[\s._-]*\d{1,3}\b/ig, " ")
+      .replace(/\bS(?:eason)?[\s._-]*\d{1,2}\s*[-._ ]*E(?:p(?:isode)?)?[\s._-]*\d{1,3}\b/ig, " ");
+    const base = cleanBaseTitle(baseRaw) || cleanBaseTitle(raw) || raw;
+
+    if (seasonNumber !== null && episodeNumber !== null) {
+      return `${base} – S${String(seasonNumber).padStart(2, "0")} E${String(episodeNumber).padStart(2, "0")}`;
+    }
+    if (seasonNumber !== null) {
+      return `${base} – Season ${seasonNumber} (Complete)`;
+    }
+    return base;
+  }
+
+  return cleanBaseTitle(raw) || raw;
+}
+
+// Movie poster card
 function createMovieCard(movie) {
   const card = document.createElement("div");
   card.className = "movie-card";
   card.tabIndex = 0;
-
-  const displayTitle = getDisplayTitle(movie);
 
   const poster = document.createElement("div");
   poster.className = "poster";
 
   const placeholder = document.createElement("div");
   placeholder.className = "poster-placeholder";
-  placeholder.textContent = displayTitle || "Movie";
+  placeholder.textContent = getDisplayTitle(movie) || "Movie";
 
   poster.appendChild(placeholder);
 
   if (movie.thumbnail) {
     const img = document.createElement("img");
-
     img.src = movie.thumbnail;
-    img.alt = displayTitle || "Movie poster";
+    img.alt = movie.title || "Movie poster";
     img.loading = "lazy";
 
     img.onerror = function() {
@@ -669,7 +622,7 @@ function createMovieCard(movie) {
 
   const title = document.createElement("div");
   title.className = "movie-title";
-  title.textContent = displayTitle || "Untitled";
+  title.textContent = getDisplayTitle(movie) || "Untitled";
 
   card.appendChild(poster);
   card.appendChild(title);
@@ -686,18 +639,14 @@ function createMovieCard(movie) {
   return card;
 }
 
-
 // HERO SLIDESHOW
-
-// Change these names whenever you want to feature different movies.
-
+// Change these four original Drive titles to select different featured items.
 const FEATURED_MOVIES = [
   "Aadu 3_2026_720p WEB-DL",
   "Aakhri Sawal (2026)",
   "Akka S1 (2026) Hindi Completed Web Series HD ESub 1080p",
   "Dhurandhar 2_The Revenge_2026_Quality_1080p HEVC WEB-DL x265"
 ];
-
 
 function normalizeMovieTitle(title) {
   return String(title || "")
@@ -706,12 +655,10 @@ function normalizeMovieTitle(title) {
     .toLowerCase();
 }
 
-
 function startHeroSlideshow() {
   heroMovies = FEATURED_MOVIES
     .map(featuredTitle => {
       const wantedTitle = normalizeMovieTitle(featuredTitle);
-
       return allMovies.find(movie =>
         normalizeMovieTitle(movie.title) === wantedTitle && movie.id
       );
@@ -719,45 +666,31 @@ function startHeroSlideshow() {
     .filter(Boolean);
 
   if (heroTimer) clearInterval(heroTimer);
-
   heroIndex = 0;
 
   if (!heroMovies.length) {
-    document.getElementById("heroTitle").textContent =
-      "Featured movies not found";
-
+    document.getElementById("heroTitle").textContent = "Featured titles not found";
     document.getElementById("heroPoster").classList.add("hidden");
-
     return;
   }
 
   showHeroSlide(0);
-
   heroTimer = setInterval(() => {
     showHeroSlide((heroIndex + 1) % heroMovies.length);
   }, 5000);
 
   if (heroMovies.length < FEATURED_MOVIES.length) {
-    console.warn(
-      "Some featured movies were not found. Check FEATURED_MOVIES names:",
-      FEATURED_MOVIES
-    );
+    console.warn("Some featured titles were not found. Check FEATURED_MOVIES:", FEATURED_MOVIES);
   }
 }
 
-
 function showHeroSlide(index) {
   if (!heroMovies.length) return;
-
   heroIndex = (index + heroMovies.length) % heroMovies.length;
-
   const movie = heroMovies[heroIndex];
 
-  document.getElementById("heroTitle").textContent =
-    getDisplayTitle(movie) || "Untitled";
-
+  document.getElementById("heroTitle").textContent = getDisplayTitle(movie) || "Untitled";
   const poster = document.getElementById("heroPoster");
-
   if (movie.thumbnail) {
     poster.src = movie.thumbnail;
     poster.alt = getDisplayTitle(movie) + " poster";
@@ -768,9 +701,7 @@ function showHeroSlide(index) {
   }
 }
 
-
 // GOOGLE DRIVE VIDEO PLAYER
-
 function playMovie(movie) {
   if (!movie.id) {
     alert("Movie ID is missing.");
@@ -789,7 +720,6 @@ function playMovie(movie) {
   const iframe = document.createElement("iframe");
 
   iframe.id = "drivePlayer";
-
   iframe.src =
     "https://drive.google.com/file/d/" +
     encodeURIComponent(movie.id) +
@@ -809,7 +739,6 @@ function playMovie(movie) {
   }, 5000);
 }
 
-
 function closePlayer() {
   const modal = document.getElementById("playerModal");
   const iframe = document.getElementById("drivePlayer");
@@ -819,7 +748,6 @@ function closePlayer() {
   modal.classList.remove("show");
   document.body.style.overflow = "";
 }
-
 
 document.getElementById("closePlayer")
   .addEventListener("click", closePlayer);
@@ -833,9 +761,7 @@ document.addEventListener("keydown", function(event) {
   if (event.key === "Escape") closePlayer();
 });
 
-
 // SEARCH
-
 document.getElementById("searchBox")
   .addEventListener("input", function() {
     const query = this.value.trim().toLowerCase();
@@ -847,19 +773,14 @@ document.getElementById("searchBox")
     renderCatalogue(filtered);
   });
 
-
 // THEME
-
 document.getElementById("themeBtn")
   .addEventListener("click", function() {
     document.body.classList.toggle("light");
   });
 
-
 // START
-
 loadMovies();
-
 </script>
 
 </body>
