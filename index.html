@@ -586,11 +586,12 @@ function renderCatalogue(movies) {
 function cleanBaseTitle(value) {
   return String(value || "")
     .replace(/\.[^.]+$/, "")
-    .replace(/\b(?:2160p|1080p|720p|480p|4k|uhd|fhd|hd|web[- ]?dl|webrip|bluray|blu[- ]?ray|hdtv|hdrip|dvdrip|x264|x265|hevc|h\.?264|h\.?265|aac|esub|dual audio|hindi|english|multi audio|completed|complete)\b/ig, " ")
+    // Remove common release/quality and language tags from display names only.
+    .replace(/\b(?:2160p|1080p|720p|480p|4k|uhd|fhd|hd|web[- ]?dl|webrip|bluray|blu[- ]?ray|hdtv|hdrip|dvdrip|x264|x265|hevc|h\.?264|h\.?265|aac|esub|dual audio|multi audio|hindi|english|quality|completed|complete)\b/ig, " ")
+    // Remove years whether written in brackets or separated by underscores/spaces.
+    .replace(/[([]?\b(?:19|20)\d{2}\b[)\]]?/g, " ")
     .replace(/[_.]+/g, " ")
     .replace(/\s*[-–|]+\s*/g, " ")
-    .replace(/\s*\(\s*\d{4}\s*\)/g, " ")
-    .replace(/\s*\[\s*\d{4}\s*\]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
