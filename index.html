@@ -96,8 +96,10 @@ header {
   overflow: hidden;
   isolation: isolate;
   background-color: #101010;
+  background-image: linear-gradient(rgba(0,0,0,.18), rgba(0,0,0,.18));
   background-size: cover;
   background-position: center 30%;
+  background-repeat: no-repeat;
   transition: background-image .35s ease;
 }
 
@@ -105,7 +107,7 @@ header {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   background: linear-gradient(90deg, rgba(0,0,0,.88) 0%, rgba(0,0,0,.62) 48%, rgba(0,0,0,.35) 100%),
               linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.18));
 }
@@ -114,11 +116,11 @@ header {
   flex: 1;
   min-width: 0;
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 
 .hero h1 {
-  font-size: clamp(19px, 2.4vw, 29px);
+  font-size: clamp(17px, 2vw, 25px);
   font-weight: 800;
   line-height: 1.2;
   max-width: 520px;
@@ -127,6 +129,8 @@ header {
 }
 
 .hero-watch-btn {
+  position: relative;
+  z-index: 1;
   margin-top: 17px;
   border: 0;
   border-radius: 4px;
@@ -143,6 +147,8 @@ header {
 .hero-watch-btn:disabled { opacity: .55; cursor: not-allowed; }
 
 .hero-poster-wrap {
+  position: relative;
+  z-index: 1;
   flex: 0 0 auto;
   width: 220px;
   height: 315px;
