@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADARSHYA INOX | Unlimited Entertainment</title>
+<title>ADRASHYA INOX | Unlimited Entertainment</title>
 
 <style>
 :root {
@@ -87,122 +87,51 @@ header {
 /* HERO SLIDESHOW */
 
 .hero {
-  height: 480px;
-  min-height: 480px;
-  max-height: 480px;
-  padding: 70px 6% 80px;
-  display: flex;
+  min-height: 390px;
+  padding: 42px 7%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
   align-items: center;
+  gap: 35px;
   position: relative;
   overflow: hidden;
-  background-color: #151515;
-  background-size: cover;
-  background-position: center 30%;
-  transition: background-image .6s ease;
-}
-
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    #080808 3%,
-    rgba(8,8,8,.82) 42%,
-    rgba(8,8,8,.12) 100%
-  );
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    0deg,
-    #080808 0%,
-    transparent 55%
-  );
+  background: linear-gradient(115deg, #080808 0%, #171717 65%, #080808 100%);
 }
 
 .hero-content {
-  max-width: 650px;
   position: relative;
   z-index: 2;
-}
-
-.hero-category {
-  color: #ff343d;
-  font-weight: bold;
-  letter-spacing: 3px;
-  margin-bottom: 15px;
-  text-transform: uppercase;
+  min-width: 0;
 }
 
 .hero h1 {
-  font-size: clamp(25px, 3.2vw, 40px);
-  margin-bottom: 15px;
+  font-size: clamp(27px, 4vw, 48px);
   font-weight: 900;
   line-height: 1.15;
-  min-height: 2.3em;
-  max-width: 650px;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  max-width: 700px;
+  overflow-wrap: anywhere;
   text-shadow: 0 2px 12px #000;
 }
 
-.hero p {
-  color: #eee;
-  font-size: 17px;
-  line-height: 1.6;
-  margin-bottom: 25px;
-  max-width: 500px;
+.hero-poster-wrap {
+  width: 230px;
+  height: 325px;
+  justify-self: end;
+  border-radius: 9px;
+  overflow: hidden;
+  background: #242424;
+  box-shadow: 0 12px 35px rgba(0,0,0,.55);
 }
 
-.hero-watch {
-  padding: 14px 27px;
-  border: 0;
-  border-radius: 4px;
-  background: var(--accent);
-  color: white;
-  font-weight: bold;
-  font-size: 15px;
-  cursor: pointer;
+.hero-poster {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
-.hero-watch:hover {
-  background: #ff202a;
-}
-
-.hero-controls {
-  position: absolute;
-  right: 6%;
-  bottom: 35px;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.hero-controls button {
-  background: rgba(0,0,0,.7);
-  color: white;
-  border: 1px solid #777;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.hero-controls button:hover {
-  background: var(--accent);
-}
-
-.hero-controls span {
-  color: white;
-  font-size: 13px;
+.hero-poster.hidden {
+  display: none;
 }
 
 /* MOVIE SECTIONS */
@@ -306,12 +235,6 @@ main {
   line-height: 1.4;
 }
 
-.movie-category {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-
 .status {
   text-align: center;
   padding: 30px;
@@ -400,10 +323,6 @@ body.light .search {
   color: black;
 }
 
-body.light .hero {
-  background-color: #333;
-}
-
 @media(max-width:600px) {
   header {
     padding: 13px 4%;
@@ -424,20 +343,19 @@ body.light .hero {
   }
 
   .hero {
-    height: 380px;
-    min-height: 380px;
-    max-height: 380px;
-    padding: 55px 5% 75px;
-    background-position: center;
+    min-height: 250px;
+    padding: 28px 5%;
+    grid-template-columns: minmax(0, 1fr) 125px;
+    gap: 15px;
   }
 
   .hero h1 {
-    font-size: clamp(24px, 7vw, 32px);
-    min-height: 2.3em;
+    font-size: clamp(21px, 6vw, 30px);
   }
 
-  .hero p {
-    font-size: 14px;
+  .hero-poster-wrap {
+    width: 125px;
+    height: 185px;
   }
 
   .movie-card {
@@ -467,7 +385,7 @@ body.light .hero {
 
 <header>
   <div>
-    <div class="logo">ADARSHYA INOX</div>
+    <div class="logo">ADRASHYA INOX</div>
     <div class="tagline">UNLIMITED ENTERTAINMENT</div>
   </div>
 
@@ -486,25 +404,16 @@ body.light .hero {
 <!-- HERO -->
 <section class="hero" id="hero">
   <div class="hero-content">
-    <div class="hero-category" id="heroCategory">
-      ADARSHYA INOX ORIGINALS
-    </div>
-
     <h1 id="heroTitle">Unlimited Entertainment</h1>
-
-    <p id="heroDescription">
-      Discover your favourite movies, web series and animation.
-    </p>
-
-    <button class="hero-watch" id="heroWatchBtn">
-      ▶ WATCH NOW
-    </button>
   </div>
 
-  <div class="hero-controls">
-    <button id="heroPrev" aria-label="Previous slide">❮</button>
-    <span id="heroCounter">0 / 0</span>
-    <button id="heroNext" aria-label="Next slide">❯</button>
+  <div class="hero-poster-wrap">
+    <img
+      class="hero-poster"
+      id="heroPoster"
+      src=""
+      alt="Featured movie poster"
+    >
   </div>
 </section>
 
@@ -523,7 +432,7 @@ body.light .hero {
 </div>
 
 <footer>
-  ADARSHYA INOX · Unlimited Entertainment
+  ADRASHYA INOX · Unlimited Entertainment
 </footer>
 
 <script>
@@ -537,7 +446,9 @@ let heroMovies = [];
 let heroIndex = 0;
 let heroTimer = null;
 
-// Load Google Drive library
+
+// LOAD GOOGLE DRIVE LIBRARY
+
 function loadMovies() {
   const callbackName = "inoxCallback";
 
@@ -559,6 +470,7 @@ function loadMovies() {
 
   const script = document.createElement("script");
   script.id = "inoxApiScript";
+
   script.src = API_URL +
     "?callback=" + callbackName +
     "&t=" + Date.now();
@@ -572,9 +484,11 @@ function loadMovies() {
   document.body.appendChild(script);
 }
 
+
 function showError(message) {
   document.getElementById("catalogue").textContent = message;
 }
+
 
 function escapeHTML(value) {
   return String(value ?? "").replace(/[&<>"']/g, function(char) {
@@ -588,7 +502,82 @@ function escapeHTML(value) {
   });
 }
 
-// Display all movie categories
+
+// CLEAN DISPLAY TITLES
+
+function cleanBaseTitle(rawTitle) {
+  let title = String(rawTitle || "");
+
+  // Remove file extension
+  title = title.replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "");
+
+  // Replace underscores and dots with spaces
+  title = title.replace(/[_.]+/g, " ");
+
+  // Remove year
+  title = title.replace(/\s*\(\d{4}\)\s*/g, " ");
+  title = title.replace(/\b(19|20)\d{2}\b/g, " ");
+
+  // Remove common video quality and release tags
+  title = title.replace(
+    /\b(480p|720p|1080p|1440p|2160p|4k|8k|hd|fhd|uhd|hdr|hevc|x264|x265|h264|h265|web[- ]?dl|webrip|bluray|brrip|dvdrip|esub|aac|ddp\d?\.?\d?|proper|repack|quality)\b/gi,
+    " "
+  );
+
+  // Remove language and file description tags
+  title = title.replace(
+    /\b(hindi|english|dual audio|multi audio|completed|complete|web series|movie|animation)\b/gi,
+    " "
+  );
+
+  title = title.replace(/[()[\]{}]+/g, " ");
+
+  return title
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/[-_:]+$/g, "")
+    .trim();
+}
+
+
+function getDisplayTitle(movie) {
+  const raw = String(movie.title || "");
+  const category = String(movie.category || "").toLowerCase();
+
+  // WEB SERIES
+  if (category.includes("web")) {
+    const base = cleanBaseTitle(raw);
+
+    const seasonMatch = raw.match(
+      /\b(?:S|Season[\s._-]*)(\d{1,2})\b/i
+    );
+
+    const episodeMatch = raw.match(
+      /\b(?:E|Ep|Episode[\s._-]*)(\d{1,3})\b/i
+    );
+
+    if (seasonMatch && episodeMatch) {
+      return base +
+        " – S" + String(seasonMatch[1]).padStart(2, "0") +
+        " E" + String(episodeMatch[1]).padStart(2, "0");
+    }
+
+    if (seasonMatch) {
+      return base +
+        " – Season " + Number(seasonMatch[1]) +
+        " (Complete)";
+    }
+
+    return base || raw;
+  }
+
+  // MOVIES AND ANIMATION
+  return cleanBaseTitle(raw) || raw;
+}
+
+
+// DISPLAY ALL MOVIE CATEGORIES
+
 function renderCatalogue(movies) {
   const catalogue = document.getElementById("catalogue");
   catalogue.innerHTML = "";
@@ -635,25 +624,30 @@ function renderCatalogue(movies) {
   });
 }
 
-// Movie poster card
+
+// MOVIE POSTER CARD
+
 function createMovieCard(movie) {
   const card = document.createElement("div");
   card.className = "movie-card";
   card.tabIndex = 0;
+
+  const displayTitle = getDisplayTitle(movie);
 
   const poster = document.createElement("div");
   poster.className = "poster";
 
   const placeholder = document.createElement("div");
   placeholder.className = "poster-placeholder";
-  placeholder.textContent = movie.title || "Movie";
+  placeholder.textContent = displayTitle || "Movie";
 
   poster.appendChild(placeholder);
 
   if (movie.thumbnail) {
     const img = document.createElement("img");
+
     img.src = movie.thumbnail;
-    img.alt = movie.title || "Movie poster";
+    img.alt = displayTitle || "Movie poster";
     img.loading = "lazy";
 
     img.onerror = function() {
@@ -675,15 +669,10 @@ function createMovieCard(movie) {
 
   const title = document.createElement("div");
   title.className = "movie-title";
-  title.textContent = movie.title || "Untitled";
-
-  const category = document.createElement("div");
-  category.className = "movie-category";
-  category.textContent = movie.category || "";
+  title.textContent = displayTitle || "Untitled";
 
   card.appendChild(poster);
   card.appendChild(title);
-  card.appendChild(category);
 
   card.addEventListener("click", () => playMovie(movie));
 
@@ -697,8 +686,11 @@ function createMovieCard(movie) {
   return card;
 }
 
+
 // HERO SLIDESHOW
-// Change these three names whenever you want to feature different movies.
+
+// Change these names whenever you want to feature different movies.
+
 const FEATURED_MOVIES = [
   "Aadu 3_2026_720p WEB-DL",
   "Aakhri Sawal (2026)",
@@ -706,18 +698,20 @@ const FEATURED_MOVIES = [
   "Dhurandhar 2_The Revenge_2026_Quality_1080p HEVC WEB-DL x265"
 ];
 
-// Compare titles without being affected by capital letters or video extensions.
+
 function normalizeMovieTitle(title) {
   return String(title || "")
     .trim()
-    .replace(/\\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
+    .replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
     .toLowerCase();
 }
+
 
 function startHeroSlideshow() {
   heroMovies = FEATURED_MOVIES
     .map(featuredTitle => {
       const wantedTitle = normalizeMovieTitle(featuredTitle);
+
       return allMovies.find(movie =>
         normalizeMovieTitle(movie.title) === wantedTitle && movie.id
       );
@@ -731,9 +725,9 @@ function startHeroSlideshow() {
   if (!heroMovies.length) {
     document.getElementById("heroTitle").textContent =
       "Featured movies not found";
-    document.getElementById("heroDescription").textContent =
-      "Check that the three featured titles match the movie names in Google Drive.";
-    document.getElementById("heroCounter").textContent = "0 / 0";
+
+    document.getElementById("heroPoster").classList.add("hidden");
+
     return;
   }
 
@@ -751,60 +745,32 @@ function startHeroSlideshow() {
   }
 }
 
+
 function showHeroSlide(index) {
   if (!heroMovies.length) return;
 
   heroIndex = (index + heroMovies.length) % heroMovies.length;
 
   const movie = heroMovies[heroIndex];
-  const hero = document.getElementById("hero");
 
   document.getElementById("heroTitle").textContent =
-    movie.title || "Untitled";
+    getDisplayTitle(movie) || "Untitled";
 
-  document.getElementById("heroCategory").textContent =
-    movie.category || "ADARSHYA INOX";
-
-  document.getElementById("heroDescription").textContent =
-    "Now streaming on ADARSHYA INOX. Enjoy unlimited entertainment.";
-
-  document.getElementById("heroCounter").textContent =
-    (heroIndex + 1) + " / " + heroMovies.length;
+  const poster = document.getElementById("heroPoster");
 
   if (movie.thumbnail) {
-    const safePoster = movie.thumbnail.replace(/'/g, "%27");
-
-    hero.style.backgroundImage =
-      "linear-gradient(90deg, #080808 3%, rgba(8,8,8,.65) 50%, rgba(8,8,8,.15)), url('" +
-      safePoster + "')";
+    poster.src = movie.thumbnail;
+    poster.alt = getDisplayTitle(movie) + " poster";
+    poster.classList.remove("hidden");
   } else {
-    hero.style.backgroundImage = "none";
+    poster.removeAttribute("src");
+    poster.classList.add("hidden");
   }
-
-  document.getElementById("heroWatchBtn").onclick = function() {
-    playMovie(movie);
-  };
 }
 
-document.getElementById("heroPrev").addEventListener("click", function() {
-  showHeroSlide(heroIndex - 1);
-  restartHeroTimer();
-});
-
-document.getElementById("heroNext").addEventListener("click", function() {
-  showHeroSlide(heroIndex + 1);
-  restartHeroTimer();
-});
-
-function restartHeroTimer() {
-  if (heroTimer) clearInterval(heroTimer);
-
-  heroTimer = setInterval(() => {
-    showHeroSlide(heroIndex + 1);
-  }, 5000);
-}
 
 // GOOGLE DRIVE VIDEO PLAYER
+
 function playMovie(movie) {
   if (!movie.id) {
     alert("Movie ID is missing.");
@@ -823,6 +789,7 @@ function playMovie(movie) {
   const iframe = document.createElement("iframe");
 
   iframe.id = "drivePlayer";
+
   iframe.src =
     "https://drive.google.com/file/d/" +
     encodeURIComponent(movie.id) +
@@ -842,6 +809,7 @@ function playMovie(movie) {
   }, 5000);
 }
 
+
 function closePlayer() {
   const modal = document.getElementById("playerModal");
   const iframe = document.getElementById("drivePlayer");
@@ -851,6 +819,7 @@ function closePlayer() {
   modal.classList.remove("show");
   document.body.style.overflow = "";
 }
+
 
 document.getElementById("closePlayer")
   .addEventListener("click", closePlayer);
@@ -864,7 +833,9 @@ document.addEventListener("keydown", function(event) {
   if (event.key === "Escape") closePlayer();
 });
 
+
 // SEARCH
+
 document.getElementById("searchBox")
   .addEventListener("input", function() {
     const query = this.value.trim().toLowerCase();
@@ -876,14 +847,19 @@ document.getElementById("searchBox")
     renderCatalogue(filtered);
   });
 
+
 // THEME
+
 document.getElementById("themeBtn")
   .addEventListener("click", function() {
     document.body.classList.toggle("light");
   });
 
+
 // START
+
 loadMovies();
+
 </script>
 
 </body>
