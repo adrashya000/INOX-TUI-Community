@@ -8,418 +8,376 @@
 
 <style>
 :root {
-  --bg: #080808;
-  --text: #ffffff;
-  --muted: #aaaaaa;
-  --accent: #e50914;
-  --card: #181818;
+  --bg:#080808;
+  --text:#fff;
+  --muted:#aaa;
+  --accent:#e50914;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* {margin:0;padding:0;box-sizing:border-box}
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: Arial, sans-serif;
-  overflow-x: hidden;
-  transition: background .3s, color .3s;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  overflow-x:hidden;
 }
 
 header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  padding: 17px 5%;
-  background: rgba(8,8,8,.96);
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:15px 5%;
+  background:rgba(8,8,8,.97);
 }
 
 .logo {
-  color: var(--accent);
-  font-size: 27px;
-  font-weight: 900;
-  letter-spacing: 1px;
+  color:var(--accent);
+  font-size:25px;
+  font-weight:900;
+  letter-spacing:1px;
 }
 
 .tagline {
-  color: var(--muted);
-  font-size: 11px;
-  margin-top: 4px;
-  letter-spacing: 2px;
+  color:var(--muted);
+  font-size:10px;
+  margin-top:4px;
+  letter-spacing:2px;
 }
 
 .header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
 .search {
-  width: 220px;
-  padding: 10px 13px;
-  border: 1px solid #555;
-  border-radius: 5px;
-  background: #171717;
-  color: white;
-  outline: none;
+  width:220px;
+  padding:10px 13px;
+  border:1px solid #555;
+  border-radius:5px;
+  background:#171717;
+  color:white;
+  outline:none;
 }
 
-.search:focus {
-  border-color: var(--accent);
-}
+.search:focus {border-color:var(--accent)}
 
 .theme-btn {
-  background: #333;
-  border: 0;
-  color: white;
-  padding: 10px 13px;
-  border-radius: 5px;
-  cursor: pointer;
+  background:#333;
+  border:0;
+  color:white;
+  padding:10px 13px;
+  border-radius:5px;
+  cursor:pointer;
 }
 
-/* HERO SLIDESHOW */
+/* HERO */
+
 .hero {
-  min-height: 390px;
-  padding: 38px 7%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 35px;
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  background-color: #101010;
-  background-image: linear-gradient(rgba(0,0,0,.18), rgba(0,0,0,.18));
-  background-size: cover;
-  background-position: center 30%;
-  background-repeat: no-repeat;
-  transition: background-image .35s ease;
+  height:440px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  padding:45px 7%;
+  background:#151515;
+  background-size:cover;
+  background-position:center 30%;
 }
 
 .hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: linear-gradient(90deg, rgba(0,0,0,.88) 0%, rgba(0,0,0,.62) 48%, rgba(0,0,0,.35) 100%),
-              linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.18));
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    90deg,
+    rgba(0,0,0,.94) 0%,
+    rgba(0,0,0,.78) 45%,
+    rgba(0,0,0,.30) 100%
+  );
+  z-index:1;
+}
+
+.hero::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(0deg,#080808 0%,transparent 45%);
+  z-index:1;
 }
 
 .hero-content {
-  flex: 1;
-  min-width: 0;
-  position: relative;
-  z-index: 1;
+  position:relative;
+  z-index:3;
+  max-width:55%;
 }
 
 .hero h1 {
-  font-size: clamp(17px, 2vw, 25px);
-  font-weight: 800;
-  line-height: 1.2;
-  max-width: 520px;
-  overflow-wrap: anywhere;
-  text-shadow: 0 2px 12px rgba(0,0,0,.8);
+  font-size:clamp(22px,2.5vw,32px);
+  font-weight:800;
+  line-height:1.2;
+  margin-bottom:20px;
+  text-shadow:0 2px 12px #000;
 }
 
-.hero-watch-btn {
-  position: relative;
-  z-index: 1;
-  margin-top: 17px;
-  border: 0;
-  border-radius: 4px;
-  padding: 10px 19px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,.3);
+.hero-watch {
+  padding:11px 23px;
+  border:0;
+  border-radius:4px;
+  background:var(--accent);
+  color:white;
+  font-size:13px;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-.hero-watch-btn:hover { background: #b80710; }
-.hero-watch-btn:disabled { opacity: .55; cursor: not-allowed; }
+.hero-watch:hover {background:#ff202a}
 
 .hero-poster-wrap {
-  position: relative;
-  z-index: 1;
-  flex: 0 0 auto;
-  width: 220px;
-  height: 315px;
-  border-radius: 9px;
-  overflow: hidden;
-  background: #242424;
-  box-shadow: 0 12px 35px rgba(0,0,0,.55);
+  position:absolute;
+  right:9%;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:3;
+  height:330px;
+  width:220px;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 8px 35px rgba(0,0,0,.7);
 }
 
 .hero-poster {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:none;
 }
-
-.hero-poster.hidden { display: none; }
 
 /* MOVIE SECTIONS */
 
-main {
-  padding: 10px 0 50px;
-}
+main {padding:10px 0 50px}
 
-.category-section {
-  margin: 25px 0 35px;
-}
+.category-section {margin:25px 0 35px}
 
 .category-title {
-  padding: 0 5%;
-  font-size: 23px;
-  margin-bottom: 15px;
+  padding:0 5%;
+  font-size:22px;
+  margin-bottom:15px;
 }
 
 .movie-row {
-  display: flex;
-  gap: 13px;
-  overflow-x: auto;
-  padding: 5px 5% 18px;
-  scrollbar-width: thin;
-  scrollbar-color: #555 #151515;
+  display:flex;
+  gap:13px;
+  overflow-x:auto;
+  padding:5px 5% 18px;
+  scrollbar-width:thin;
+  scrollbar-color:#555 #151515;
 }
 
 .movie-card {
-  flex: 0 0 175px;
-  cursor: pointer;
-  transition: transform .25s;
+  flex:0 0 175px;
+  cursor:pointer;
+  transition:transform .25s;
 }
 
-.movie-card:hover {
-  transform: scale(1.06);
-}
+.movie-card:hover {transform:scale(1.05)}
 
 .poster {
-  height: 245px;
-  position: relative;
-  overflow: hidden;
-  border-radius: 7px;
-  background: #242424;
+  height:245px;
+  position:relative;
+  overflow:hidden;
+  border-radius:7px;
+  background:#242424;
 }
 
 .poster img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  position:absolute;
+  inset:0;
+  z-index:1;
 }
 
 .poster-placeholder {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 12px;
-  color: var(--muted);
-  font-weight: bold;
-  overflow-wrap: anywhere;
+  position:absolute;
+  inset:0;
+  z-index:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:12px;
+  color:var(--muted);
+  font-weight:bold;
+  overflow-wrap:anywhere;
 }
 
 .play-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,.25);
-  opacity: 0;
-  transition: opacity .2s;
+  position:absolute;
+  inset:0;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.25);
+  opacity:0;
+  transition:opacity .2s;
 }
 
-.movie-card:hover .play-overlay {
-  opacity: 1;
-}
+.movie-card:hover .play-overlay {opacity:1}
 
 .play-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 23px;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:var(--accent);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:23px;
 }
 
 .movie-title {
-  font-size: 14px;
-  font-weight: bold;
-  margin-top: 9px;
-  line-height: 1.4;
+  font-size:13px;
+  font-weight:bold;
+  margin-top:9px;
+  line-height:1.4;
 }
 
+/* No category/extra metadata below posters */
 
 .status {
-  text-align: center;
-  padding: 30px;
-  color: var(--muted);
+  text-align:center;
+  padding:30px;
+  color:var(--muted);
 }
 
-/* VIDEO PLAYER */
+/* PLAYER */
 
 .modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: rgba(0,0,0,.96);
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:rgba(0,0,0,.96);
+  align-items:center;
+  justify-content:center;
+  padding:20px;
 }
 
-.modal.show {
-  display: flex;
-}
+.modal.show {display:flex}
 
 .player-box {
-  width: min(1100px, 100%);
-  height: min(650px, 85vh);
-  position: relative;
-  background: #000;
-  border-radius: 8px;
-  overflow: hidden;
+  width:min(1100px,100%);
+  height:min(650px,85vh);
+  position:relative;
+  background:#000;
+  border-radius:8px;
+  overflow:hidden;
 }
 
 .player-box iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
+  width:100%;
+  height:100%;
+  border:0;
 }
 
 .close-btn {
-  position: absolute;
-  z-index: 5;
-  top: 12px;
-  right: 15px;
-  width: 40px;
-  height: 40px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(0,0,0,.8);
-  color: white;
-  font-size: 25px;
-  cursor: pointer;
+  position:absolute;
+  z-index:5;
+  top:12px;
+  right:15px;
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:50%;
+  background:rgba(0,0,0,.8);
+  color:white;
+  font-size:25px;
+  cursor:pointer;
 }
 
 .player-message {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  z-index: 4;
-  color: white;
-  font-size: 12px;
-  pointer-events: none;
+  position:absolute;
+  bottom:10px;
+  left:10px;
+  z-index:4;
+  color:white;
+  font-size:12px;
+  pointer-events:none;
 }
 
 footer {
-  border-top: 1px solid #292929;
-  text-align: center;
-  padding: 25px;
-  color: #777;
-  font-size: 12px;
+  border-top:1px solid #292929;
+  text-align:center;
+  padding:25px;
+  color:#777;
+  font-size:12px;
 }
 
 /* LIGHT MODE */
 
 body.light {
-  --bg: #f2f2f2;
-  --text: #151515;
-  --muted: #666;
+  --bg:#f2f2f2;
+  --text:#151515;
+  --muted:#666;
 }
 
-body.light header {
-  background: rgba(245,245,245,.97);
-}
+body.light header {background:rgba(245,245,245,.97)}
 
 body.light .search {
-  background: white;
-  color: black;
-}
-
-body.light .hero {
-  background-color: #333;
+  background:white;
+  color:black;
 }
 
 @media(max-width:600px) {
   header {
-    padding: 13px 4%;
-    flex-wrap: wrap;
+    padding:13px 4%;
+    flex-wrap:wrap;
   }
 
-  .logo {
-    font-size: 22px;
-  }
+  .logo {font-size:21px}
 
-  .header-right {
-    width: 100%;
-  }
+  .header-right {width:100%}
 
-  .search {
-    flex: 1;
-    width: 100%;
-  }
+  .search {flex:1;width:100%}
 
   .hero {
-    min-height: 280px;
-    padding: 30px 5%;
-    gap: 18px;
+    height:330px;
+    padding:35px 5%;
   }
 
-  .hero h1 {
-    font-size: clamp(17px, 4.5vw, 22px);
-  }
+  .hero-content {max-width:65%}
 
-  .hero-watch-btn {
-    margin-top: 12px;
-    padding: 8px 14px;
-    font-size: 12px;
-  }
+  .hero h1 {font-size:21px}
 
   .hero-poster-wrap {
-    width: 125px;
-    height: 185px;
+    right:5%;
+    height:190px;
+    width:125px;
   }
 
-  .movie-card {
-    flex-basis: 135px;
+  .hero-watch {
+    padding:9px 15px;
+    font-size:11px;
   }
 
-  .poster {
-    height: 195px;
-  }
+  .movie-card {flex-basis:135px}
 
-  .category-title {
-    font-size: 19px;
-  }
+  .poster {height:195px}
 
-  .modal {
-    padding: 5px;
-  }
+  .category-title {font-size:19px}
 
-  .player-box {
-    height: 55vh;
-  }
+  .modal {padding:5px}
+
+  .player-box {height:55vh}
 }
 </style>
 </head>
@@ -446,13 +404,18 @@ body.light .hero {
 
 <!-- HERO SLIDESHOW -->
 <section class="hero" id="hero">
+
   <div class="hero-content">
     <h1 id="heroTitle">ADRASHYA INOX</h1>
-    <button class="hero-watch-btn" id="heroWatchBtn" type="button">▶ WATCH NOW</button>
+    <button class="hero-watch" id="heroWatchBtn">
+      ▶ WATCH NOW
+    </button>
   </div>
+
   <div class="hero-poster-wrap">
-    <img class="hero-poster" id="heroPoster" alt="Featured movie poster">
+    <img id="heroPoster" class="hero-poster" alt="Featured poster">
   </div>
+
 </section>
 
 <main>
@@ -464,7 +427,7 @@ body.light .hero {
 <!-- PLAYER MODAL -->
 <div class="modal" id="playerModal">
   <div class="player-box" id="playerBox">
-    <button class="close-btn" id="closePlayer" aria-label="Close player">×</button>
+    <button class="close-btn" id="closePlayer">×</button>
     <div class="player-message" id="playerMessage"></div>
   </div>
 </div>
@@ -484,14 +447,14 @@ let heroMovies = [];
 let heroIndex = 0;
 let heroTimer = null;
 
-// Load Google Drive library
+/* LOAD GOOGLE DRIVE LIBRARY */
+
 function loadMovies() {
   const callbackName = "inoxCallback";
 
   window[callbackName] = function(data) {
     if (data && Array.isArray(data.movies)) {
       allMovies = data.movies;
-
       renderCatalogue(allMovies);
       startHeroSlideshow();
     } else {
@@ -506,9 +469,7 @@ function loadMovies() {
 
   const script = document.createElement("script");
   script.id = "inoxApiScript";
-  script.src = API_URL +
-    "?callback=" + callbackName +
-    "&t=" + Date.now();
+  script.src = API_URL + "?callback=" + callbackName + "&t=" + Date.now();
 
   script.onerror = function() {
     showError("Unable to connect to Google Drive API.");
@@ -523,19 +484,95 @@ function showError(message) {
   document.getElementById("catalogue").textContent = message;
 }
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, function(char) {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    }[char];
-  });
+/* CLEAN DISPLAY TITLES
+   Does NOT change original Drive filenames or IDs.
+*/
+
+function cleanBaseTitle(value) {
+  return String(value || "")
+    .replace(/\.[^.]+$/, "")
+
+    // Remove technical labels and unwanted descriptive text.
+    .replace(/\b(?:view\s*series|web\s*series|decoupled|web\s*show|complete\s*series|completed\s*series)\b/ig, " ")
+
+    // Remove quality and resolution.
+    .replace(/\b(?:2160p|1440p|1080p|720p|576p|480p|360p|4k|uhd|fhd|hdr10|hdr|sdr|hd|sd)\b/ig, " ")
+
+    // Remove video formats and codecs.
+    .replace(/\b(?:web[- ]?dl|web[- ]?rip|webrip|bluray|blu[- ]?ray|brrip|hdtv|hdrip|dvdrip|dvdscr|camrip|x264|x265|hevc|avc|h\.?264|h\.?265)\b/ig, " ")
+
+    // Remove audio and subtitle information.
+    .replace(/\b(?:aac\d?\.?\d?|ddp?\d?\.?\d?|dd5\.1|ac3|eac3|esub|e[- ]?sub|subbed|dubbed|dual audio|multi audio|atmos|dts)\b/ig, " ")
+
+    // Remove language labels.
+    .replace(/\b(?:hindi|english|tamil|telugu|malayalam|kannada|bengali|marathi|punjabi|gujarati|japanese|korean|spanish|french)\b/ig, " ")
+
+    // Remove other common release/file labels.
+    .replace(/\b(?:quality|completed|complete|uncut|proper|repack|sample|original audio|movie file|full movie)\b/ig, " ")
+
+    // Remove years.
+    .replace(/[([]?\b(?:19|20)\d{2}\b[)\]]?/g, " ")
+
+    // Normalize separators.
+    .replace(/[_.]+/g, " ")
+    .replace(/\s*[-|]+\s*/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^[\s:;,.-]+|[\s:;,.-]+$/g, "");
 }
 
-// Display all movie categories
+/* WEB SERIES DISPLAY TITLE */
+
+function getDisplayTitle(movie) {
+  const raw = String(movie.title || "");
+  const category = String(movie.category || "").toLowerCase();
+
+  // Movies and Animation: clean name only.
+  if (!category.includes("web")) {
+    return cleanBaseTitle(raw) || raw;
+  }
+
+  // Supports S1 E02, S01E02, Season 1 Episode 2.
+  const combined = raw.match(
+    /\bS(?:eason)?[\s._-]*(\d{1,2})\s*[-._ ]*E(?:p(?:isode)?)?[\s._-]*(\d{1,3})\b/i
+  );
+
+  const seasonMatch = combined ||
+    raw.match(/\bS(?:eason)?[\s._-]*(\d{1,2})(?=\s*E|\b)/i);
+
+  const episodeMatch = combined ? null :
+    raw.match(/\b(?:E|Ep|Episode)[\s._-]*(\d{1,3})\b/i);
+
+  const seasonNumber = seasonMatch ? Number(seasonMatch[1]) : null;
+
+  const episodeNumber = combined
+    ? Number(combined[2])
+    : (episodeMatch ? Number(episodeMatch[1]) : null);
+
+  // Remove season and episode markers before making the display title.
+  const baseRaw = raw
+    .replace(
+      /\bS(?:eason)?[\s._-]*\d{1,2}\s*[-._ ]*E(?:p(?:isode)?)?[\s._-]*\d{1,3}\b/ig,
+      " "
+    )
+    .replace(/\bS(?:eason)?[\s._-]*\d{1,2}(?=\s*E|\b)/ig, " ")
+    .replace(/\b(?:E|Ep|Episode)[\s._-]*\d{1,3}\b/ig, " ");
+
+  const base = cleanBaseTitle(baseRaw) || cleanBaseTitle(raw) || raw;
+
+  if (seasonNumber !== null && episodeNumber !== null) {
+    return `${base} – S${String(seasonNumber).padStart(2,"0")} E${String(episodeNumber).padStart(2,"0")}`;
+  }
+
+  if (seasonNumber !== null) {
+    return `${base} – Season ${seasonNumber} (Complete)`;
+  }
+
+  return base;
+}
+
+/* DISPLAY CATALOGUE */
+
 function renderCatalogue(movies) {
   const catalogue = document.getElementById("catalogue");
   catalogue.innerHTML = "";
@@ -582,51 +619,8 @@ function renderCatalogue(movies) {
   });
 }
 
-// Clean display names without changing original Drive filenames or IDs.
-function cleanBaseTitle(value) {
-  return String(value || "")
-    .replace(/\.[^.]+$/, "")
-    // Remove common release/quality and language tags from display names only.
-    .replace(/\b(?:2160p|1080p|720p|480p|4k|uhd|fhd|hd|web[- ]?dl|webrip|bluray|blu[- ]?ray|hdtv|hdrip|dvdrip|x264|x265|hevc|h\.?264|h\.?265|aac|esub|dual audio|multi audio|hindi|english|quality|completed|complete)\b/ig, " ")
-    // Remove years whether written in brackets or separated by underscores/spaces.
-    .replace(/[([]?\b(?:19|20)\d{2}\b[)\]]?/g, " ")
-    .replace(/[_.]+/g, " ")
-    .replace(/\s*[-–|]+\s*/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+/* MOVIE POSTER CARD */
 
-function getDisplayTitle(movie) {
-  const raw = String(movie.title || "");
-  const category = String(movie.category || "").toLowerCase();
-
-  if (category.includes("web")) {
-    // Supports S1 E02, S01E02, Season 1 Episode 2, etc.
-    const combined = raw.match(/\bS(?:eason)?[\s._-]*(\d{1,2})\s*[-._ ]*E(?:p(?:isode)?)?[\s._-]*(\d{1,3})\b/i);
-    const season = combined || raw.match(/\bS(?:eason)?[\s._-]*(\d{1,2})(?=\s*E|\b)/i);
-    const episode = combined ? null : raw.match(/\b(?:E|Ep|Episode)[\s._-]*(\d{1,3})\b/i);
-    const seasonNumber = season ? Number(season[1]) : null;
-    const episodeNumber = combined ? Number(combined[2]) : (episode ? Number(episode[1]) : null);
-
-    const baseRaw = raw
-      .replace(/\bS(?:eason)?[\s._-]*\d{1,2}(?=\s*E|\b)/ig, " ")
-      .replace(/\b(?:E|Ep|Episode)[\s._-]*\d{1,3}\b/ig, " ")
-      .replace(/\bS(?:eason)?[\s._-]*\d{1,2}\s*[-._ ]*E(?:p(?:isode)?)?[\s._-]*\d{1,3}\b/ig, " ");
-    const base = cleanBaseTitle(baseRaw) || cleanBaseTitle(raw) || raw;
-
-    if (seasonNumber !== null && episodeNumber !== null) {
-      return `${base} – S${String(seasonNumber).padStart(2, "0")} E${String(episodeNumber).padStart(2, "0")}`;
-    }
-    if (seasonNumber !== null) {
-      return `${base} – Season ${seasonNumber} (Complete)`;
-    }
-    return base;
-  }
-
-  return cleanBaseTitle(raw) || raw;
-}
-
-// Movie poster card
 function createMovieCard(movie) {
   const card = document.createElement("div");
   card.className = "movie-card";
@@ -637,14 +631,14 @@ function createMovieCard(movie) {
 
   const placeholder = document.createElement("div");
   placeholder.className = "poster-placeholder";
-  placeholder.textContent = getDisplayTitle(movie) || "Movie";
+  placeholder.textContent = getDisplayTitle(movie);
 
   poster.appendChild(placeholder);
 
   if (movie.thumbnail) {
     const img = document.createElement("img");
     img.src = movie.thumbnail;
-    img.alt = movie.title || "Movie poster";
+    img.alt = getDisplayTitle(movie);
     img.loading = "lazy";
 
     img.onerror = function() {
@@ -666,7 +660,9 @@ function createMovieCard(movie) {
 
   const title = document.createElement("div");
   title.className = "movie-title";
-  title.textContent = getDisplayTitle(movie) || "Untitled";
+
+  // Only cleaned title is displayed below the poster.
+  title.textContent = getDisplayTitle(movie);
 
   card.appendChild(poster);
   card.appendChild(title);
@@ -683,8 +679,10 @@ function createMovieCard(movie) {
   return card;
 }
 
-// HERO SLIDESHOW
-// Change these four original Drive titles to select different featured items.
+/* HERO SLIDESHOW
+   Change these four names whenever you want.
+*/
+
 const FEATURED_MOVIES = [
   "Aadu 3_2026_720p WEB-DL",
   "Aakhri Sawal (2026)",
@@ -703,6 +701,7 @@ function startHeroSlideshow() {
   heroMovies = FEATURED_MOVIES
     .map(featuredTitle => {
       const wantedTitle = normalizeMovieTitle(featuredTitle);
+
       return allMovies.find(movie =>
         normalizeMovieTitle(movie.title) === wantedTitle && movie.id
       );
@@ -710,52 +709,56 @@ function startHeroSlideshow() {
     .filter(Boolean);
 
   if (heroTimer) clearInterval(heroTimer);
+
   heroIndex = 0;
 
   if (!heroMovies.length) {
-    document.getElementById("heroTitle").textContent = "Featured titles not found";
-    document.getElementById("heroPoster").classList.add("hidden");
+    document.getElementById("heroTitle").textContent =
+      "Featured movies not found";
     return;
   }
 
   showHeroSlide(0);
-  heroTimer = setInterval(() => {
-    showHeroSlide((heroIndex + 1) % heroMovies.length);
-  }, 5000);
 
-  if (heroMovies.length < FEATURED_MOVIES.length) {
-    console.warn("Some featured titles were not found. Check FEATURED_MOVIES:", FEATURED_MOVIES);
-  }
+  heroTimer = setInterval(() => {
+    showHeroSlide(heroIndex + 1);
+  }, 5000);
 }
 
 function showHeroSlide(index) {
   if (!heroMovies.length) return;
-  heroIndex = (index + heroMovies.length) % heroMovies.length;
-  const movie = heroMovies[heroIndex];
 
-  document.getElementById("heroTitle").textContent = getDisplayTitle(movie) || "Untitled";
+  heroIndex = (index + heroMovies.length) % heroMovies.length;
+
+  const movie = heroMovies[heroIndex];
   const hero = document.getElementById("hero");
   const poster = document.getElementById("heroPoster");
+
+  // Use clean title in hero too.
+  document.getElementById("heroTitle").textContent =
+    getDisplayTitle(movie);
+
   if (movie.thumbnail) {
-    // Use the same poster as a full hero background and as the poster on the right.
-    hero.style.backgroundImage = `url("${String(movie.thumbnail).replace(/"/g, '%22')}")`;
     poster.src = movie.thumbnail;
-    poster.alt = getDisplayTitle(movie) + " poster";
-    poster.classList.remove("hidden");
+    poster.style.display = "block";
+
+    // Same poster fills the hero background.
+    const safePoster = movie.thumbnail.replace(/'/g, "%27");
+
+    hero.style.backgroundImage =
+      `url('${safePoster}')`;
   } else {
+    poster.style.display = "none";
     hero.style.backgroundImage = "none";
-    poster.removeAttribute("src");
-    poster.classList.add("hidden");
   }
+
+  document.getElementById("heroWatchBtn").onclick = function() {
+    playMovie(movie);
+  };
 }
 
-// Play the currently featured slideshow item.
-document.getElementById("heroWatchBtn").addEventListener("click", function() {
-  const movie = heroMovies[heroIndex];
-  if (movie) playMovie(movie);
-});
+/* GOOGLE DRIVE PLAYER */
 
-// GOOGLE DRIVE VIDEO PLAYER
 function playMovie(movie) {
   if (!movie.id) {
     alert("Movie ID is missing.");
@@ -769,7 +772,7 @@ function playMovie(movie) {
   const oldFrame = document.getElementById("drivePlayer");
   if (oldFrame) oldFrame.remove();
 
-  message.textContent = "Loading " + (movie.title || "movie") + "...";
+  message.textContent = "Loading " + getDisplayTitle(movie) + "...";
 
   const iframe = document.createElement("iframe");
 
@@ -781,7 +784,7 @@ function playMovie(movie) {
 
   iframe.allow = "autoplay; fullscreen";
   iframe.allowFullscreen = true;
-  iframe.title = movie.title || "Movie player";
+  iframe.title = getDisplayTitle(movie);
 
   playerBox.appendChild(iframe);
 
@@ -815,7 +818,10 @@ document.addEventListener("keydown", function(event) {
   if (event.key === "Escape") closePlayer();
 });
 
-// SEARCH
+/* SEARCH
+   Search uses ORIGINAL Drive filename, not cleaned display title.
+*/
+
 document.getElementById("searchBox")
   .addEventListener("input", function() {
     const query = this.value.trim().toLowerCase();
@@ -827,15 +833,17 @@ document.getElementById("searchBox")
     renderCatalogue(filtered);
   });
 
-// THEME
+/* THEME */
+
 document.getElementById("themeBtn")
   .addEventListener("click", function() {
     document.body.classList.toggle("light");
   });
 
-// START
-loadMovies();
-</script>
+/* START WEBSITE */
 
+loadMovies();
+
+</script>
 </body>
 </html>
