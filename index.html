@@ -97,7 +97,7 @@ header {
   isolation: isolate;
   background-color: #101010;
   background-size: cover;
-  background-position: center top;
+  background-position: center center;
   background-repeat: no-repeat;
 }
 
@@ -1252,7 +1252,7 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
 const FEATURED_MOVIES = [
   "Aadu 3",
   "Aakhri Sawal",
-  "Akka S1",
+  "Akka Season-1",
   "Dhurandhar 2"
 
   // Add more titles below:
@@ -1360,7 +1360,7 @@ function showHeroSlide(index) {
     getDisplayTitle(movie);
 
   // Show the upper part of the poster
-  hero.style.backgroundPosition = "center top";
+  hero.style.backgroundPosition = "center center";
 
   hero.style.backgroundImage = image
     ? `url("${String(image).replace(/"/g, "%22")}")`
