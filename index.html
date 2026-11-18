@@ -84,15 +84,13 @@ header {
   cursor: pointer;
 }
 
-/* HERO SLIDESHOW */
+/* HERO BANNER */
 
 .hero {
-  min-height: 390px;
-  padding: 38px 7%;
+  min-height: 510px;
+  padding: 65px 7%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 35px;
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -109,36 +107,44 @@ header {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(90deg, rgba(0,0,0,.88) 0%, rgba(0,0,0,.62) 48%, rgba(0,0,0,.35) 100%),
-              linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.18));
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0,0,0,.88) 0%,
+      rgba(0,0,0,.62) 55%,
+      rgba(0,0,0,.35) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(0,0,0,.55),
+      rgba(0,0,0,.18)
+    );
 }
 
 .hero-content {
-  flex: 1;
-  min-width: 0;
+  width: 100%;
+  max-width: 750px;
   position: relative;
   z-index: 1;
 }
 
 .hero h1 {
-  font-size: clamp(17px, 2vw, 25px);
+  font-size: clamp(25px, 3.5vw, 42px);
   font-weight: 800;
   line-height: 1.2;
-  max-width: 520px;
+  max-width: 700px;
   overflow-wrap: anywhere;
   text-shadow: 0 2px 12px rgba(0,0,0,.8);
 }
 
 .hero-watch-btn {
-  position: relative;
-  z-index: 1;
-  margin-top: 17px;
+  margin-top: 22px;
   border: 0;
   border-radius: 4px;
-  padding: 10px 19px;
+  padding: 12px 22px;
   background: var(--accent);
   color: #fff;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(0,0,0,.3);
@@ -151,29 +157,6 @@ header {
 .hero-watch-btn:disabled {
   opacity: .55;
   cursor: not-allowed;
-}
-
-.hero-poster-wrap {
-  position: relative;
-  z-index: 1;
-  flex: 0 0 auto;
-  width: 220px;
-  height: 315px;
-  border-radius: 9px;
-  overflow: hidden;
-  background: #242424;
-  box-shadow: 0 12px 35px rgba(0,0,0,.55);
-}
-
-.hero-poster {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.hero-poster.hidden {
-  display: none;
 }
 
 /* MOVIE SECTIONS */
@@ -381,6 +364,32 @@ main {
   overflow-wrap: anywhere;
 }
 
+.selection-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.selection-actions .hero-watch-btn {
+  margin-top: 0;
+}
+
+.resume-btn {
+  border: 1px solid #777;
+  border-radius: 4px;
+  padding: 12px 22px;
+  background: #333;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.resume-btn:hover {
+  background: #505050;
+}
+
 .selection-nav {
   position: absolute;
   top: 45%;
@@ -488,6 +497,8 @@ body.light .hero {
   background-color: #333;
 }
 
+/* MOBILE */
+
 @media(max-width:600px) {
   header {
     padding: 13px 4%;
@@ -508,24 +519,18 @@ body.light .hero {
   }
 
   .hero {
-    min-height: 280px;
-    padding: 30px 5%;
-    gap: 18px;
+    min-height: 390px;
+    padding: 40px 5%;
   }
 
   .hero h1 {
-    font-size: clamp(17px, 4.5vw, 22px);
+    font-size: clamp(22px, 6vw, 30px);
   }
 
   .hero-watch-btn {
-    margin-top: 12px;
-    padding: 8px 14px;
+    margin-top: 16px;
+    padding: 10px 16px;
     font-size: 12px;
-  }
-
-  .hero-poster-wrap {
-    width: 125px;
-    height: 185px;
   }
 
   .row-arrow {
@@ -565,6 +570,10 @@ body.light .hero {
     font-size: 16px;
   }
 
+  .selection-actions {
+    justify-content: center;
+  }
+
   .modal {
     padding: 5px;
   }
@@ -596,7 +605,7 @@ body.light .hero {
   </div>
 </header>
 
-<!-- HERO SLIDESHOW -->
+<!-- HERO BANNER - NO FEATURED POSTER -->
 
 <section class="hero" id="hero">
   <div class="hero-content">
@@ -604,10 +613,6 @@ body.light .hero {
     <button class="hero-watch-btn" id="heroWatchBtn" type="button">
       ▶ WATCH NOW
     </button>
-  </div>
-
-  <div class="hero-poster-wrap">
-    <img class="hero-poster" id="heroPoster" alt="Featured movie poster">
   </div>
 </section>
 
@@ -629,9 +634,16 @@ body.light .hero {
 
       <div class="selection-info">
         <h2 id="selectionTitle"></h2>
-        <button class="hero-watch-btn" id="selectionPlay" type="button">
-          ▶ PLAY
-        </button>
+
+        <div class="selection-actions">
+          <button class="hero-watch-btn" id="selectionPlay" type="button">
+            ▶ PLAY
+          </button>
+
+          <button class="resume-btn" id="selectionResume" type="button">
+            ↻ RESUME
+          </button>
+        </div>
       </div>
     </div>
 
@@ -742,29 +754,7 @@ function normalizeCategory(value) {
   return String(value || "Other").trim() || "Other";
 }
 
-/*
-  TRENDING / POPULAR RELEASES
-
-  Each category is sorted independently.
-  Newest available year appears first.
-  Older years automatically fill the remaining places.
-  Maximum 10 titles per category.
-*/
-
-function getTrendingMovies(categoryMovies) {
-  function getYear(movie) {
-    const match = String(movie.title || "").match(/\b(19\d{2}|20\d{2})\b/);
-    return match ? Number(match[1]) : 0;
-  }
-
-  const sortedMovies = [...categoryMovies].sort((a, b) => {
-    return getYear(b) - getYear(a);
-  });
-
-  return sortedMovies.slice(0, 10);
-}
-
-// Display category rows.
+// Display only one row for each category.
 
 function renderCatalogue(movies) {
   const catalogue = document.getElementById("catalogue");
@@ -854,58 +844,29 @@ function renderCatalogue(movies) {
 
     section.appendChild(heading);
 
-    // ANIMATION: Only one row showing all animation movies.
+    let rowLabel;
 
-    if (category === "Animation") {
-      const allAnimationRow = createMovieRow(
-        categoryMovies,
-        "All Animation"
-      );
-
-      if (allAnimationRow) {
-        section.appendChild(allAnimationRow);
-      }
-
-      catalogue.appendChild(section);
-      return;
+    if (category === "Movies") {
+      rowLabel = "All Movies";
+    } else if (category === "Web Series") {
+      rowLabel = "All Web Series";
+    } else if (category === "Animation") {
+      rowLabel = "All Animation";
+    } else {
+      rowLabel = "All " + category;
     }
 
-    // MOVIES AND WEB SERIES: Keep two rows.
+    const allRow = createMovieRow(categoryMovies, rowLabel);
 
-    const firstLabel =
-      category === "Movies" ? "Trending Movies" :
-      category === "Web Series" ? "Popular Series" :
-      "Featured " + category;
-
-    const secondLabel =
-      category === "Movies" ? "All Movies" :
-      category === "Web Series" ? "All Web Series" :
-      "All " + category;
-
-    const trendingMovies = getTrendingMovies(categoryMovies);
-
-    const trendingRow = createMovieRow(trendingMovies, firstLabel);
-    if (trendingRow) section.appendChild(trendingRow);
-
-    const allRow = createMovieRow(categoryMovies, secondLabel);
-    if (allRow) section.appendChild(allRow);
+    if (allRow) {
+      section.appendChild(allRow);
+    }
 
     catalogue.appendChild(section);
   });
 }
 
 // Keep original Drive filenames and IDs unchanged.
-
-function cleanBaseTitle(value) {
-  return String(value || "")
-    .replace(/\.[^.]+$/, "")
-    .replace(/\b(?:2160p|1080p|720p|480p|4k|uhd|fhd|hd|web[- ]?dl|webrip|bluray|blu[- ]?ray|hdtv|hdrip|dvdrip|x264|x265|hevc|h\.?264|h\.?265|aac|esub|dual audio|multi audio|hindi|english|quality|completed|complete)\b/ig, " ")
-    .replace(/[([]?\b(?:19|20)\d{2}\b[)\]]?/g, " ")
-    .replace(/[_.]+/g, " ")
-    .replace(/\s*[-–|]+\s*/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
 
 function getDisplayTitle(movie) {
   return String(movie.title || "Untitled");
@@ -1000,10 +961,13 @@ function startHeroSlideshow() {
   heroIndex = 0;
 
   if (!heroMovies.length) {
-    document.getElementById("heroTitle").textContent = "Featured titles not found";
-    document.getElementById("heroPoster").classList.add("hidden");
+    document.getElementById("heroTitle").textContent = "ADRASHYA INOX";
+    document.getElementById("hero").style.backgroundImage = "none";
+    document.getElementById("heroWatchBtn").disabled = true;
     return;
   }
+
+  document.getElementById("heroWatchBtn").disabled = false;
 
   showHeroSlide(0);
 
@@ -1030,19 +994,12 @@ function showHeroSlide(index) {
     getDisplayTitle(movie) || "Untitled";
 
   const hero = document.getElementById("hero");
-  const poster = document.getElementById("heroPoster");
 
   if (movie.thumbnail) {
     hero.style.backgroundImage =
       `url("${String(movie.thumbnail).replace(/"/g, '%22')}")`;
-
-    poster.src = movie.thumbnail;
-    poster.alt = getDisplayTitle(movie) + " poster";
-    poster.classList.remove("hidden");
   } else {
     hero.style.backgroundImage = "none";
-    poster.removeAttribute("src");
-    poster.classList.add("hidden");
   }
 }
 
@@ -1119,6 +1076,18 @@ document.getElementById("selectionPlay")
       closeSelection();
       playMovie(movie);
     }
+  });
+
+document.getElementById("selectionResume")
+  .addEventListener("click", () => {
+    const movie = selectionMovies[selectionIndex];
+
+    if (!movie) return;
+
+    alert(
+      "Resume position is not available with Google Drive Preview. " +
+      "The built-in ADRASHYA INOX player will be required for true Resume playback."
+    );
   });
 
 document.getElementById("selectionModal")
