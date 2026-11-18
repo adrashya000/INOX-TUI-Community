@@ -84,11 +84,12 @@ header {
   cursor: pointer;
 }
 
-/* HERO */
+/* HERO SLIDESHOW */
 
 .hero {
-  min-height: 510px;
-  padding: 65px 7%;
+  height: 320px;
+  min-height: 320px;
+  padding: 35px 7%;
   display: flex;
   align-items: center;
   position: relative;
@@ -96,7 +97,7 @@ header {
   isolation: isolate;
   background-color: #101010;
   background-size: cover;
-  background-position: center 30%;
+  background-position: center top;
   background-repeat: no-repeat;
 }
 
@@ -106,8 +107,13 @@ header {
   inset: 0;
   z-index: 0;
   background:
-    linear-gradient(90deg,rgba(0,0,0,.88),rgba(0,0,0,.62),rgba(0,0,0,.35)),
-    linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,.18));
+    linear-gradient(90deg,
+      rgba(0,0,0,.85),
+      rgba(0,0,0,.55),
+      rgba(0,0,0,.15)),
+    linear-gradient(0deg,
+      rgba(0,0,0,.4),
+      transparent);
 }
 
 .hero-content {
@@ -126,7 +132,7 @@ header {
 }
 
 .hero-watch-btn {
-  margin-top: 22px;
+  margin-top: 18px;
   border: 0;
   border-radius: 5px;
   padding: 12px 22px;
@@ -714,8 +720,10 @@ body.light .hero {
   }
 
   .hero {
-    min-height: 390px;
-    padding: 40px 5%;
+    height: 240px;
+    min-height: 240px;
+    padding: 30px 5%;
+    background-position: center top;
   }
 
   .hero h1 {
@@ -866,7 +874,6 @@ body.light .hero {
       aria-label="Close details">×</button>
 
     <section class="premium-hero" id="premiumHero">
-
       <div class="premium-content">
 
         <div class="premium-poster-wrap">
@@ -890,7 +897,6 @@ body.light .hero {
 
           <div class="premium-list-note" id="myListNote"></div>
         </div>
-
       </div>
     </section>
 
@@ -1240,51 +1246,105 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
 
 // HERO SLIDESHOW
 
+// Add more featured movies here.
+// Only a distinctive part of the Drive filename is required.
+
 const FEATURED_MOVIES = [
-  "Aadu 3_2026_720p WEB-DL",
-  "Aakhri Sawal (2026)",
-  "Akka S1 (2026) Hindi Completed Web Series HD ESub 1080p",
-  "Dhurandhar 2_The Revenge_2026_Quality_1080p HEVC WEB-DL x265"
+  "Aadu 3",
+  "Aakhri Sawal",
+  "Akka S1",
+  "Dhurandhar 2"
+
+  // Add more titles below:
+  // ,"Panchayat"
+  // ,"Mirzapur"
+  // ,"Decoupled"
 ];
 
 function normalizeMovieTitle(title) {
   return String(title || "")
-    .trim()
+    .toLowerCase()
     .replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
-    .toLowerCase();
+    .replace(/[_\-.[\]()]/g, " ")
+    .replace(/\b(480p|720p|1080p|2160p|4k|hevc|x265|x264|web dl|webrip|bluray|hdr|esub|hindi|completed|quality)\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function findFeaturedMovie(featuredTitle) {
+  const wanted = normalizeMovieTitle(featuredTitle);
+
+  if (!wanted) return null;
+
+  // Exact normalized match first
+  let match = allMovies.find(movie =>
+    normalizeMovieTitle(movie.title) === wanted && movie.id
+  );
+
+  if (match) return match;
+
+  // Partial matching
+  // Avoid matching very short titles accidentally.
+  match = allMovies.find(movie => {
+    const actual = normalizeMovieTitle(movie.title);
+
+    return movie.id &&
+      wanted.length >= 4 &&
+      (actual.includes(wanted) || wanted.includes(actual));
+  });
+
+  return match || null;
 }
 
 function startHeroSlideshow() {
-  heroMovies = FEATURED_MOVIES
-    .map(featuredTitle => {
-      const wantedTitle = normalizeMovieTitle(featuredTitle);
-
-      return allMovies.find(movie =>
-        normalizeMovieTitle(movie.title) === wantedTitle && movie.id
-      );
-    })
+  const foundMovies = FEATURED_MOVIES
+    .map(title => findFeaturedMovie(title))
     .filter(Boolean);
 
-  if (heroTimer) clearInterval(heroTimer);
+  // Remove duplicate videos
+  heroMovies = foundMovies.filter((movie, index, array) =>
+    array.findIndex(item => item.id === movie.id) === index
+  );
+
+  if (heroTimer) {
+    clearInterval(heroTimer);
+    heroTimer = null;
+  }
+
   heroIndex = 0;
 
+  const heroTitle = document.getElementById("heroTitle");
+  const hero = document.getElementById("hero");
+  const watchButton = document.getElementById("heroWatchBtn");
+
   if (!heroMovies.length) {
-    document.getElementById("heroTitle").textContent = "ADRASHYA INOX";
-    document.getElementById("hero").style.backgroundImage = "none";
-    document.getElementById("heroWatchBtn").disabled = true;
+    heroTitle.textContent = "ADRASHYA INOX";
+    hero.style.backgroundImage = "none";
+    watchButton.disabled = true;
+    console.warn("No featured movies matched your Drive library.");
     return;
   }
 
-  document.getElementById("heroWatchBtn").disabled = false;
+  watchButton.disabled = false;
+
   showHeroSlide(0);
 
-  heroTimer = setInterval(() => {
-    showHeroSlide((heroIndex + 1) % heroMovies.length);
-  }, 5000);
-
-  if (heroMovies.length < FEATURED_MOVIES.length) {
-    console.warn("Some featured titles were not found:", FEATURED_MOVIES);
+  // Automatic slideshow every 5 seconds
+  if (heroMovies.length > 1) {
+    heroTimer = setInterval(() => {
+      showHeroSlide((heroIndex + 1) % heroMovies.length);
+    }, 5000);
   }
+
+  console.log(
+    "Hero slideshow loaded:",
+    heroMovies.map(movie => movie.title)
+  );
+
+  console.log(
+    "Featured titles not found:",
+    FEATURED_MOVIES.filter(title => !findFeaturedMovie(title))
+  );
 }
 
 function showHeroSlide(index) {
@@ -1293,12 +1353,14 @@ function showHeroSlide(index) {
   heroIndex = (index + heroMovies.length) % heroMovies.length;
 
   const movie = heroMovies[heroIndex];
+  const image = getSeasonPoster(movie);
+  const hero = document.getElementById("hero");
 
   document.getElementById("heroTitle").textContent =
     getDisplayTitle(movie);
 
-  const image = getSeasonPoster(movie);
-  const hero = document.getElementById("hero");
+  // Show the upper part of the poster
+  hero.style.backgroundPosition = "center top";
 
   hero.style.backgroundImage = image
     ? `url("${String(image).replace(/"/g, "%22")}")`
@@ -1343,7 +1405,6 @@ function showSelection() {
   document.getElementById("selectionTitle").textContent =
     getDisplayTitle(movie);
 
-  // No invented descriptions or details
   const description = document.getElementById("selectionDescription");
   description.textContent = movie.description || "";
   description.style.display = movie.description ? "block" : "none";
@@ -1434,7 +1495,6 @@ function renderRecommendations(currentMovie) {
     normalizeCategory(movie.category) === category
   );
 
-  // Prefer same category, but do not show the current video
   const selected = recommendations.slice(0, 20);
 
   if (!selected.length) {
@@ -1466,9 +1526,8 @@ function renderRecommendations(currentMovie) {
     card.append(img, title);
 
     card.addEventListener("click", () => {
-      const list = recommendations;
-      const index = list.findIndex(item => item.id === movie.id);
-      openSelection(list, index);
+      const index = recommendations.findIndex(item => item.id === movie.id);
+      openSelection(recommendations, index);
     });
 
     row.appendChild(card);
@@ -1690,4 +1749,3 @@ loadMovies();
 
 </body>
 </html>
-```
