@@ -329,65 +329,51 @@ main {
   color: var(--muted);
 }
 
-/* MOVIE SELECTION POPUP */
+/* LARGER MOVIE SELECTION POPUP */
 
 .selection-box {
   position: relative;
-  width: min(760px, 96%);
-  min-height: 300px;
+  width: min(900px, 96%);
+  min-height: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
   background: #181818;
-  border-radius: 10px;
-  padding: 28px 55px;
+  border-radius: 12px;
+  padding: 40px 65px;
+  box-shadow: 0 15px 50px rgba(0,0,0,.6);
 }
 
 .selection-content {
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 35px;
+  min-height: 340px;
 }
 
 .selection-poster {
-  width: 180px;
-  height: 260px;
+  flex: 0 0 230px;
+  width: 230px;
+  height: 330px;
   object-fit: cover;
-  border-radius: 7px;
+  border-radius: 9px;
   background: #333;
+  box-shadow: 0 8px 25px rgba(0,0,0,.4);
 }
 
 .selection-info {
+  flex: 1;
   min-width: 0;
 }
 
 .selection-info h2 {
-  font-size: 21px;
+  font-size: 27px;
   line-height: 1.4;
   overflow-wrap: anywhere;
 }
 
-.selection-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 18px;
-}
-
-.selection-actions .hero-watch-btn {
-  margin-top: 0;
-}
-
-.resume-btn {
-  border: 1px solid #777;
-  border-radius: 4px;
-  padding: 12px 22px;
-  background: #333;
-  color: white;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.resume-btn:hover {
-  background: #505050;
+.selection-info .hero-watch-btn {
+  margin-top: 22px;
+  min-width: 130px;
 }
 
 .selection-nav {
@@ -397,10 +383,15 @@ main {
   background: #333;
   color: white;
   border-radius: 5px;
-  width: 35px;
-  height: 50px;
-  font-size: 28px;
+  width: 42px;
+  height: 58px;
+  font-size: 30px;
   cursor: pointer;
+  transition: background .2s;
+}
+
+.selection-nav:hover {
+  background: var(--accent);
 }
 
 .selection-nav.prev {
@@ -497,7 +488,7 @@ body.light .hero {
   background-color: #333;
 }
 
-/* MOBILE */
+/* MOBILE RESPONSIVE */
 
 @media(max-width:600px) {
   header {
@@ -551,27 +542,49 @@ body.light .hero {
     font-size: 19px;
   }
 
+  /* MOBILE POPUP */
+
   .selection-box {
-    padding: 55px 38px 25px;
+    width: 96%;
+    min-height: auto;
+    max-height: 92vh;
+    padding: 55px 30px 30px;
   }
 
   .selection-content {
     flex-direction: column;
     text-align: center;
-    gap: 15px;
+    gap: 20px;
+    min-height: auto;
   }
 
   .selection-poster {
-    width: 135px;
-    height: 195px;
+    flex: none;
+    width: 170px;
+    height: 245px;
   }
 
   .selection-info h2 {
-    font-size: 16px;
+    font-size: 20px;
   }
 
-  .selection-actions {
-    justify-content: center;
+  .selection-info .hero-watch-btn {
+    margin-top: 15px;
+  }
+
+  .selection-nav {
+    top: 34%;
+    width: 32px;
+    height: 48px;
+    font-size: 25px;
+  }
+
+  .selection-nav.prev {
+    left: 5px;
+  }
+
+  .selection-nav.next {
+    right: 5px;
   }
 
   .modal {
@@ -605,7 +618,7 @@ body.light .hero {
   </div>
 </header>
 
-<!-- HERO BANNER - NO FEATURED POSTER -->
+<!-- HERO BANNER -->
 
 <section class="hero" id="hero">
   <div class="hero-content">
@@ -622,11 +635,13 @@ body.light .hero {
   </div>
 </main>
 
-<!-- MOVIE DETAILS / SELECTION MODAL -->
+<!-- MOVIE DETAILS POPUP -->
 
 <div class="modal" id="selectionModal">
   <div class="selection-box">
+
     <button class="close-btn" id="closeSelection" aria-label="Close details">×</button>
+
     <button class="selection-nav prev" id="selectionPrev" aria-label="Previous movie">‹</button>
 
     <div class="selection-content">
@@ -635,19 +650,14 @@ body.light .hero {
       <div class="selection-info">
         <h2 id="selectionTitle"></h2>
 
-        <div class="selection-actions">
-          <button class="hero-watch-btn" id="selectionPlay" type="button">
-            ▶ PLAY
-          </button>
-
-          <button class="resume-btn" id="selectionResume" type="button">
-            ↻ RESUME
-          </button>
-        </div>
+        <button class="hero-watch-btn" id="selectionPlay" type="button">
+          ▶ PLAY
+        </button>
       </div>
     </div>
 
     <button class="selection-nav next" id="selectionNext" aria-label="Next movie">›</button>
+
   </div>
 </div>
 
@@ -675,7 +685,7 @@ let heroMovies = [];
 let heroIndex = 0;
 let heroTimer = null;
 
-// Load Google Drive library
+// LOAD GOOGLE DRIVE LIBRARY
 
 function loadMovies() {
   const callbackName = "inoxCallback";
@@ -715,18 +725,6 @@ function showError(message) {
   document.getElementById("catalogue").textContent = message;
 }
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, function(char) {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    }[char];
-  });
-}
-
 /* CATEGORY NORMALIZATION */
 
 function normalizeCategory(value) {
@@ -754,7 +752,7 @@ function normalizeCategory(value) {
   return String(value || "Other").trim() || "Other";
 }
 
-// Display only one row for each category.
+// DISPLAY ONE ROW FOR EACH CATEGORY
 
 function renderCatalogue(movies) {
   const catalogue = document.getElementById("catalogue");
@@ -866,13 +864,13 @@ function renderCatalogue(movies) {
   });
 }
 
-// Keep original Drive filenames and IDs unchanged.
+// KEEP ORIGINAL DRIVE FILENAMES AND IDS UNCHANGED
 
 function getDisplayTitle(movie) {
   return String(movie.title || "Untitled");
 }
 
-// Movie poster card
+// MOVIE POSTER CARD
 
 function createMovieCard(movie, categoryMovies = [movie], index = 0) {
   const card = document.createElement("div");
@@ -1003,7 +1001,7 @@ function showHeroSlide(index) {
   }
 }
 
-// Play the currently featured slideshow item.
+// HERO WATCH NOW
 
 document.getElementById("heroWatchBtn").addEventListener("click", function() {
   const movie = heroMovies[heroIndex];
@@ -1076,18 +1074,6 @@ document.getElementById("selectionPlay")
       closeSelection();
       playMovie(movie);
     }
-  });
-
-document.getElementById("selectionResume")
-  .addEventListener("click", () => {
-    const movie = selectionMovies[selectionIndex];
-
-    if (!movie) return;
-
-    alert(
-      "Resume position is not available with Google Drive Preview. " +
-      "The built-in ADRASHYA INOX player will be required for true Resume playback."
-    );
   });
 
 document.getElementById("selectionModal")
@@ -1181,7 +1167,10 @@ document.getElementById("playerModal")
   });
 
 document.addEventListener("keydown", function(event) {
-  if (event.key === "Escape") closePlayer();
+  if (event.key === "Escape") {
+    closePlayer();
+    closeSelection();
+  }
 });
 
 // SEARCH
