@@ -84,63 +84,109 @@ header {
   cursor: pointer;
 }
 
-/* HERO SLIDESHOW */
+/* HERO SLIDESHOW - BLURRED BACKGROUND + ORIGINAL POSTER */
 
 .hero {
-  height: 320px;
-  min-height: 320px;
-  padding: 35px 7%;
+  height: 340px;
+  min-height: 340px;
+  padding: 25px 7%;
   display: flex;
   align-items: center;
+  justify-content: center;
   position: relative;
   overflow: hidden;
   isolation: isolate;
   background-color: #101010;
+}
+
+/* Enlarged blurred version of the same poster */
+
+.hero-backdrop {
+  position: absolute;
+  inset: -25px;
+  z-index: 0;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  filter: blur(20px);
+  transform: scale(1.08);
+  opacity: .75;
+  transition: background-image .4s ease;
 }
+
+/* Dark overlay */
 
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   background:
     linear-gradient(90deg,
-      rgba(0,0,0,.85),
-      rgba(0,0,0,.55),
-      rgba(0,0,0,.15)),
+      rgba(0,0,0,.65),
+      rgba(0,0,0,.18),
+      rgba(0,0,0,.65)),
     linear-gradient(0deg,
-      rgba(0,0,0,.4),
-      transparent);
+      rgba(0,0,0,.55),
+      rgba(0,0,0,.12));
 }
+
+/* Original poster - no cropping */
+
+.hero-poster-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  padding: 12px;
+}
+
+.hero-poster {
+  display: block;
+  height: 300px;
+  width: auto;
+  max-width: 42%;
+  object-fit: contain;
+  border-radius: 5px;
+  box-shadow: 0 8px 35px rgba(0,0,0,.65);
+  transition: opacity .3s ease;
+}
+
+/* Hero title and button */
 
 .hero-content {
   width: 100%;
   max-width: 750px;
-  position: relative;
-  z-index: 1;
+  position: absolute;
+  z-index: 3;
+  left: 5%;
+  bottom: 25px;
+  pointer-events: none;
 }
 
 .hero h1 {
-  font-size: clamp(25px,3.5vw,42px);
+  font-size: clamp(22px,3vw,34px);
   font-weight: 800;
   line-height: 1.2;
-  max-width: 700px;
+  max-width: 400px;
   overflow-wrap: anywhere;
+  text-shadow: 0 3px 12px rgba(0,0,0,.95);
 }
 
 .hero-watch-btn {
-  margin-top: 18px;
+  margin-top: 12px;
   border: 0;
   border-radius: 5px;
-  padding: 12px 22px;
+  padding: 11px 20px;
   background: var(--accent);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+  pointer-events: auto;
 }
 
 .hero-watch-btn:hover,
@@ -720,14 +766,39 @@ body.light .hero {
   }
 
   .hero {
-    height: 240px;
-    min-height: 240px;
-    padding: 30px 5%;
-    background-position: center top;
+    height: 260px;
+    min-height: 260px;
+    padding: 15px 5%;
+  }
+
+  .hero-backdrop {
+    inset: -18px;
+    filter: blur(15px);
+  }
+
+  .hero-poster-wrap {
+    padding: 10px;
+  }
+
+  .hero-poster {
+    height: 220px;
+    max-width: 55%;
+  }
+
+  .hero-content {
+    left: 5%;
+    bottom: 13px;
   }
 
   .hero h1 {
-    font-size: clamp(22px,6vw,30px);
+    font-size: clamp(17px,5vw,23px);
+    max-width: 65%;
+  }
+
+  .hero-watch-btn {
+    margin-top: 8px;
+    padding: 9px 14px;
+    font-size: 12px;
   }
 
   .row-arrow {
@@ -850,13 +921,26 @@ body.light .hero {
   </div>
 </header>
 
+<!-- HERO SECTION -->
+
 <section class="hero" id="hero">
+
+  <!-- Blurred background uses the same poster -->
+  <div class="hero-backdrop" id="heroBackdrop"></div>
+
+  <!-- Original poster displayed without cropping -->
+  <div class="hero-poster-wrap">
+    <img id="heroPoster" class="hero-poster"
+      alt="Featured movie poster">
+  </div>
+
   <div class="hero-content">
     <h1 id="heroTitle">ADRASHYA INOX</h1>
     <button class="hero-watch-btn" id="heroWatchBtn" type="button">
       ▶ WATCH NOW
     </button>
   </div>
+
 </section>
 
 <main>
@@ -1265,7 +1349,7 @@ function normalizeMovieTitle(title) {
   return String(title || "")
     .toLowerCase()
     .replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
-    .replace(/[_\-.[\]()]/g, " ")
+    .replace(/[_\-\.\[\]\(\)]/g, " ")
     .replace(/\b(480p|720p|1080p|2160p|4k|hevc|x265|x264|web dl|webrip|bluray|hdr|esub|hindi|completed|quality)\b/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
@@ -1290,6 +1374,7 @@ function findFeaturedMovie(featuredTitle) {
 
     return movie.id &&
       wanted.length >= 4 &&
+      actual.length >= 4 &&
       (actual.includes(wanted) || wanted.includes(actual));
   });
 
@@ -1314,12 +1399,14 @@ function startHeroSlideshow() {
   heroIndex = 0;
 
   const heroTitle = document.getElementById("heroTitle");
-  const hero = document.getElementById("hero");
+  const heroBackdrop = document.getElementById("heroBackdrop");
+  const heroPoster = document.getElementById("heroPoster");
   const watchButton = document.getElementById("heroWatchBtn");
 
   if (!heroMovies.length) {
     heroTitle.textContent = "ADRASHYA INOX";
-    hero.style.backgroundImage = "none";
+    heroBackdrop.style.backgroundImage = "none";
+    heroPoster.removeAttribute("src");
     watchButton.disabled = true;
     console.warn("No featured movies matched your Drive library.");
     return;
@@ -1354,17 +1441,27 @@ function showHeroSlide(index) {
 
   const movie = heroMovies[heroIndex];
   const image = getSeasonPoster(movie);
-  const hero = document.getElementById("hero");
+
+  const heroBackdrop = document.getElementById("heroBackdrop");
+  const heroPoster = document.getElementById("heroPoster");
 
   document.getElementById("heroTitle").textContent =
     getDisplayTitle(movie);
 
-  // Show the upper part of the poster
-  hero.style.backgroundPosition = "center center";
+  if (image) {
+    const safeImage = `url("${String(image).replace(/"/g, "%22")}")`;
 
-  hero.style.backgroundImage = image
-    ? `url("${String(image).replace(/"/g, "%22")}")`
-    : "none";
+    // Blurred background image
+    heroBackdrop.style.backgroundImage = safeImage;
+
+    // Original poster - object-fit: contain keeps the full poster visible
+    heroPoster.src = image;
+    heroPoster.style.display = "block";
+  } else {
+    heroBackdrop.style.backgroundImage = "none";
+    heroPoster.removeAttribute("src");
+    heroPoster.style.display = "none";
+  }
 }
 
 document.getElementById("heroWatchBtn")
