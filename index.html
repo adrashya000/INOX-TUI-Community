@@ -46,6 +46,8 @@ header {
   font-size: 27px;
   font-weight: 900;
   letter-spacing: 1px;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .tagline {
@@ -329,7 +331,7 @@ main {
   color: var(--muted);
 }
 
-/* LARGER MOVIE SELECTION POPUP */
+/* MOVIE SELECTION POPUP */
 
 .selection-box {
   position: relative;
@@ -488,7 +490,7 @@ body.light .hero {
   background-color: #333;
 }
 
-/* MOBILE RESPONSIVE */
+/* MOBILE */
 
 @media(max-width:600px) {
   header {
@@ -541,8 +543,6 @@ body.light .hero {
   .category-title {
     font-size: 19px;
   }
-
-  /* MOBILE POPUP */
 
   .selection-box {
     width: 96%;
@@ -602,7 +602,9 @@ body.light .hero {
 
 <header>
   <div>
-    <div class="logo">ADRASHYA INOX</div>
+    <a href="./" class="logo" title="Go to Homepage">
+      ADRASHYA INOX
+    </a>
     <div class="tagline">UNLIMITED ENTERTAINMENT</div>
   </div>
 
@@ -617,8 +619,6 @@ body.light .hero {
     <button class="theme-btn" id="themeBtn">☀ / ☾</button>
   </div>
 </header>
-
-<!-- HERO BANNER -->
 
 <section class="hero" id="hero">
   <div class="hero-content">
@@ -733,23 +733,102 @@ function normalizeCategory(value) {
     .toLowerCase()
     .replace(/[\s_-]+/g, "");
 
-  if (key === "movie" || key === "movies") {
-    return "Movies";
-  }
+  if (key === "movie" || key === "movies") return "Movies";
 
-  if (key === "webseries" || key === "series") {
-    return "Web Series";
-  }
+  if (key === "webseries" || key === "series") return "Web Series";
 
   if (
     key === "animation" ||
     key === "animations" ||
     key === "cartoonmovies"
-  ) {
-    return "Animation";
-  }
+  ) return "Animation";
 
   return String(value || "Other").trim() || "Other";
+}
+
+// TITLE AND SEASON-WISE POSTER MATCHING
+
+function getDisplayTitle(movie) {
+  return String(movie.title || "Untitled");
+}
+
+function cleanSeriesName(title) {
+  return String(title || "")
+    .replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
+    .replace(/[\s._-]+S\d{1,2}[\s._-]*/i, " ")
+    .replace(/[\s._-]*(episode|ep)[\s._-]*\d+.*$/i, "")
+    .replace(/[\s._-]*\d+x\d+.*$/i, "")
+    .replace(/[\s._-]+/g, " ")
+    .trim();
+}
+
+function getSeasonNumber(title) {
+  const match = String(title || "").match(/\bS(?:eason)?[\s._-]*(\d{1,2})\b/i);
+  if (match) return String(match[1]).padStart(2, "0");
+
+  const alternate = String(title || "").match(/\bSeason[\s._-]*(\d{1,2})\b/i);
+  return alternate ? String(alternate[1]).padStart(2, "0") : null;
+}
+
+function getSeasonPosterKey(movie) {
+  const seriesName = cleanSeriesName(movie.title);
+  const season = getSeasonNumber(movie.title);
+
+  if (!seriesName || !season) return null;
+
+  return (seriesName + " S" + season).toLowerCase();
+}
+
+/*
+Poster data supported from API:
+movie.posterThumbnail
+movie.poster
+movie.seasonPoster
+movie.posterFilename
+movie.posterName
+
+The API can provide poster filenames such as:
+Decoupled S01.jpg
+Mirzapur S02.jpg
+*/
+
+function getSeasonPoster(movie) {
+  const category = normalizeCategory(movie.category);
+
+  if (category !== "Web Series") {
+    return movie.thumbnail || "";
+  }
+
+  const key = getSeasonPosterKey(movie);
+
+  if (!key) {
+    return movie.posterThumbnail ||
+      movie.poster ||
+      movie.thumbnail ||
+      "";
+  }
+
+  const sameSeason = allMovies.find(item =>
+    normalizeCategory(item.category) === "Web Series" &&
+    getSeasonPosterKey(item) === key &&
+    (
+      item.seasonPoster ||
+      item.posterThumbnail ||
+      item.poster
+    )
+  );
+
+  if (sameSeason) {
+    return sameSeason.seasonPoster ||
+      sameSeason.posterThumbnail ||
+      sameSeason.poster;
+  }
+
+  return movie.seasonPoster ||
+    movie.posterThumbnail ||
+    movie.poster ||
+    movie.thumbnail ||
+    "";
 }
 
 // DISPLAY ONE ROW FOR EACH CATEGORY
@@ -797,7 +876,6 @@ function renderCatalogue(movies) {
     leftArrow.addEventListener("click", event => {
       event.preventDefault();
       event.stopPropagation();
-
       row.scrollBy({
         left: -Math.max(220, row.clientWidth * 0.8),
         behavior: "smooth"
@@ -813,7 +891,6 @@ function renderCatalogue(movies) {
     rightArrow.addEventListener("click", event => {
       event.preventDefault();
       event.stopPropagation();
-
       row.scrollBy({
         left: Math.max(220, row.clientWidth * 0.8),
         behavior: "smooth"
@@ -842,32 +919,18 @@ function renderCatalogue(movies) {
 
     section.appendChild(heading);
 
-    let rowLabel;
-
-    if (category === "Movies") {
-      rowLabel = "All Movies";
-    } else if (category === "Web Series") {
-      rowLabel = "All Web Series";
-    } else if (category === "Animation") {
-      rowLabel = "All Animation";
-    } else {
-      rowLabel = "All " + category;
-    }
+    const rowLabel =
+      category === "Movies" ? "All Movies" :
+      category === "Web Series" ? "All Web Series" :
+      category === "Animation" ? "All Animation" :
+      "All " + category;
 
     const allRow = createMovieRow(categoryMovies, rowLabel);
 
-    if (allRow) {
-      section.appendChild(allRow);
-    }
+    if (allRow) section.appendChild(allRow);
 
     catalogue.appendChild(section);
   });
-}
-
-// KEEP ORIGINAL DRIVE FILENAMES AND IDS UNCHANGED
-
-function getDisplayTitle(movie) {
-  return String(movie.title || "Untitled");
 }
 
 // MOVIE POSTER CARD
@@ -882,13 +945,15 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
 
   const placeholder = document.createElement("div");
   placeholder.className = "poster-placeholder";
-  placeholder.textContent = getDisplayTitle(movie) || "Movie";
+  placeholder.textContent = getDisplayTitle(movie);
 
   poster.appendChild(placeholder);
 
-  if (movie.thumbnail) {
+  const posterUrl = getSeasonPoster(movie);
+
+  if (posterUrl) {
     const img = document.createElement("img");
-    img.src = movie.thumbnail;
+    img.src = posterUrl;
     img.alt = movie.title || "Movie poster";
     img.loading = "lazy";
 
@@ -911,10 +976,9 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
 
   const title = document.createElement("div");
   title.className = "movie-title";
-  title.textContent = getDisplayTitle(movie) || "Untitled";
+  title.textContent = getDisplayTitle(movie);
 
-  card.appendChild(poster);
-  card.appendChild(title);
+  card.append(poster, title);
 
   card.addEventListener("click", () => openSelection(categoryMovies, index));
 
@@ -966,7 +1030,6 @@ function startHeroSlideshow() {
   }
 
   document.getElementById("heroWatchBtn").disabled = false;
-
   showHeroSlide(0);
 
   heroTimer = setInterval(() => {
@@ -974,10 +1037,7 @@ function startHeroSlideshow() {
   }, 5000);
 
   if (heroMovies.length < FEATURED_MOVIES.length) {
-    console.warn(
-      "Some featured titles were not found. Check FEATURED_MOVIES:",
-      FEATURED_MOVIES
-    );
+    console.warn("Some featured titles were not found:", FEATURED_MOVIES);
   }
 }
 
@@ -985,17 +1045,17 @@ function showHeroSlide(index) {
   if (!heroMovies.length) return;
 
   heroIndex = (index + heroMovies.length) % heroMovies.length;
-
   const movie = heroMovies[heroIndex];
 
-  document.getElementById("heroTitle").textContent =
-    getDisplayTitle(movie) || "Untitled";
+  document.getElementById("heroTitle").textContent = getDisplayTitle(movie);
 
   const hero = document.getElementById("hero");
 
-  if (movie.thumbnail) {
+  const image = getSeasonPoster(movie);
+
+  if (image) {
     hero.style.backgroundImage =
-      `url("${String(movie.thumbnail).replace(/"/g, '%22')}")`;
+      `url("${String(image).replace(/"/g, '%22')}")`;
   } else {
     hero.style.backgroundImage = "none";
   }
@@ -1005,7 +1065,6 @@ function showHeroSlide(index) {
 
 document.getElementById("heroWatchBtn").addEventListener("click", function() {
   const movie = heroMovies[heroIndex];
-
   if (movie) playMovie(movie);
 });
 
@@ -1018,7 +1077,6 @@ let touchStartX = 0;
 function openSelection(list, index) {
   selectionMovies = list || [];
   selectionIndex = index || 0;
-
   showSelection();
 
   document.getElementById("selectionModal").classList.add("show");
@@ -1029,11 +1087,11 @@ function showSelection() {
   if (!selectionMovies.length) return;
 
   const movie = selectionMovies[selectionIndex];
-
   const poster = document.getElementById("selectionPoster");
+  const posterUrl = getSeasonPoster(movie);
 
-  poster.src = movie.thumbnail || "";
-  poster.style.visibility = movie.thumbnail ? "visible" : "hidden";
+  poster.src = posterUrl || "";
+  poster.style.visibility = posterUrl ? "visible" : "hidden";
   poster.alt = movie.title || "Movie poster";
 
   document.getElementById("selectionTitle").textContent =
@@ -1078,9 +1136,7 @@ document.getElementById("selectionPlay")
 
 document.getElementById("selectionModal")
   .addEventListener("click", event => {
-    if (event.target.id === "selectionModal") {
-      closeSelection();
-    }
+    if (event.target.id === "selectionModal") closeSelection();
   });
 
 document.getElementById("selectionModal")
@@ -1090,8 +1146,7 @@ document.getElementById("selectionModal")
 
 document.getElementById("selectionModal")
   .addEventListener("touchend", event => {
-    const delta =
-      event.changedTouches[0].screenX - touchStartX;
+    const delta = event.changedTouches[0].screenX - touchStartX;
 
     if (Math.abs(delta) > 55) {
       moveSelection(delta < 0 ? 1 : -1);
@@ -1120,13 +1175,11 @@ function playMovie(movie) {
   const message = document.getElementById("playerMessage");
 
   const oldFrame = document.getElementById("drivePlayer");
-
   if (oldFrame) oldFrame.remove();
 
   message.textContent = "Loading " + (movie.title || "movie") + "...";
 
   const iframe = document.createElement("iframe");
-
   iframe.id = "drivePlayer";
 
   iframe.src =
