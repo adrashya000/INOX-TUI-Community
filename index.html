@@ -1,4 +1,6 @@
+# ADRASHYA INOX — Cinematic Premium Popup
 
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,8 +11,8 @@
 <style>
 :root {
   --bg: #080808;
-  --text: #ffffff;
-  --muted: #aaaaaa;
+  --text: #fff;
+  --muted: #aaa;
   --accent: #e50914;
   --card: #181818;
 }
@@ -26,7 +28,6 @@ body {
   color: var(--text);
   font-family: Arial, sans-serif;
   overflow-x: hidden;
-  transition: background .3s, color .3s;
 }
 
 header {
@@ -47,7 +48,6 @@ header {
   font-weight: 900;
   letter-spacing: 1px;
   text-decoration: none;
-  cursor: pointer;
 }
 
 .tagline {
@@ -86,7 +86,7 @@ header {
   cursor: pointer;
 }
 
-/* HERO BANNER */
+/* HERO */
 
 .hero {
   min-height: 510px;
@@ -97,11 +97,9 @@ header {
   overflow: hidden;
   isolation: isolate;
   background-color: #101010;
-  background-image: linear-gradient(rgba(0,0,0,.18), rgba(0,0,0,.18));
   background-size: cover;
   background-position: center 30%;
   background-repeat: no-repeat;
-  transition: background-image .35s ease;
 }
 
 .hero::before {
@@ -110,17 +108,8 @@ header {
   inset: 0;
   z-index: 0;
   background:
-    linear-gradient(
-      90deg,
-      rgba(0,0,0,.88) 0%,
-      rgba(0,0,0,.62) 55%,
-      rgba(0,0,0,.35) 100%
-    ),
-    linear-gradient(
-      0deg,
-      rgba(0,0,0,.55),
-      rgba(0,0,0,.18)
-    );
+    linear-gradient(90deg,rgba(0,0,0,.88),rgba(0,0,0,.62),rgba(0,0,0,.35)),
+    linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,.18));
 }
 
 .hero-content {
@@ -131,28 +120,27 @@ header {
 }
 
 .hero h1 {
-  font-size: clamp(25px, 3.5vw, 42px);
+  font-size: clamp(25px,3.5vw,42px);
   font-weight: 800;
   line-height: 1.2;
   max-width: 700px;
   overflow-wrap: anywhere;
-  text-shadow: 0 2px 12px rgba(0,0,0,.8);
 }
 
 .hero-watch-btn {
   margin-top: 22px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 5px;
   padding: 12px 22px;
   background: var(--accent);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,.3);
 }
 
-.hero-watch-btn:hover {
+.hero-watch-btn:hover,
+.premium-play:hover {
   background: #b80710;
 }
 
@@ -161,7 +149,7 @@ header {
   cursor: not-allowed;
 }
 
-/* MOVIE SECTIONS */
+/* CATALOGUE */
 
 main {
   padding: 10px 0 50px;
@@ -179,7 +167,6 @@ main {
 
 .category-row-block {
   width: 100%;
-  min-width: 0;
   margin-bottom: 10px;
 }
 
@@ -193,30 +180,21 @@ main {
 
 .row-shell {
   position: relative;
-  display: block;
   width: 100%;
-  min-width: 0;
-  max-width: 100%;
   overflow: hidden;
 }
 
 .movie-row {
   display: flex;
-  flex-wrap: nowrap;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
   gap: 13px;
   overflow-x: auto;
   overflow-y: hidden;
   padding: 5px 5% 18px;
   scrollbar-width: thin;
   scrollbar-color: #555 #151515;
-  overscroll-behavior-x: contain;
-  -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
   scroll-snap-type: x proximity;
-  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
 }
 
 .row-arrow {
@@ -240,13 +218,8 @@ main {
   opacity: 1;
 }
 
-.row-arrow.left {
-  left: 5px;
-}
-
-.row-arrow.right {
-  right: 5px;
-}
+.row-arrow.left { left: 5px; }
+.row-arrow.right { right: 5px; }
 
 .movie-card {
   flex: 0 0 175px;
@@ -331,77 +304,308 @@ main {
   color: var(--muted);
 }
 
-/* MOVIE SELECTION POPUP */
+/* CINEMATIC PREMIUM POPUP */
 
-.selection-box {
-  position: relative;
-  width: min(900px, 96%);
-  min-height: 420px;
-  max-height: 90vh;
-  overflow-y: auto;
-  background: #181818;
-  border-radius: 12px;
-  padding: 40px 65px;
-  box-shadow: 0 15px 50px rgba(0,0,0,.6);
-}
-
-.selection-content {
-  display: flex;
+.selection-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  padding: 25px;
+  background: rgba(0,0,0,.88);
+  backdrop-filter: blur(9px);
   align-items: center;
-  gap: 35px;
-  min-height: 340px;
+  justify-content: center;
 }
 
-.selection-poster {
-  flex: 0 0 230px;
-  width: 230px;
-  height: 330px;
+.selection-modal.show {
+  display: flex;
+  animation: modalFade .25s ease;
+}
+
+@keyframes modalFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.premium-box {
+  width: min(1000px, 100%);
+  max-height: 92vh;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #111;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 15px;
+  box-shadow: 0 25px 90px rgba(0,0,0,.8);
+  scrollbar-width: thin;
+  scrollbar-color: #555 #111;
+}
+
+.premium-hero {
+  min-height: 430px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 45px;
+  background-color: #191919;
+  background-size: cover;
+  background-position: center;
+  isolation: isolate;
+}
+
+.premium-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.65) 48%,rgba(0,0,0,.15) 100%),
+    linear-gradient(0deg,#111 0%,rgba(0,0,0,.15) 75%);
+}
+
+.premium-close {
+  position: absolute;
+  z-index: 5;
+  top: 15px;
+  right: 17px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,.72);
+  color: white;
+  font-size: 27px;
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+
+.premium-close:hover {
+  background: var(--accent);
+  transform: rotate(90deg);
+}
+
+.premium-content {
+  display: flex;
+  align-items: flex-end;
+  gap: 30px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.premium-poster-wrap {
+  flex: 0 0 195px;
+}
+
+.premium-poster {
+  width: 195px;
+  height: 280px;
+  display: block;
   object-fit: cover;
   border-radius: 9px;
-  background: #333;
-  box-shadow: 0 8px 25px rgba(0,0,0,.4);
+  background: #252525;
+  box-shadow: 0 12px 35px rgba(0,0,0,.65);
 }
 
-.selection-info {
+.premium-info {
   flex: 1;
   min-width: 0;
+  padding-bottom: 8px;
 }
 
-.selection-info h2 {
-  font-size: 27px;
-  line-height: 1.4;
+.premium-title {
+  font-size: clamp(26px,4vw,42px);
+  line-height: 1.15;
+  font-weight: 900;
   overflow-wrap: anywhere;
+  text-shadow: 0 3px 15px rgba(0,0,0,.8);
 }
 
-.selection-info .hero-watch-btn {
-  margin-top: 22px;
-  min-width: 130px;
+.premium-description {
+  display: none;
+  margin-top: 14px;
+  color: #ddd;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
-.selection-nav {
-  position: absolute;
-  top: 45%;
+.premium-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 23px;
+}
+
+.premium-play {
   border: 0;
-  background: #333;
-  color: white;
   border-radius: 5px;
-  width: 42px;
-  height: 58px;
-  font-size: 30px;
+  background: var(--accent);
+  color: white;
+  padding: 13px 25px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background .2s, transform .2s;
+}
+
+.premium-play:hover {
+  transform: translateY(-2px);
+}
+
+.premium-list {
+  width: 47px;
+  height: 45px;
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 5px;
+  background: rgba(35,35,35,.8);
+  color: white;
+  font-size: 25px;
   cursor: pointer;
   transition: background .2s;
 }
 
-.selection-nav:hover {
+.premium-list:hover,
+.premium-list.active {
+  background: #444;
+  border-color: white;
+}
+
+.premium-list-note {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 9px;
+  min-height: 15px;
+}
+
+/* MORE LIKE THIS */
+
+.premium-recommendations {
+  padding: 20px 30px 30px;
+}
+
+.premium-section-title {
+  font-size: 19px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.recommendation-row {
+  display: flex;
+  gap: 13px;
+  overflow-x: auto;
+  padding: 4px 3px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #151515;
+}
+
+.recommendation-card {
+  flex: 0 0 145px;
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+.recommendation-card:hover {
+  transform: translateY(-4px);
+}
+
+.recommendation-poster {
+  width: 100%;
+  height: 195px;
+  object-fit: cover;
+  display: block;
+  border-radius: 7px;
+  background: #242424;
+}
+
+.recommendation-title {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1.4;
+}
+
+/* WEB SERIES EPISODES */
+
+.episode-section {
+  display: none;
+  padding: 0 30px 25px;
+}
+
+.episode-section.show {
+  display: block;
+}
+
+.episode-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 16px;
+}
+
+.episode-header h3 {
+  font-size: 19px;
+}
+
+.season-select {
+  background: #252525;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 9px 12px;
+  max-width: 180px;
+  outline: none;
+}
+
+.episode-list {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+}
+
+.episode-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 7px;
+  background: #202020;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.episode-item:hover {
+  background: #333;
+}
+
+.episode-number {
+  color: #aaa;
+  font-size: 18px;
+  font-weight: bold;
+  min-width: 27px;
+}
+
+.episode-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+.episode-play {
+  color: white;
   background: var(--accent);
-}
-
-.selection-nav.prev {
-  left: 10px;
-}
-
-.selection-nav.next {
-  right: 10px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 /* VIDEO PLAYER */
@@ -422,8 +626,8 @@ main {
 }
 
 .player-box {
-  width: min(1100px, 100%);
-  height: min(650px, 85vh);
+  width: min(1100px,100%);
+  height: min(650px,85vh);
   position: relative;
   background: #000;
   border-radius: 8px;
@@ -492,7 +696,7 @@ body.light .hero {
 
 /* MOBILE */
 
-@media(max-width:600px) {
+@media(max-width:650px) {
   header {
     padding: 13px 4%;
     flex-wrap: wrap;
@@ -517,13 +721,7 @@ body.light .hero {
   }
 
   .hero h1 {
-    font-size: clamp(22px, 6vw, 30px);
-  }
-
-  .hero-watch-btn {
-    margin-top: 16px;
-    padding: 10px 16px;
-    font-size: 12px;
+    font-size: clamp(22px,6vw,30px);
   }
 
   .row-arrow {
@@ -544,47 +742,80 @@ body.light .hero {
     font-size: 19px;
   }
 
-  .selection-box {
-    width: 96%;
-    min-height: auto;
-    max-height: 92vh;
-    padding: 55px 30px 30px;
+  .selection-modal {
+    padding: 8px;
   }
 
-  .selection-content {
+  .premium-box {
+    max-height: 94vh;
+    border-radius: 11px;
+  }
+
+  .premium-hero {
+    min-height: 520px;
+    padding: 25px 18px;
+    background-position: center;
+  }
+
+  .premium-hero::before {
+    background:
+      linear-gradient(0deg,#111 0%,rgba(0,0,0,.65) 50%,rgba(0,0,0,.25) 100%),
+      linear-gradient(90deg,rgba(0,0,0,.35),transparent);
+  }
+
+  .premium-content {
     flex-direction: column;
+    align-items: center;
     text-align: center;
-    gap: 20px;
-    min-height: auto;
+    gap: 17px;
   }
 
-  .selection-poster {
+  .premium-poster-wrap {
     flex: none;
-    width: 170px;
-    height: 245px;
   }
 
-  .selection-info h2 {
-    font-size: 20px;
+  .premium-poster {
+    width: 145px;
+    height: 205px;
   }
 
-  .selection-info .hero-watch-btn {
-    margin-top: 15px;
-  }
-
-  .selection-nav {
-    top: 34%;
-    width: 32px;
-    height: 48px;
+  .premium-title {
     font-size: 25px;
   }
 
-  .selection-nav.prev {
-    left: 5px;
+  .premium-actions {
+    justify-content: center;
+    margin-top: 17px;
   }
 
-  .selection-nav.next {
-    right: 5px;
+  .premium-recommendations {
+    padding: 18px 15px 25px;
+  }
+
+  .recommendation-card {
+    flex-basis: 115px;
+  }
+
+  .recommendation-poster {
+    height: 155px;
+  }
+
+  .episode-section {
+    padding: 0 15px 22px;
+  }
+
+  .episode-list {
+    grid-template-columns: 1fr;
+  }
+
+  .episode-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .season-select {
+    max-width: 100%;
+    width: 100%;
   }
 
   .modal {
@@ -602,20 +833,13 @@ body.light .hero {
 
 <header>
   <div>
-    <a href="./" class="logo" title="Go to Homepage">
-      ADRASHYA INOX
-    </a>
+    <a href="./" class="logo" title="Go to Homepage">ADRASHYA INOX</a>
     <div class="tagline">UNLIMITED ENTERTAINMENT</div>
   </div>
 
   <div class="header-right">
-    <input
-      type="search"
-      id="searchBox"
-      class="search"
-      placeholder="Search movies..."
-      autocomplete="off"
-    >
+    <input type="search" id="searchBox" class="search"
+      placeholder="Search movies..." autocomplete="off">
     <button class="theme-btn" id="themeBtn">☀ / ☾</button>
   </div>
 </header>
@@ -635,28 +859,61 @@ body.light .hero {
   </div>
 </main>
 
-<!-- MOVIE DETAILS POPUP -->
+<!-- CINEMATIC PREMIUM DETAILS POPUP -->
 
-<div class="modal" id="selectionModal">
-  <div class="selection-box">
+<div class="selection-modal" id="selectionModal">
+  <div class="premium-box">
 
-    <button class="close-btn" id="closeSelection" aria-label="Close details">×</button>
+    <button class="premium-close" id="closeSelection"
+      aria-label="Close details">×</button>
 
-    <button class="selection-nav prev" id="selectionPrev" aria-label="Previous movie">‹</button>
+    <section class="premium-hero" id="premiumHero">
 
-    <div class="selection-content">
-      <img id="selectionPoster" class="selection-poster" alt="Movie poster">
+      <div class="premium-content">
 
-      <div class="selection-info">
-        <h2 id="selectionTitle"></h2>
+        <div class="premium-poster-wrap">
+          <img id="selectionPoster" class="premium-poster"
+            alt="Movie poster">
+        </div>
 
-        <button class="hero-watch-btn" id="selectionPlay" type="button">
-          ▶ PLAY
-        </button>
+        <div class="premium-info">
+          <h2 class="premium-title" id="selectionTitle"></h2>
+
+          <p class="premium-description" id="selectionDescription"></p>
+
+          <div class="premium-actions">
+            <button class="premium-play" id="selectionPlay" type="button">
+              ▶ PLAY NOW
+            </button>
+
+            <button class="premium-list" id="myListButton"
+              type="button" title="Add to My List">＋</button>
+          </div>
+
+          <div class="premium-list-note" id="myListNote"></div>
+        </div>
+
       </div>
-    </div>
+    </section>
 
-    <button class="selection-nav next" id="selectionNext" aria-label="Next movie">›</button>
+    <!-- WEB SERIES SEASON AND EPISODE SELECTOR -->
+
+    <section class="episode-section" id="episodeSection">
+      <div class="episode-header">
+        <h3>Episodes</h3>
+        <select class="season-select" id="seasonSelect"
+          aria-label="Select season"></select>
+      </div>
+
+      <div class="episode-list" id="episodeList"></div>
+    </section>
+
+    <!-- RECOMMENDATIONS -->
+
+    <section class="premium-recommendations">
+      <h3 class="premium-section-title">More Like This</h3>
+      <div class="recommendation-row" id="recommendationRow"></div>
+    </section>
 
   </div>
 </div>
@@ -665,7 +922,8 @@ body.light .hero {
 
 <div class="modal" id="playerModal">
   <div class="player-box" id="playerBox">
-    <button class="close-btn" id="closePlayer" aria-label="Close player">×</button>
+    <button class="close-btn" id="closePlayer"
+      aria-label="Close player">×</button>
     <div class="player-message" id="playerMessage"></div>
   </div>
 </div>
@@ -685,6 +943,10 @@ let heroMovies = [];
 let heroIndex = 0;
 let heroTimer = null;
 
+let selectionMovies = [];
+let selectionIndex = 0;
+let currentSeriesSeasons = [];
+
 // LOAD GOOGLE DRIVE LIBRARY
 
 function loadMovies() {
@@ -693,7 +955,6 @@ function loadMovies() {
   window[callbackName] = function(data) {
     if (data && Array.isArray(data.movies)) {
       allMovies = data.movies;
-
       renderCatalogue(allMovies);
       startHeroSlideshow();
     } else {
@@ -734,7 +995,6 @@ function normalizeCategory(value) {
     .replace(/[\s_-]+/g, "");
 
   if (key === "movie" || key === "movies") return "Movies";
-
   if (key === "webseries" || key === "series") return "Web Series";
 
   if (
@@ -746,11 +1006,13 @@ function normalizeCategory(value) {
   return String(value || "Other").trim() || "Other";
 }
 
-// TITLE AND SEASON-WISE POSTER MATCHING
+// DISPLAY TITLE
 
 function getDisplayTitle(movie) {
   return String(movie.title || "Untitled");
 }
+
+// POSTER MATCHING
 
 function cleanSeriesName(title) {
   return String(title || "")
@@ -763,10 +1025,14 @@ function cleanSeriesName(title) {
 }
 
 function getSeasonNumber(title) {
-  const match = String(title || "").match(/\bS(?:eason)?[\s._-]*(\d{1,2})\b/i);
+  const match = String(title || "")
+    .match(/\bS(?:eason)?[\s._-]*(\d{1,2})\b/i);
+
   if (match) return String(match[1]).padStart(2, "0");
 
-  const alternate = String(title || "").match(/\bSeason[\s._-]*(\d{1,2})\b/i);
+  const alternate = String(title || "")
+    .match(/\bSeason[\s._-]*(\d{1,2})\b/i);
+
   return alternate ? String(alternate[1]).padStart(2, "0") : null;
 }
 
@@ -778,19 +1044,6 @@ function getSeasonPosterKey(movie) {
 
   return (seriesName + " S" + season).toLowerCase();
 }
-
-/*
-Poster data supported from API:
-movie.posterThumbnail
-movie.poster
-movie.seasonPoster
-movie.posterFilename
-movie.posterName
-
-The API can provide poster filenames such as:
-Decoupled S01.jpg
-Mirzapur S02.jpg
-*/
 
 function getSeasonPoster(movie) {
   const category = normalizeCategory(movie.category);
@@ -831,14 +1084,15 @@ function getSeasonPoster(movie) {
     "";
 }
 
-// DISPLAY ONE ROW FOR EACH CATEGORY
+// CATALOGUE
 
 function renderCatalogue(movies) {
   const catalogue = document.getElementById("catalogue");
   catalogue.innerHTML = "";
 
   if (!movies.length) {
-    catalogue.innerHTML = '<div class="status">No videos found.</div>';
+    catalogue.innerHTML =
+      '<div class="status">No videos found.</div>';
     return;
   }
 
@@ -875,9 +1129,8 @@ function renderCatalogue(movies) {
 
     leftArrow.addEventListener("click", event => {
       event.preventDefault();
-      event.stopPropagation();
       row.scrollBy({
-        left: -Math.max(220, row.clientWidth * 0.8),
+        left: -Math.max(220, row.clientWidth * .8),
         behavior: "smooth"
       });
     });
@@ -890,9 +1143,8 @@ function renderCatalogue(movies) {
 
     rightArrow.addEventListener("click", event => {
       event.preventDefault();
-      event.stopPropagation();
       row.scrollBy({
-        left: Math.max(220, row.clientWidth * 0.8),
+        left: Math.max(220, row.clientWidth * .8),
         behavior: "smooth"
       });
     });
@@ -926,14 +1178,13 @@ function renderCatalogue(movies) {
       "All " + category;
 
     const allRow = createMovieRow(categoryMovies, rowLabel);
-
     if (allRow) section.appendChild(allRow);
 
     catalogue.appendChild(section);
   });
 }
 
-// MOVIE POSTER CARD
+// MOVIE CARD
 
 function createMovieCard(movie, categoryMovies = [movie], index = 0) {
   const card = document.createElement("div");
@@ -946,7 +1197,6 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
   const placeholder = document.createElement("div");
   placeholder.className = "poster-placeholder";
   placeholder.textContent = getDisplayTitle(movie);
-
   poster.appendChild(placeholder);
 
   const posterUrl = getSeasonPoster(movie);
@@ -956,11 +1206,7 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
     img.src = posterUrl;
     img.alt = movie.title || "Movie poster";
     img.loading = "lazy";
-
-    img.onerror = function() {
-      img.remove();
-    };
-
+    img.onerror = () => img.remove();
     poster.appendChild(img);
   }
 
@@ -980,7 +1226,9 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
 
   card.append(poster, title);
 
-  card.addEventListener("click", () => openSelection(categoryMovies, index));
+  card.addEventListener("click", () =>
+    openSelection(categoryMovies, index)
+  );
 
   card.addEventListener("keydown", event => {
     if (event.key === "Enter" || event.key === " ") {
@@ -1045,38 +1293,32 @@ function showHeroSlide(index) {
   if (!heroMovies.length) return;
 
   heroIndex = (index + heroMovies.length) % heroMovies.length;
+
   const movie = heroMovies[heroIndex];
 
-  document.getElementById("heroTitle").textContent = getDisplayTitle(movie);
-
-  const hero = document.getElementById("hero");
+  document.getElementById("heroTitle").textContent =
+    getDisplayTitle(movie);
 
   const image = getSeasonPoster(movie);
+  const hero = document.getElementById("hero");
 
-  if (image) {
-    hero.style.backgroundImage =
-      `url("${String(image).replace(/"/g, '%22')}")`;
-  } else {
-    hero.style.backgroundImage = "none";
-  }
+  hero.style.backgroundImage = image
+    ? `url("${String(image).replace(/"/g, "%22")}")`
+    : "none";
 }
 
-// HERO WATCH NOW
+document.getElementById("heroWatchBtn")
+  .addEventListener("click", () => {
+    const movie = heroMovies[heroIndex];
+    if (movie) playMovie(movie);
+  });
 
-document.getElementById("heroWatchBtn").addEventListener("click", function() {
-  const movie = heroMovies[heroIndex];
-  if (movie) playMovie(movie);
-});
-
-// MOVIE SELECTION POPUP
-
-let selectionMovies = [];
-let selectionIndex = 0;
-let touchStartX = 0;
+// PREMIUM POPUP
 
 function openSelection(list, index) {
   selectionMovies = list || [];
   selectionIndex = index || 0;
+
   showSelection();
 
   document.getElementById("selectionModal").classList.add("show");
@@ -1087,24 +1329,30 @@ function showSelection() {
   if (!selectionMovies.length) return;
 
   const movie = selectionMovies[selectionIndex];
-  const poster = document.getElementById("selectionPoster");
   const posterUrl = getSeasonPoster(movie);
+
+  const poster = document.getElementById("selectionPoster");
+  const hero = document.getElementById("premiumHero");
 
   poster.src = posterUrl || "";
   poster.style.visibility = posterUrl ? "visible" : "hidden";
   poster.alt = movie.title || "Movie poster";
 
+  hero.style.backgroundImage = posterUrl
+    ? `url("${String(posterUrl).replace(/"/g, "%22")}")`
+    : "none";
+
   document.getElementById("selectionTitle").textContent =
     getDisplayTitle(movie);
-}
 
-function moveSelection(step) {
-  if (!selectionMovies.length) return;
+  // No invented descriptions or details
+  const description = document.getElementById("selectionDescription");
+  description.textContent = movie.description || "";
+  description.style.display = movie.description ? "block" : "none";
 
-  selectionIndex =
-    (selectionIndex + step + selectionMovies.length) % selectionMovies.length;
-
-  showSelection();
+  updateMyListButton(movie);
+  renderRecommendations(movie);
+  renderSeriesEpisodes(movie);
 }
 
 function closeSelection() {
@@ -1115,54 +1363,242 @@ function closeSelection() {
   }
 }
 
-document.getElementById("selectionPrev")
-  .addEventListener("click", () => moveSelection(-1));
-
-document.getElementById("selectionNext")
-  .addEventListener("click", () => moveSelection(1));
-
 document.getElementById("closeSelection")
   .addEventListener("click", closeSelection);
-
-document.getElementById("selectionPlay")
-  .addEventListener("click", () => {
-    const movie = selectionMovies[selectionIndex];
-
-    if (movie) {
-      closeSelection();
-      playMovie(movie);
-    }
-  });
 
 document.getElementById("selectionModal")
   .addEventListener("click", event => {
     if (event.target.id === "selectionModal") closeSelection();
   });
 
-document.getElementById("selectionModal")
-  .addEventListener("touchstart", event => {
-    touchStartX = event.changedTouches[0].screenX;
-  }, { passive: true });
-
-document.getElementById("selectionModal")
-  .addEventListener("touchend", event => {
-    const delta = event.changedTouches[0].screenX - touchStartX;
-
-    if (Math.abs(delta) > 55) {
-      moveSelection(delta < 0 ? 1 : -1);
+document.getElementById("selectionPlay")
+  .addEventListener("click", () => {
+    const movie = selectionMovies[selectionIndex];
+    if (movie) {
+      closeSelection();
+      playMovie(movie);
     }
-  }, { passive: true });
+  });
 
-document.addEventListener("keydown", event => {
-  if (!document.getElementById("selectionModal").classList.contains("show")) {
+// MY LIST
+
+function getMyList() {
+  try {
+    return JSON.parse(localStorage.getItem("inoxMyList") || "[]");
+  } catch (error) {
+    return [];
+  }
+}
+
+function isInMyList(movie) {
+  return getMyList().includes(movie.id);
+}
+
+function updateMyListButton(movie) {
+  const button = document.getElementById("myListButton");
+  const note = document.getElementById("myListNote");
+  const saved = isInMyList(movie);
+
+  button.classList.toggle("active", saved);
+  button.textContent = saved ? "✓" : "＋";
+  button.title = saved ? "Remove from My List" : "Add to My List";
+  note.textContent = saved ? "Added to My List" : "";
+}
+
+document.getElementById("myListButton")
+  .addEventListener("click", () => {
+    const movie = selectionMovies[selectionIndex];
+    if (!movie || !movie.id) return;
+
+    const list = getMyList();
+    const index = list.indexOf(movie.id);
+
+    if (index >= 0) {
+      list.splice(index, 1);
+    } else {
+      list.push(movie.id);
+    }
+
+    localStorage.setItem("inoxMyList", JSON.stringify(list));
+    updateMyListButton(movie);
+  });
+
+// MORE LIKE THIS
+
+function renderRecommendations(currentMovie) {
+  const row = document.getElementById("recommendationRow");
+  row.innerHTML = "";
+
+  const category = normalizeCategory(currentMovie.category);
+
+  const recommendations = allMovies.filter(movie =>
+    movie.id !== currentMovie.id &&
+    normalizeCategory(movie.category) === category
+  );
+
+  // Prefer same category, but do not show the current video
+  const selected = recommendations.slice(0, 20);
+
+  if (!selected.length) {
+    const empty = document.createElement("div");
+    empty.className = "status";
+    empty.textContent = "No recommendations available.";
+    row.appendChild(empty);
     return;
   }
 
-  if (event.key === "ArrowLeft") moveSelection(-1);
-  if (event.key === "ArrowRight") moveSelection(1);
-});
+  selected.forEach(movie => {
+    const card = document.createElement("div");
+    card.className = "recommendation-card";
 
-// GOOGLE DRIVE VIDEO PLAYER
+    const img = document.createElement("img");
+    img.className = "recommendation-poster";
+    img.alt = movie.title || "Poster";
+    img.loading = "lazy";
+    img.src = getSeasonPoster(movie);
+
+    img.onerror = () => {
+      img.style.visibility = "hidden";
+    };
+
+    const title = document.createElement("div");
+    title.className = "recommendation-title";
+    title.textContent = getDisplayTitle(movie);
+
+    card.append(img, title);
+
+    card.addEventListener("click", () => {
+      const list = recommendations;
+      const index = list.findIndex(item => item.id === movie.id);
+      openSelection(list, index);
+    });
+
+    row.appendChild(card);
+  });
+}
+
+// WEB SERIES SEASON / EPISODE SELECTOR
+
+function getSeriesName(title) {
+  return cleanSeriesName(title).toLowerCase();
+}
+
+function getEpisodeNumber(title) {
+  const text = String(title || "");
+
+  let match = text.match(/\bE(?:P)?[\s._-]*0*(\d{1,3})\b/i);
+
+  if (!match) {
+    match = text.match(/\bEpisode[\s._-]*0*(\d{1,3})\b/i);
+  }
+
+  if (!match) {
+    match = text.match(/\b\d{1,2}x0*(\d{1,3})\b/i);
+  }
+
+  return match ? parseInt(match[1], 10) : 9999;
+}
+
+function getSeasonGroup(movie) {
+  const season = getSeasonNumber(movie.title);
+  return season || "01";
+}
+
+function renderSeriesEpisodes(movie) {
+  const section = document.getElementById("episodeSection");
+  const seasonSelect = document.getElementById("seasonSelect");
+  const episodeList = document.getElementById("episodeList");
+
+  section.classList.remove("show");
+  seasonSelect.innerHTML = "";
+  episodeList.innerHTML = "";
+
+  if (normalizeCategory(movie.category) !== "Web Series") return;
+
+  const seriesName = getSeriesName(movie.title);
+
+  const episodes = allMovies.filter(item =>
+    normalizeCategory(item.category) === "Web Series" &&
+    getSeriesName(item.title) === seriesName
+  );
+
+  if (!episodes.length) return;
+
+  const seasons = [...new Set(episodes.map(getSeasonGroup))]
+    .sort((a, b) => Number(a) - Number(b));
+
+  currentSeriesSeasons = episodes;
+
+  seasons.forEach(season => {
+    const option = document.createElement("option");
+    option.value = season;
+    option.textContent = "Season " + Number(season);
+    seasonSelect.appendChild(option);
+  });
+
+  const selectedSeason = getSeasonGroup(movie);
+  seasonSelect.value = selectedSeason;
+
+  function renderEpisodesForSeason(season) {
+    episodeList.innerHTML = "";
+
+    const seasonEpisodes = episodes
+      .filter(item => getSeasonGroup(item) === season)
+      .sort((a, b) => getEpisodeNumber(a.title) - getEpisodeNumber(b.title));
+
+    seasonEpisodes.forEach((episode, index) => {
+      const item = document.createElement("div");
+      item.className = "episode-item";
+
+      const number = document.createElement("div");
+      number.className = "episode-number";
+      number.textContent = String(index + 1).padStart(2, "0");
+
+      const name = document.createElement("div");
+      name.className = "episode-name";
+      name.textContent = getEpisodeDisplayName(episode.title);
+
+      const play = document.createElement("div");
+      play.className = "episode-play";
+      play.textContent = "▶";
+
+      item.append(number, name, play);
+
+      item.addEventListener("click", () => {
+        closeSelection();
+        playMovie(episode);
+      });
+
+      episodeList.appendChild(item);
+    });
+  }
+
+  seasonSelect.onchange = () => {
+    renderEpisodesForSeason(seasonSelect.value);
+  };
+
+  renderEpisodesForSeason(selectedSeason);
+  section.classList.add("show");
+}
+
+function getEpisodeDisplayName(title) {
+  let name = String(title || "");
+
+  name = name
+    .replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
+    .replace(/\bS\d{1,2}\b/ig, "")
+    .replace(/\bSeason[\s._-]*\d{1,2}\b/ig, "")
+    .replace(/\b(?:EP?|Episode)[\s._-]*\d{1,3}\b/ig, "")
+    .replace(/\b\d{1,2}x\d{1,3}\b/ig, "")
+    .replace(/\b(480p|720p|1080p|2160p|4k|HEVC|WEB-DL|BluRay|HDR|ESub)\b/ig, "")
+    .replace(/[()[\]_.-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return name || "Episode";
+}
+
+// GOOGLE DRIVE PLAYER
 
 function playMovie(movie) {
   if (!movie.id) {
@@ -1215,16 +1651,9 @@ document.getElementById("closePlayer")
   .addEventListener("click", closePlayer);
 
 document.getElementById("playerModal")
-  .addEventListener("click", function(event) {
-    if (event.target === this) closePlayer();
+  .addEventListener("click", event => {
+    if (event.target === event.currentTarget) closePlayer();
   });
-
-document.addEventListener("keydown", function(event) {
-  if (event.key === "Escape") {
-    closePlayer();
-    closeSelection();
-  }
-});
 
 // SEARCH
 
@@ -1246,6 +1675,15 @@ document.getElementById("themeBtn")
     document.body.classList.toggle("light");
   });
 
+// KEYBOARD
+
+document.addEventListener("keydown", function(event) {
+  if (event.key === "Escape") {
+    closePlayer();
+    closeSelection();
+  }
+});
+
 // START
 
 loadMovies();
@@ -1254,3 +1692,4 @@ loadMovies();
 
 </body>
 </html>
+```
