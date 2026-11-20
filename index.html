@@ -1527,7 +1527,7 @@ function showHeroSlide(index) {
   heroIndex = (index + heroMovies.length) % heroMovies.length;
 
   const movie = heroMovies[heroIndex];
-  const image = getSeasonPoster(movie);
+  const image = movie.heroImage || getSeasonPoster(movie);
 
   const heroBackdrop = document.getElementById("heroBackdrop");
   const heroPoster = document.getElementById("heroPoster");
