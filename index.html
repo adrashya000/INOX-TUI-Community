@@ -1023,6 +1023,7 @@ let allMovies = [];
 let heroImages = [];
 let heroIndex = 0;
 let heroTimer = null;
+let currentHeroMovie = null;
 
 let selectionMovies = [];
 let selectionIndex = 0;
@@ -1410,9 +1411,26 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
   return card;
 }
 
-// HERO SLIDESHOW - ONLY IMAGES FROM HERO FOLDER
+// HERO SLIDESHOW - MATCH IMAGE NAME WITH MOVIE TITLE
 
 const HERO_SLIDE_DURATION = 5000;
+
+function normalizeHeroName(name) {
+  return String(name || "")
+    .replace(/\.(jpg|jpeg|png|webp|gif|bmp)$/i, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function findHeroMovie(image) {
+  const heroName = normalizeHeroName(image.name);
+
+  if (!heroName) return null;
+
+  return allMovies.find(movie =>
+    normalizeHeroName(movie.title) === heroName
+  ) || null;
+}
 
 function startHeroSlideshow() {
   if (heroTimer) {
@@ -1421,13 +1439,13 @@ function startHeroSlideshow() {
   }
 
   heroIndex = 0;
+  currentHeroMovie = null;
 
   const heroTitle = document.getElementById("heroTitle");
   const heroPoster = document.getElementById("heroPoster");
   const heroBackdrop = document.getElementById("heroBackdrop");
   const watchButton = document.getElementById("heroWatchBtn");
 
-  // Hero images are independent of movie posters.
   watchButton.style.display = "none";
 
   if (!heroImages.length) {
@@ -1439,8 +1457,6 @@ function startHeroSlideshow() {
     return;
   }
 
-  heroTitle.textContent = "ADRASHYA INOX";
-
   showHeroSlide(0);
 
   if (heroImages.length > 1) {
@@ -1449,16 +1465,8 @@ function startHeroSlideshow() {
     }, HERO_SLIDE_DURATION);
   }
 
-  console.log(
-    "Hero slideshow loaded:",
-    heroImages.length,
-    "images"
-  );
-
-  console.log(
-    "Hero image names:",
-    heroImages.map(image => image.name)
-  );
+  console.log("Hero slideshow loaded:", heroImages.length, "images");
+  console.log("Hero image names:", heroImages.map(image => image.name));
 }
 
 function showHeroSlide(index) {
@@ -1472,12 +1480,31 @@ function showHeroSlide(index) {
 
   const heroPoster = document.getElementById("heroPoster");
   const heroBackdrop = document.getElementById("heroBackdrop");
+  const heroTitle = document.getElementById("heroTitle");
+  const watchButton = document.getElementById("heroWatchBtn");
+
+  // Match Hero image filename with the movie title.
+  currentHeroMovie = findHeroMovie(image);
+
+  if (currentHeroMovie) {
+    heroTitle.textContent = getDisplayTitle(currentHeroMovie);
+    watchButton.style.display = "inline-block";
+  } else {
+    // If no matching movie is found, show the image filename.
+    heroTitle.textContent = image.name.replace(/\.[^.]+$/, "");
+    watchButton.style.display = "none";
+
+    console.warn("No matching movie found for Hero image:", image.name);
+  }
 
   heroPoster.style.opacity = "0";
 
   const nextImage = new Image();
 
   nextImage.onload = function() {
+    // Ignore an old image request if the slideshow has moved on.
+    if (heroImages[heroIndex] !== image) return;
+
     heroPoster.src = image.url;
 
     heroBackdrop.style.backgroundImage =
@@ -1490,14 +1517,19 @@ function showHeroSlide(index) {
 
   nextImage.onerror = function() {
     console.warn("Hero image failed to load:", image.name);
-
-    if (heroImages.length > 1) {
-      showHeroSlide((heroIndex + 1) % heroImages.length);
-    }
   };
 
   nextImage.src = image.url;
 }
+
+// HERO WATCH NOW BUTTON
+
+document.getElementById("heroWatchBtn")
+  .addEventListener("click", () => {
+    if (currentHeroMovie) {
+      playMovie(currentHeroMovie);
+    }
+  });
 
 // PREMIUM POPUP
 
