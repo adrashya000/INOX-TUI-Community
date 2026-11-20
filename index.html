@@ -207,6 +207,8 @@ main {
 
 .category-section {
   margin: 25px 0 35px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 360px;
 }
 
 .category-title {
@@ -1037,22 +1039,85 @@ let currentSeriesSeasons = [];
 
 // LOAD GOOGLE DRIVE LIBRARY
 
+const MOVIE_CACHE_KEY = "adrashyaInoxMovieCache_v1";
+const MOVIE_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+let apiRequestInProgress = false;
+
+function readMovieCache() {
+  try {
+    const saved = localStorage.getItem(MOVIE_CACHE_KEY);
+    if (!saved) return null;
+
+    const cache = JSON.parse(saved);
+    if (
+      !cache ||
+      !Array.isArray(cache.movies) ||
+      !cache.savedAt
+    ) return null;
+
+    return cache;
+  } catch (error) {
+    console.warn("Movie cache could not be read:", error);
+    return null;
+  }
+}
+
+function saveMovieCache(movies) {
+  try {
+    localStorage.setItem(MOVIE_CACHE_KEY, JSON.stringify({
+      savedAt: Date.now(),
+      movies: movies
+    }));
+  } catch (error) {
+    // The site still works if browser storage is full or unavailable.
+    console.warn("Movie cache could not be saved:", error);
+  }
+}
+
+function displayMovies(movies) {
+  allMovies = movies;
+  renderCatalogue(allMovies);
+  startHeroSlideshow();
+}
+
 function loadMovies() {
+  const cache = readMovieCache();
+  const cacheIsFresh = cache &&
+    (Date.now() - cache.savedAt) < MOVIE_CACHE_TTL;
+
+  // Show saved movies immediately instead of waiting for the Drive API.
+  if (cache && cache.movies.length) {
+    displayMovies(cache.movies);
+  }
+
+  // A fresh cache avoids an API request on every page reload.
+  if (cacheIsFresh) return;
+
+  if (apiRequestInProgress) return;
+  apiRequestInProgress = true;
+
   const callbackName = "inoxCallback";
+  let requestFinished = false;
+
+  function finishRequest() {
+    if (requestFinished) return;
+    requestFinished = true;
+    apiRequestInProgress = false;
+    delete window[callbackName];
+
+    const oldScript = document.getElementById("inoxApiScript");
+    if (oldScript) oldScript.remove();
+  }
 
   window[callbackName] = function(data) {
     if (data && Array.isArray(data.movies)) {
-      allMovies = data.movies;
-      renderCatalogue(allMovies);
-      startHeroSlideshow();
-    } else {
+      saveMovieCache(data.movies);
+      displayMovies(data.movies);
+    } else if (!cache || !cache.movies.length) {
       showError("Unexpected API response.");
     }
 
-    delete window[callbackName];
-
-    const script = document.getElementById("inoxApiScript");
-    if (script) script.remove();
+    finishRequest();
   };
 
   const script = document.createElement("script");
@@ -1062,9 +1127,26 @@ function loadMovies() {
     "&t=" + Date.now();
 
   script.onerror = function() {
-    showError("Unable to connect to Google Drive API.");
-    delete window[callbackName];
-    script.remove();
+    if (!cache || !cache.movies.length) {
+      showError("Unable to connect to Google Drive API.");
+    }
+    finishRequest();
+  };
+
+  // Prevent a permanently pending request from blocking future retries.
+  const requestTimeout = window.setTimeout(function() {
+    if (!requestFinished) {
+      if (!cache || !cache.movies.length) {
+        showError("Google Drive is taking too long to respond. Please reload.");
+      }
+      finishRequest();
+    }
+  }, 15000);
+
+  const originalFinishRequest = finishRequest;
+  finishRequest = function() {
+    window.clearTimeout(requestTimeout);
+    originalFinishRequest();
   };
 
   document.body.appendChild(script);
@@ -1294,6 +1376,8 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
     img.src = posterUrl;
     img.alt = movie.title || "Movie poster";
     img.loading = "lazy";
+    img.decoding = "async";
+    img.fetchPriority = "low";
     img.onerror = () => img.remove();
     poster.appendChild(img);
   }
@@ -1613,6 +1697,8 @@ function renderRecommendations(currentMovie) {
     img.className = "recommendation-poster";
     img.alt = movie.title || "Poster";
     img.loading = "lazy";
+    img.decoding = "async";
+    img.fetchPriority = "low";
     img.src = getSeasonPoster(movie);
 
     img.onerror = () => {
