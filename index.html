@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -924,12 +925,13 @@ body.light .hero {
 
   <div class="hero-poster-wrap">
     <img id="heroPoster" class="hero-poster"
-      alt="Featured movie poster">
+      alt="Featured Hero image">
   </div>
 
   <div class="hero-content">
     <h1 id="heroTitle">ADRASHYA INOX</h1>
-    <button class="hero-watch-btn" id="heroWatchBtn" type="button">
+    <button class="hero-watch-btn" id="heroWatchBtn"
+      type="button" style="display:none">
       ▶ WATCH NOW
     </button>
   </div>
@@ -1018,7 +1020,7 @@ const API_URL =
 const CATEGORIES = ["Movies", "Web Series", "Animation"];
 
 let allMovies = [];
-let heroMovies = [];
+let heroImages = [];
 let heroIndex = 0;
 let heroTimer = null;
 
@@ -1028,7 +1030,7 @@ let currentSeriesSeasons = [];
 
 // LOAD GOOGLE DRIVE LIBRARY
 
-const MOVIE_CACHE_KEY = "adrashyaInoxMovieCache_v3";
+const MOVIE_CACHE_KEY = "adrashyaInoxMovieCache_v4";
 const MOVIE_CACHE_TTL = 5 * 60 * 1000;
 let apiRequestInProgress = false;
 
@@ -1042,6 +1044,7 @@ function readMovieCache() {
     if (
       !cache ||
       !Array.isArray(cache.movies) ||
+      !Array.isArray(cache.heroImages) ||
       !cache.savedAt
     ) return null;
 
@@ -1052,19 +1055,22 @@ function readMovieCache() {
   }
 }
 
-function saveMovieCache(movies) {
+function saveMovieCache(movies, images) {
   try {
     localStorage.setItem(MOVIE_CACHE_KEY, JSON.stringify({
       savedAt: Date.now(),
-      movies: movies
+      movies: movies,
+      heroImages: images
     }));
   } catch (error) {
     console.warn("Movie cache could not be saved:", error);
   }
 }
 
-function displayMovies(movies) {
+function displayMovies(movies, images) {
   allMovies = movies;
+  heroImages = Array.isArray(images) ? images : [];
+
   renderCatalogue(allMovies);
   startHeroSlideshow();
 }
@@ -1076,7 +1082,7 @@ function loadMovies() {
     (Date.now() - cache.savedAt) < MOVIE_CACHE_TTL;
 
   if (cache && cache.movies.length) {
-    displayMovies(cache.movies);
+    displayMovies(cache.movies, cache.heroImages);
   }
 
   if (cacheIsFresh) return;
@@ -1104,11 +1110,16 @@ function loadMovies() {
   }
 
   window[callbackName] = function(data) {
-    if (data && Array.isArray(data.movies)) {
-      saveMovieCache(data.movies);
-      displayMovies(data.movies);
+    if (
+      data &&
+      Array.isArray(data.movies) &&
+      Array.isArray(data.heroImages)
+    ) {
+      saveMovieCache(data.movies, data.heroImages);
+      displayMovies(data.movies, data.heroImages);
     } else if (!cache || !cache.movies.length) {
       showError("Unexpected API response.");
+      console.error("Unexpected API response:", data);
     }
 
     finishRequest();
@@ -1399,68 +1410,15 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
   return card;
 }
 
-// HERO SLIDESHOW - AUTOMATIC MOVIE SELECTION + PRELOADING
+// HERO SLIDESHOW - ONLY IMAGES FROM HERO FOLDER
 
 const HERO_SLIDE_DURATION = 5000;
-const HERO_PRELOAD_COUNT = 3;
-
-let heroImageCache = {};
-
-function getHeroImage(movie) {
-  return movie.heroImage ||
-    getSeasonPoster(movie) ||
-    movie.posterThumbnail ||
-    movie.poster ||
-    movie.thumbnail ||
-    "";
-}
-
-function preloadHeroImage(url) {
-  if (!url || heroImageCache[url]) return;
-
-  const img = new Image();
-  heroImageCache[url] = img;
-
-  img.decoding = "async";
-  img.src = url;
-}
 
 function startHeroSlideshow() {
   if (heroTimer) {
     clearInterval(heroTimer);
     heroTimer = null;
   }
-
-  // First use movies that have a dedicated Hero image.
-  const dedicatedHeroMovies = allMovies.filter(movie =>
-    movie &&
-    movie.id &&
-    movie.heroImage
-  );
-
-  // If there are not enough dedicated Hero images,
-  // use other movie posters/thumbnails as fallback.
-  const fallbackMovies = allMovies.filter(movie =>
-    movie &&
-    movie.id &&
-    !movie.heroImage &&
-    getHeroImage(movie)
-  );
-
-  // Dedicated Hero images appear first.
-  // Other movies are used after those images.
-  const combinedMovies = [
-    ...dedicatedHeroMovies,
-    ...fallbackMovies
-  ];
-
-  // Remove duplicate movie IDs.
-  heroMovies = combinedMovies.filter((movie, index, array) =>
-    array.findIndex(item => item.id === movie.id) === index
-  );
-
-  // Remove movies without an image.
-  heroMovies = heroMovies.filter(movie => getHeroImage(movie));
 
   heroIndex = 0;
 
@@ -1469,132 +1427,77 @@ function startHeroSlideshow() {
   const heroBackdrop = document.getElementById("heroBackdrop");
   const watchButton = document.getElementById("heroWatchBtn");
 
-  if (!heroMovies.length) {
+  // Hero images are independent of movie posters.
+  watchButton.style.display = "none";
+
+  if (!heroImages.length) {
     heroTitle.textContent = "ADRASHYA INOX";
     heroPoster.removeAttribute("src");
     heroBackdrop.style.backgroundImage = "none";
-    watchButton.disabled = true;
 
-    console.warn("No Hero images or movie posters found.");
+    console.warn("No images found in the Hero folder.");
     return;
   }
 
-  watchButton.disabled = false;
+  heroTitle.textContent = "ADRASHYA INOX";
 
-  // Preload the first few images immediately.
-  for (
-    let i = 0;
-    i < Math.min(HERO_PRELOAD_COUNT, heroMovies.length);
-    i++
-  ) {
-    preloadHeroImage(getHeroImage(heroMovies[i]));
-  }
-
-  // Display the first slide immediately.
   showHeroSlide(0);
 
-  // Start automatic slideshow.
-  if (heroMovies.length > 1) {
+  if (heroImages.length > 1) {
     heroTimer = setInterval(() => {
-      showHeroSlide((heroIndex + 1) % heroMovies.length);
+      showHeroSlide((heroIndex + 1) % heroImages.length);
     }, HERO_SLIDE_DURATION);
   }
 
   console.log(
     "Hero slideshow loaded:",
-    heroMovies.length,
-    "movies"
+    heroImages.length,
+    "images"
   );
 
   console.log(
-    "Dedicated Hero images:",
-    dedicatedHeroMovies.length
-  );
-
-  console.log(
-    "Hero slideshow titles:",
-    heroMovies.map(movie => movie.title)
+    "Hero image names:",
+    heroImages.map(image => image.name)
   );
 }
 
 function showHeroSlide(index) {
-  if (!heroMovies.length) return;
+  if (!heroImages.length) return;
 
-  heroIndex = (index + heroMovies.length) % heroMovies.length;
+  heroIndex = (index + heroImages.length) % heroImages.length;
 
-  const movie = heroMovies[heroIndex];
-  const imageUrl = getHeroImage(movie);
+  const image = heroImages[heroIndex];
+
+  if (!image || !image.url) return;
 
   const heroPoster = document.getElementById("heroPoster");
   const heroBackdrop = document.getElementById("heroBackdrop");
-  const heroTitle = document.getElementById("heroTitle");
 
-  heroTitle.textContent = getDisplayTitle(movie);
-
-  if (!imageUrl) return;
-
-  // Preload upcoming images in the background.
-  for (let offset = 1; offset <= HERO_PRELOAD_COUNT; offset++) {
-    const nextMovie =
-      heroMovies[(heroIndex + offset) % heroMovies.length];
-
-    if (nextMovie) {
-      preloadHeroImage(getHeroImage(nextMovie));
-    }
-  }
-
-  // Fade out current image before changing it.
   heroPoster.style.opacity = "0";
 
-  let nextImage = heroImageCache[imageUrl];
+  const nextImage = new Image();
 
-  if (!nextImage) {
-    nextImage = new Image();
-    heroImageCache[imageUrl] = nextImage;
-  }
-
-  function displayImage() {
-    heroPoster.src = imageUrl;
+  nextImage.onload = function() {
+    heroPoster.src = image.url;
 
     heroBackdrop.style.backgroundImage =
-      `url("${imageUrl.replace(/"/g, "%22")}")`;
-
-    heroPoster.style.display = "block";
+      `url("${image.url.replace(/"/g, "%22")}")`;
 
     requestAnimationFrame(() => {
       heroPoster.style.opacity = "1";
     });
-  }
-
-  // If image has already loaded, show it immediately.
-  if (nextImage.complete && nextImage.naturalWidth > 0) {
-    displayImage();
-    return;
-  }
-
-  // Set handlers before assigning src.
-  nextImage.onload = displayImage;
+  };
 
   nextImage.onerror = function() {
-    console.warn("Hero image failed to load:", imageUrl);
+    console.warn("Hero image failed to load:", image.name);
 
-    // Try the next available movie if an image fails.
-    if (heroMovies.length > 1) {
-      showHeroSlide((heroIndex + 1) % heroMovies.length);
+    if (heroImages.length > 1) {
+      showHeroSlide((heroIndex + 1) % heroImages.length);
     }
   };
 
-  // Start loading if it has not already started.
-  if (!nextImage.src) {
-    nextImage.src = imageUrl;
-  }
+  nextImage.src = image.url;
 }
-
-document.getElementById("heroWatchBtn")
-  .addEventListener("click", () => {
-    const movie = heroMovies[heroIndex];
-    if (movie) playMovie(movie);
-  });
 
 // PREMIUM POPUP
 
