@@ -106,7 +106,7 @@ header {
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  filter: blur(20px);
+  filter: blur(12px);
   transform: scale(1.08);
   opacity: .65;
   transition: opacity .5s ease;
@@ -148,7 +148,7 @@ header {
   border-radius: 0;
   box-shadow: none;
   opacity: 1;
-  transition: opacity .5s ease-in-out;
+  transition: opacity .35s ease-in-out;
 }
 
 .hero-content {
@@ -181,6 +181,8 @@ header {
   font-weight: 700;
   cursor: pointer;
   pointer-events: auto;
+  position: relative;
+  z-index: 5;
 }
 
 .hero-watch-btn:hover,
@@ -769,7 +771,7 @@ body.light .hero {
 
   .hero-backdrop {
     inset: -18px;
-    filter: blur(15px);
+    filter: blur(10px);
   }
 
   .hero-poster-wrap {
@@ -977,8 +979,6 @@ body.light .hero {
       </div>
     </section>
 
-    <!-- WEB SERIES SEASON AND EPISODE SELECTOR -->
-
     <section class="episode-section" id="episodeSection">
       <div class="episode-header">
         <h3>Episodes</h3>
@@ -988,8 +988,6 @@ body.light .hero {
 
       <div class="episode-list" id="episodeList"></div>
     </section>
-
-    <!-- RECOMMENDATIONS -->
 
     <section class="premium-recommendations">
       <h3 class="premium-section-title">More Like This</h3>
@@ -1015,7 +1013,7 @@ body.light .hero {
 
 <script>
 const API_URL =
-"https://script.google.com/macros/s/AKfycbzismKAUniBCM3f9G3kyIMaDBz7KKE0YvZE6kgQcCWCNFBruBEczDej6EiWLE8WvQeB/exec";
+"https://script.google.com/macros/s/AKfycbzismKAUniBCM3f9G3kyIMaDBz7KKE0YvZE6kgCWCNFBruBEczDej6EiWLE8WvQeB/exec";
 
 const CATEGORIES = ["Movies", "Web Series", "Animation"];
 
@@ -1024,14 +1022,38 @@ let heroImages = [];
 let heroIndex = 0;
 let heroTimer = null;
 let currentHeroMovie = null;
+let heroRequestToken = 0;
 
 let selectionMovies = [];
 let selectionIndex = 0;
 let currentSeriesSeasons = [];
 
+// IMAGE URL OPTIMIZATION
+
+function optimizeDriveImageUrl(url, size) {
+  if (!url) return "";
+
+  const value = String(url);
+
+  if (!/drive\.google\.com\/thumbnail/i.test(value)) {
+    return value;
+  }
+
+  if (/[?&]sz=/i.test(value)) {
+    return value.replace(
+      /([?&]sz=)w?\d+/i,
+      "$1w" + size
+    );
+  }
+
+  return value +
+    (value.includes("?") ? "&" : "?") +
+    "sz=w" + size;
+}
+
 // LOAD GOOGLE DRIVE LIBRARY
 
-const MOVIE_CACHE_KEY = "adrashyaInoxMovieCache_v4";
+const MOVIE_CACHE_KEY = "adrashyaInoxMovieCache_v5";
 const MOVIE_CACHE_TTL = 5 * 60 * 1000;
 let apiRequestInProgress = false;
 
@@ -1372,12 +1394,16 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
 
   if (posterUrl) {
     const img = document.createElement("img");
-    img.src = posterUrl;
+
+    img.src = optimizeDriveImageUrl(posterUrl, 450);
     img.alt = movie.title || "Movie poster";
-    img.loading = "lazy";
+
+    img.loading = index < 5 ? "eager" : "lazy";
     img.decoding = "async";
-    img.fetchPriority = "low";
+    img.fetchPriority = index < 5 ? "high" : "low";
+
     img.onerror = () => img.remove();
+
     poster.appendChild(img);
   }
 
@@ -1411,20 +1437,42 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
   return card;
 }
 
+// HERO SLIDESHOW - IMPROVED MATCHING AND LOADING
 
-// HERO SLIDESHOW - IMPROVED IMAGE AND MOVIE MATCHING
-
-const HERO_SLIDE_DURATION = 5000;
+const HERO_SLIDE_DURATION = 6000;
 
 function normalizeHeroName(name) {
   return String(name || "")
     .replace(/\.(jpg|jpeg|png|webp|gif|bmp)$/i, "")
     .replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
-    .replace(/\b(480p|720p|1080p|2160p|4k|8k|hevc|h264|h265|web-dl|webrip|bluray|hdr|x264|x265)\b/gi, "")
-    .replace(/\b(19|20)\d{2}\b/g, "")
-    .replace(/\b(poster|hero|banner|official)\b/gi, "")
+    .replace(/\b(480p|720p|1080p|2160p|4k|8k|hevc|h264|h265|web.?dl|webrip|bluray|hdr|x264|x265)\b/gi, " ")
+    .replace(/\b(19|20)\d{2}\b/g, " ")
+    .replace(/\b(poster|hero|banner|official|movie|series)\b/gi, " ")
+    .replace(/\bS(?:eason)?[\s._-]*\d{1,2}\b/gi, " ")
+    .replace(/\b(?:EP?|Episode)[\s._-]*\d{1,3}\b/gi, " ")
+    .replace(/\b\d{1,2}x\d{1,3}\b/gi, " ")
+    .replace(/[\[\](){}]/g, " ")
+    .replace(/[_\-.]+/g, " ")
+    .replace(/[^a-zA-Z0-9\s]/g, " ")
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getHeroMovieNames(movie) {
+  const names = [
+    movie.title,
+    movie.name,
+    movie.fileName,
+    movie.filename,
+    movie.originalName
+  ].filter(Boolean);
+
+  if (normalizeCategory(movie.category) === "Web Series") {
+    names.push(cleanSeriesName(movie.title));
+  }
+
+  return [...new Set(names.map(normalizeHeroName).filter(Boolean))];
 }
 
 function findHeroMovie(image) {
@@ -1432,58 +1480,107 @@ function findHeroMovie(image) {
 
   if (!heroName) return null;
 
-  // Check all possible movie-name fields
-  const matches = allMovies.map(movie => {
-    const names = [
-      movie.title,
-      movie.name,
-      movie.fileName,
-      movie.filename,
-      movie.originalName
-    ].filter(Boolean);
+  const heroTokens = heroName.split(" ").filter(Boolean);
 
-    const normalizedNames = names.map(normalizeHeroName);
+  let bestMovie = null;
+  let bestScore = 0;
+  let secondScore = 0;
 
-    // Exact match gets highest priority
-    if (normalizedNames.includes(heroName)) {
-      return { movie, score: 1000 };
-    }
+  allMovies.forEach(movie => {
+    const names = getHeroMovieNames(movie);
+    let movieBestScore = 0;
 
-    // Check whether one name contains the other
-    let score = 0;
+    names.forEach(movieName => {
+      const movieTokens = movieName.split(" ").filter(Boolean);
 
-    normalizedNames.forEach(name => {
-      if (!name || name.length < 4) return;
+      if (!movieName) return;
 
-      if (heroName.includes(name) || name.includes(heroName)) {
-        const similarity =
-          Math.min(name.length, heroName.length) /
-          Math.max(name.length, heroName.length);
+      // Exact match
+      if (movieName === heroName) {
+        movieBestScore = Math.max(movieBestScore, 100);
+        return;
+      }
 
-        score = Math.max(score, similarity * 100);
+      // Full title inside Hero filename
+      if (movieName.length >= 4 && heroName.includes(movieName)) {
+        movieBestScore = Math.max(movieBestScore, 95);
+        return;
+      }
+
+      // Hero filename inside movie title
+      if (heroName.length >= 4 && movieName.includes(heroName)) {
+        movieBestScore = Math.max(movieBestScore, 90);
+        return;
+      }
+
+      // Compare individual words
+      const matchingTokens = heroTokens.filter(token =>
+        movieTokens.includes(token)
+      );
+
+      const uniqueMatchingTokens = [...new Set(matchingTokens)];
+
+      if (!uniqueMatchingTokens.length) return;
+
+      const unionTokens = new Set([
+        ...heroTokens,
+        ...movieTokens
+      ]);
+
+      const jaccard =
+        uniqueMatchingTokens.length / Math.max(1, unionTokens.size);
+
+      const hasLongMatch = uniqueMatchingTokens.some(token =>
+        token.length >= 6
+      );
+
+      // Require a meaningful match, not just a common short word
+      if (
+        uniqueMatchingTokens.length >= 2 ||
+        (uniqueMatchingTokens.length === 1 && hasLongMatch)
+      ) {
+        movieBestScore = Math.max(
+          movieBestScore,
+          jaccard * 85
+        );
       }
     });
 
-    return { movie, score };
+    if (movieBestScore > bestScore) {
+      secondScore = bestScore;
+      bestScore = movieBestScore;
+      bestMovie = movie;
+    } else if (movieBestScore > secondScore) {
+      secondScore = movieBestScore;
+    }
   });
 
-  matches.sort((a, b) => b.score - a.score);
-
-  if (!matches.length || matches[0].score < 75) {
-    console.warn("No matching movie for Hero image:", image.name);
-    return null;
-  }
-
-  // Avoid choosing between two equally likely movies
+  // A confident match is required to avoid playing the wrong movie
   if (
-    matches.length > 1 &&
-    matches[0].score === matches[1].score
+    !bestMovie ||
+    bestScore < 45 ||
+    (bestScore - secondScore < 10 && bestScore < 90)
   ) {
-    console.warn("Ambiguous Hero movie match:", image.name);
+    console.warn(
+      "Hero image could not be matched:",
+      image.name,
+      "Best score:",
+      bestScore,
+      "Second score:",
+      secondScore
+    );
+
     return null;
   }
 
-  return matches[0].movie;
+  console.log(
+    "Hero match:",
+    image.name,
+    "=>",
+    bestMovie.title
+  );
+
+  return bestMovie;
 }
 
 function startHeroSlideshow() {
@@ -1494,6 +1591,7 @@ function startHeroSlideshow() {
 
   heroIndex = 0;
   currentHeroMovie = null;
+  heroRequestToken++;
 
   const heroTitle = document.getElementById("heroTitle");
   const heroPoster = document.getElementById("heroPoster");
@@ -1506,6 +1604,7 @@ function startHeroSlideshow() {
     heroTitle.textContent = "ADRASHYA INOX";
     heroPoster.removeAttribute("src");
     heroBackdrop.style.backgroundImage = "none";
+
     console.warn("No images found in the Hero folder.");
     return;
   }
@@ -1518,8 +1617,16 @@ function startHeroSlideshow() {
     }, HERO_SLIDE_DURATION);
   }
 
-  console.log("Hero slideshow loaded:", heroImages.length, "images");
-  console.log("Hero image names:", heroImages.map(image => image.name));
+  console.log(
+    "Hero slideshow loaded:",
+    heroImages.length,
+    "images"
+  );
+
+  console.log(
+    "Hero image names:",
+    heroImages.map(image => image.name)
+  );
 }
 
 function showHeroSlide(index) {
@@ -1536,44 +1643,57 @@ function showHeroSlide(index) {
   const heroTitle = document.getElementById("heroTitle");
   const watchButton = document.getElementById("heroWatchBtn");
 
+  const requestToken = ++heroRequestToken;
+
   currentHeroMovie = findHeroMovie(image);
 
   if (currentHeroMovie) {
     heroTitle.textContent = getDisplayTitle(currentHeroMovie);
     watchButton.style.display = "inline-block";
+    watchButton.disabled = false;
   } else {
-    heroTitle.textContent = image.name.replace(/\.[^.]+$/, "");
+    heroTitle.textContent = String(image.name || "Featured Movie")
+      .replace(/\.(jpg|jpeg|png|webp|gif|bmp)$/i, "")
+      .replace(/[_\-.]+/g, " ")
+      .trim();
+
     watchButton.style.display = "none";
   }
 
+  const imageUrl = optimizeDriveImageUrl(image.url, 1100);
+
+  // Load the image only once through the visible image element
   heroPoster.style.opacity = "0";
 
-  const nextImage = new Image();
+  heroPoster.onload = function() {
+    if (requestToken !== heroRequestToken) return;
 
-  nextImage.onload = function() {
-    if (heroImages[heroIndex] !== image) return;
-
-    heroPoster.src = image.url;
-
-    heroBackdrop.style.backgroundImage =
-      `url("${image.url.replace(/"/g, "%22")}")`;
-
-    requestAnimationFrame(() => {
-      heroPoster.style.opacity = "1";
-    });
+    heroPoster.style.opacity = "1";
   };
 
-  nextImage.onerror = function() {
+  heroPoster.onerror = function() {
+    if (requestToken !== heroRequestToken) return;
+
     console.warn("Hero image failed to load:", image.name);
+    heroPoster.style.opacity = "1";
   };
 
-  nextImage.src = image.url;
+  // Same URL is reused for the background and browser cache
+  heroBackdrop.style.backgroundImage =
+    `url("${imageUrl.replace(/"/g, "%22")}")`;
+
+  heroPoster.src = imageUrl;
+
+  // Handle already-cached images
+  if (heroPoster.complete && heroPoster.naturalWidth > 0) {
+    heroPoster.style.opacity = "1";
+  }
 }
 
 // HERO WATCH NOW BUTTON
 
 document.getElementById("heroWatchBtn")
-  .addEventListener("click", () => {
+  .addEventListener("click", function() {
     if (currentHeroMovie) {
       playMovie(currentHeroMovie);
     }
@@ -1596,16 +1716,17 @@ function showSelection() {
 
   const movie = selectionMovies[selectionIndex];
   const posterUrl = getSeasonPoster(movie);
+  const optimizedPoster = optimizeDriveImageUrl(posterUrl, 750);
 
   const poster = document.getElementById("selectionPoster");
   const hero = document.getElementById("premiumHero");
 
-  poster.src = posterUrl || "";
-  poster.style.visibility = posterUrl ? "visible" : "hidden";
+  poster.src = optimizedPoster || "";
+  poster.style.visibility = optimizedPoster ? "visible" : "hidden";
   poster.alt = movie.title || "Movie poster";
 
-  hero.style.backgroundImage = posterUrl
-    ? `url("${String(posterUrl).replace(/"/g, "%22")}")`
+  hero.style.backgroundImage = optimizedPoster
+    ? `url("${optimizedPoster.replace(/"/g, "%22")}")`
     : "none";
 
   document.getElementById("selectionTitle").textContent =
@@ -1722,7 +1843,7 @@ function renderRecommendations(currentMovie) {
     img.loading = "lazy";
     img.decoding = "async";
     img.fetchPriority = "low";
-    img.src = getSeasonPoster(movie);
+    img.src = optimizeDriveImageUrl(getSeasonPoster(movie), 360);
 
     img.onerror = () => {
       img.style.visibility = "hidden";
