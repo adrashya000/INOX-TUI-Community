@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,11 +83,11 @@ header {
   cursor: pointer;
 }
 
-/* HERO SLIDESHOW - BLURRED BACKGROUND + ORIGINAL POSTER */
+/* HERO SLIDESHOW */
 
 .hero {
-  height: 340px;
-  min-height: 340px;
+  height: 430px;
+  min-height: 430px;
   padding: 25px 7%;
   display: flex;
   align-items: center;
@@ -98,8 +97,6 @@ header {
   isolation: isolate;
   background-color: #101010;
 }
-
-/* Enlarged blurred version of the same poster */
 
 .hero-backdrop {
   position: absolute;
@@ -113,8 +110,6 @@ header {
   opacity: .75;
   transition: background-image .4s ease;
 }
-
-/* Dark overlay */
 
 .hero::before {
   content: "";
@@ -131,7 +126,7 @@ header {
       rgba(0,0,0,.12));
 }
 
-/* Original poster - no cropping */
+/* Landscape Hero image */
 
 .hero-poster-wrap {
   position: absolute;
@@ -141,21 +136,20 @@ header {
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  padding: 12px;
+  padding: 0;
 }
 
 .hero-poster {
   display: block;
-  height: 300px;
-  width: auto;
-  max-width: 42%;
-  object-fit: contain;
-  border-radius: 5px;
-  box-shadow: 0 8px 35px rgba(0,0,0,.65);
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0;
+  box-shadow: none;
   transition: opacity .3s ease;
 }
-
-/* Hero title and button */
 
 .hero-content {
   width: 100%;
@@ -768,8 +762,8 @@ body.light .hero {
   }
 
   .hero {
-    height: 260px;
-    min-height: 260px;
+    height: 300px;
+    min-height: 300px;
     padding: 15px 5%;
   }
 
@@ -779,12 +773,14 @@ body.light .hero {
   }
 
   .hero-poster-wrap {
-    padding: 10px;
+    padding: 0;
   }
 
   .hero-poster {
-    height: 220px;
-    max-width: 55%;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
   }
 
   .hero-content {
@@ -927,13 +923,11 @@ body.light .hero {
 
 <section class="hero" id="hero">
 
-  <!-- Blurred background uses the same poster -->
   <div class="hero-backdrop" id="heroBackdrop"></div>
 
-  <!-- Original poster displayed without cropping -->
   <div class="hero-poster-wrap">
     <img id="heroPoster" class="hero-poster"
-      alt="Featured movie poster">
+      alt="Featured movie">
   </div>
 
   <div class="hero-content">
@@ -1039,8 +1033,8 @@ let currentSeriesSeasons = [];
 
 // LOAD GOOGLE DRIVE LIBRARY
 
-const MOVIE_CACHE_KEY = "adrashyaInoxMovieCache_v1";
-const MOVIE_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const MOVIE_CACHE_KEY = "adrashyaInoxMovieCache_v2";
+const MOVIE_CACHE_TTL = 5 * 60 * 1000;
 let apiRequestInProgress = false;
 
 function readMovieCache() {
@@ -1049,6 +1043,7 @@ function readMovieCache() {
     if (!saved) return null;
 
     const cache = JSON.parse(saved);
+
     if (
       !cache ||
       !Array.isArray(cache.movies) ||
@@ -1056,6 +1051,7 @@ function readMovieCache() {
     ) return null;
 
     return cache;
+
   } catch (error) {
     console.warn("Movie cache could not be read:", error);
     return null;
@@ -1069,7 +1065,6 @@ function saveMovieCache(movies) {
       movies: movies
     }));
   } catch (error) {
-    // The site still works if browser storage is full or unavailable.
     console.warn("Movie cache could not be saved:", error);
   }
 }
@@ -1082,15 +1077,14 @@ function displayMovies(movies) {
 
 function loadMovies() {
   const cache = readMovieCache();
+
   const cacheIsFresh = cache &&
     (Date.now() - cache.savedAt) < MOVIE_CACHE_TTL;
 
-  // Show saved movies immediately instead of waiting for the Drive API.
   if (cache && cache.movies.length) {
     displayMovies(cache.movies);
   }
 
-  // A fresh cache avoids an API request on every page reload.
   if (cacheIsFresh) return;
 
   if (apiRequestInProgress) return;
@@ -1098,11 +1092,18 @@ function loadMovies() {
 
   const callbackName = "inoxCallback";
   let requestFinished = false;
+  let requestTimeout = null;
 
   function finishRequest() {
     if (requestFinished) return;
+
     requestFinished = true;
     apiRequestInProgress = false;
+
+    if (requestTimeout) {
+      clearTimeout(requestTimeout);
+    }
+
     delete window[callbackName];
 
     const oldScript = document.getElementById("inoxApiScript");
@@ -1122,6 +1123,7 @@ function loadMovies() {
 
   const script = document.createElement("script");
   script.id = "inoxApiScript";
+
   script.src = API_URL +
     "?callback=" + callbackName +
     "&t=" + Date.now();
@@ -1130,24 +1132,19 @@ function loadMovies() {
     if (!cache || !cache.movies.length) {
       showError("Unable to connect to Google Drive API.");
     }
+
     finishRequest();
   };
 
-  // Prevent a permanently pending request from blocking future retries.
-  const requestTimeout = window.setTimeout(function() {
+  requestTimeout = window.setTimeout(function() {
     if (!requestFinished) {
       if (!cache || !cache.movies.length) {
         showError("Google Drive is taking too long to respond. Please reload.");
       }
+
       finishRequest();
     }
   }, 15000);
-
-  const originalFinishRequest = finishRequest;
-  finishRequest = function() {
-    window.clearTimeout(requestTimeout);
-    originalFinishRequest();
-  };
 
   document.body.appendChild(script);
 }
@@ -1299,6 +1296,7 @@ function renderCatalogue(movies) {
 
     leftArrow.addEventListener("click", event => {
       event.preventDefault();
+
       row.scrollBy({
         left: -Math.max(220, row.clientWidth * .8),
         behavior: "smooth"
@@ -1313,6 +1311,7 @@ function renderCatalogue(movies) {
 
     rightArrow.addEventListener("click", event => {
       event.preventDefault();
+
       row.scrollBy({
         left: Math.max(220, row.clientWidth * .8),
         behavior: "smooth"
@@ -1348,6 +1347,7 @@ function renderCatalogue(movies) {
       "All " + category;
 
     const allRow = createMovieRow(categoryMovies, rowLabel);
+
     if (allRow) section.appendChild(allRow);
 
     catalogue.appendChild(section);
@@ -1367,18 +1367,21 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
   const placeholder = document.createElement("div");
   placeholder.className = "poster-placeholder";
   placeholder.textContent = getDisplayTitle(movie);
+
   poster.appendChild(placeholder);
 
   const posterUrl = getSeasonPoster(movie);
 
   if (posterUrl) {
     const img = document.createElement("img");
+
     img.src = posterUrl;
     img.alt = movie.title || "Movie poster";
     img.loading = "lazy";
     img.decoding = "async";
     img.fetchPriority = "low";
     img.onerror = () => img.remove();
+
     poster.appendChild(img);
   }
 
@@ -1413,68 +1416,18 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
 }
 
 // HERO SLIDESHOW
-
-// Add more featured movies here.
-// Only a distinctive part of the Drive filename is required.
-
-
-const FEATURED_MOVIES = [
-  "Aadu 3",
-  "Aakhri Sawal",
-  "Akka Season-1",
-  "Dhurandhar-2",
-  "Jailer-2"
-
-  // Add more titles below:
-  // ,"Panchayat"
-  // ,"Mirzapur"
-  // ,"Decoupled"
-];
-
-
-function normalizeMovieTitle(title) {
-  return String(title || "")
-    .toLowerCase()
-    .replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
-    .replace(/[_\-\.\[\]\(\)]/g, " ")
-    .replace(/\b(480p|720p|1080p|2160p|4k|hevc|x265|x264|web dl|webrip|bluray|hdr|esub|hindi|completed|quality)\b/gi, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function findFeaturedMovie(featuredTitle) {
-  const wanted = normalizeMovieTitle(featuredTitle);
-
-  if (!wanted) return null;
-
-  // Exact normalized match first
-  let match = allMovies.find(movie =>
-    normalizeMovieTitle(movie.title) === wanted && movie.id
-  );
-
-  if (match) return match;
-
-  // Partial matching
-  // Avoid matching very short titles accidentally.
-  match = allMovies.find(movie => {
-    const actual = normalizeMovieTitle(movie.title);
-
-    return movie.id &&
-      wanted.length >= 4 &&
-      actual.length >= 4 &&
-      (actual.includes(wanted) || wanted.includes(actual));
-  });
-
-  return match || null;
-}
+// Automatically select all movies having a matching Hero image.
 
 function startHeroSlideshow() {
-  const foundMovies = FEATURED_MOVIES
-    .map(title => findFeaturedMovie(title))
-    .filter(Boolean);
 
-  // Remove duplicate videos
-  heroMovies = foundMovies.filter((movie, index, array) =>
+  heroMovies = allMovies.filter(movie =>
+    movie &&
+    movie.id &&
+    movie.heroImage
+  );
+
+  // Remove duplicate videos.
+  heroMovies = heroMovies.filter((movie, index, array) =>
     array.findIndex(item => item.id === movie.id) === index
   );
 
@@ -1494,8 +1447,16 @@ function startHeroSlideshow() {
     heroTitle.textContent = "ADRASHYA INOX";
     heroBackdrop.style.backgroundImage = "none";
     heroPoster.removeAttribute("src");
+    heroPoster.style.display = "none";
     watchButton.disabled = true;
-    console.warn("No featured movies matched your Drive library.");
+
+    console.warn("No Hero images received from Google Drive API.");
+
+    console.table(allMovies.map(movie => ({
+      title: movie.title,
+      heroImage: movie.heroImage || "Not found"
+    })));
+
     return;
   }
 
@@ -1503,7 +1464,7 @@ function startHeroSlideshow() {
 
   showHeroSlide(0);
 
-  // Automatic slideshow every 5 seconds
+  // Automatic slideshow every 5 seconds.
   if (heroMovies.length > 1) {
     heroTimer = setInterval(() => {
       showHeroSlide((heroIndex + 1) % heroMovies.length);
@@ -1514,11 +1475,6 @@ function startHeroSlideshow() {
     "Hero slideshow loaded:",
     heroMovies.map(movie => movie.title)
   );
-
-  console.log(
-    "Featured titles not found:",
-    FEATURED_MOVIES.filter(title => !findFeaturedMovie(title))
-  );
 }
 
 function showHeroSlide(index) {
@@ -1527,7 +1483,7 @@ function showHeroSlide(index) {
   heroIndex = (index + heroMovies.length) % heroMovies.length;
 
   const movie = heroMovies[heroIndex];
-  const image = movie.heroImage || getSeasonPoster(movie);
+  const image = movie.heroImage;
 
   const heroBackdrop = document.getElementById("heroBackdrop");
   const heroPoster = document.getElementById("heroPoster");
@@ -1536,14 +1492,14 @@ function showHeroSlide(index) {
     getDisplayTitle(movie);
 
   if (image) {
-    const safeImage = `url("${String(image).replace(/"/g, "%22")}")`;
+    const safeImage =
+      `url("${String(image).replace(/"/g, "%22")}")`;
 
-    // Blurred background image
     heroBackdrop.style.backgroundImage = safeImage;
 
-    // Original poster - object-fit: contain keeps the full poster visible
     heroPoster.src = image;
     heroPoster.style.display = "block";
+
   } else {
     heroBackdrop.style.backgroundImage = "none";
     heroPoster.removeAttribute("src");
@@ -1554,6 +1510,7 @@ function showHeroSlide(index) {
 document.getElementById("heroWatchBtn")
   .addEventListener("click", () => {
     const movie = heroMovies[heroIndex];
+
     if (movie) playMovie(movie);
   });
 
@@ -1590,6 +1547,7 @@ function showSelection() {
     getDisplayTitle(movie);
 
   const description = document.getElementById("selectionDescription");
+
   description.textContent = movie.description || "";
   description.style.display = movie.description ? "block" : "none";
 
@@ -1617,6 +1575,7 @@ document.getElementById("selectionModal")
 document.getElementById("selectionPlay")
   .addEventListener("click", () => {
     const movie = selectionMovies[selectionIndex];
+
     if (movie) {
       closeSelection();
       playMovie(movie);
@@ -1640,17 +1599,20 @@ function isInMyList(movie) {
 function updateMyListButton(movie) {
   const button = document.getElementById("myListButton");
   const note = document.getElementById("myListNote");
+
   const saved = isInMyList(movie);
 
   button.classList.toggle("active", saved);
   button.textContent = saved ? "✓" : "＋";
   button.title = saved ? "Remove from My List" : "Add to My List";
+
   note.textContent = saved ? "Added to My List" : "";
 }
 
 document.getElementById("myListButton")
   .addEventListener("click", () => {
     const movie = selectionMovies[selectionIndex];
+
     if (!movie || !movie.id) return;
 
     const list = getMyList();
@@ -1663,6 +1625,7 @@ document.getElementById("myListButton")
     }
 
     localStorage.setItem("inoxMyList", JSON.stringify(list));
+
     updateMyListButton(movie);
   });
 
@@ -1670,6 +1633,7 @@ document.getElementById("myListButton")
 
 function renderRecommendations(currentMovie) {
   const row = document.getElementById("recommendationRow");
+
   row.innerHTML = "";
 
   const category = normalizeCategory(currentMovie.category);
@@ -1683,8 +1647,10 @@ function renderRecommendations(currentMovie) {
 
   if (!selected.length) {
     const empty = document.createElement("div");
+
     empty.className = "status";
     empty.textContent = "No recommendations available.";
+
     row.appendChild(empty);
     return;
   }
@@ -1694,6 +1660,7 @@ function renderRecommendations(currentMovie) {
     card.className = "recommendation-card";
 
     const img = document.createElement("img");
+
     img.className = "recommendation-poster";
     img.alt = movie.title || "Poster";
     img.loading = "lazy";
@@ -1706,13 +1673,17 @@ function renderRecommendations(currentMovie) {
     };
 
     const title = document.createElement("div");
+
     title.className = "recommendation-title";
     title.textContent = getDisplayTitle(movie);
 
     card.append(img, title);
 
     card.addEventListener("click", () => {
-      const index = recommendations.findIndex(item => item.id === movie.id);
+      const index = recommendations.findIndex(item =>
+        item.id === movie.id
+      );
+
       openSelection(recommendations, index);
     });
 
@@ -1744,6 +1715,7 @@ function getEpisodeNumber(title) {
 
 function getSeasonGroup(movie) {
   const season = getSeasonNumber(movie.title);
+
   return season || "01";
 }
 
@@ -1753,6 +1725,7 @@ function renderSeriesEpisodes(movie) {
   const episodeList = document.getElementById("episodeList");
 
   section.classList.remove("show");
+
   seasonSelect.innerHTML = "";
   episodeList.innerHTML = "";
 
@@ -1774,12 +1747,15 @@ function renderSeriesEpisodes(movie) {
 
   seasons.forEach(season => {
     const option = document.createElement("option");
+
     option.value = season;
     option.textContent = "Season " + Number(season);
+
     seasonSelect.appendChild(option);
   });
 
   const selectedSeason = getSeasonGroup(movie);
+
   seasonSelect.value = selectedSeason;
 
   function renderEpisodesForSeason(season) {
@@ -1787,7 +1763,9 @@ function renderSeriesEpisodes(movie) {
 
     const seasonEpisodes = episodes
       .filter(item => getSeasonGroup(item) === season)
-      .sort((a, b) => getEpisodeNumber(a.title) - getEpisodeNumber(b.title));
+      .sort((a, b) =>
+        getEpisodeNumber(a.title) - getEpisodeNumber(b.title)
+      );
 
     seasonEpisodes.forEach((episode, index) => {
       const item = document.createElement("div");
@@ -1821,6 +1799,7 @@ function renderSeriesEpisodes(movie) {
   };
 
   renderEpisodesForSeason(selectedSeason);
+
   section.classList.add("show");
 }
 
@@ -1854,11 +1833,13 @@ function playMovie(movie) {
   const message = document.getElementById("playerMessage");
 
   const oldFrame = document.getElementById("drivePlayer");
+
   if (oldFrame) oldFrame.remove();
 
   message.textContent = "Loading " + (movie.title || "movie") + "...";
 
   const iframe = document.createElement("iframe");
+
   iframe.id = "drivePlayer";
 
   iframe.src =
@@ -1873,6 +1854,7 @@ function playMovie(movie) {
   playerBox.appendChild(iframe);
 
   modal.classList.add("show");
+
   document.body.style.overflow = "hidden";
 
   setTimeout(() => {
@@ -1887,6 +1869,7 @@ function closePlayer() {
   if (iframe) iframe.remove();
 
   modal.classList.remove("show");
+
   document.body.style.overflow = "";
 }
 
