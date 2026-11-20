@@ -1411,13 +1411,18 @@ function createMovieCard(movie, categoryMovies = [movie], index = 0) {
   return card;
 }
 
-// HERO SLIDESHOW - MATCH IMAGE NAME WITH MOVIE TITLE
+
+// HERO SLIDESHOW - IMPROVED IMAGE AND MOVIE MATCHING
 
 const HERO_SLIDE_DURATION = 5000;
 
 function normalizeHeroName(name) {
   return String(name || "")
     .replace(/\.(jpg|jpeg|png|webp|gif|bmp)$/i, "")
+    .replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
+    .replace(/\b(480p|720p|1080p|2160p|4k|8k|hevc|h264|h265|web-dl|webrip|bluray|hdr|x264|x265)\b/gi, "")
+    .replace(/\b(19|20)\d{2}\b/g, "")
+    .replace(/\b(poster|hero|banner|official)\b/gi, "")
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
 }
@@ -1427,9 +1432,58 @@ function findHeroMovie(image) {
 
   if (!heroName) return null;
 
-  return allMovies.find(movie =>
-    normalizeHeroName(movie.title) === heroName
-  ) || null;
+  // Check all possible movie-name fields
+  const matches = allMovies.map(movie => {
+    const names = [
+      movie.title,
+      movie.name,
+      movie.fileName,
+      movie.filename,
+      movie.originalName
+    ].filter(Boolean);
+
+    const normalizedNames = names.map(normalizeHeroName);
+
+    // Exact match gets highest priority
+    if (normalizedNames.includes(heroName)) {
+      return { movie, score: 1000 };
+    }
+
+    // Check whether one name contains the other
+    let score = 0;
+
+    normalizedNames.forEach(name => {
+      if (!name || name.length < 4) return;
+
+      if (heroName.includes(name) || name.includes(heroName)) {
+        const similarity =
+          Math.min(name.length, heroName.length) /
+          Math.max(name.length, heroName.length);
+
+        score = Math.max(score, similarity * 100);
+      }
+    });
+
+    return { movie, score };
+  });
+
+  matches.sort((a, b) => b.score - a.score);
+
+  if (!matches.length || matches[0].score < 75) {
+    console.warn("No matching movie for Hero image:", image.name);
+    return null;
+  }
+
+  // Avoid choosing between two equally likely movies
+  if (
+    matches.length > 1 &&
+    matches[0].score === matches[1].score
+  ) {
+    console.warn("Ambiguous Hero movie match:", image.name);
+    return null;
+  }
+
+  return matches[0].movie;
 }
 
 function startHeroSlideshow() {
@@ -1452,7 +1506,6 @@ function startHeroSlideshow() {
     heroTitle.textContent = "ADRASHYA INOX";
     heroPoster.removeAttribute("src");
     heroBackdrop.style.backgroundImage = "none";
-
     console.warn("No images found in the Hero folder.");
     return;
   }
@@ -1483,18 +1536,14 @@ function showHeroSlide(index) {
   const heroTitle = document.getElementById("heroTitle");
   const watchButton = document.getElementById("heroWatchBtn");
 
-  // Match Hero image filename with the movie title.
   currentHeroMovie = findHeroMovie(image);
 
   if (currentHeroMovie) {
     heroTitle.textContent = getDisplayTitle(currentHeroMovie);
     watchButton.style.display = "inline-block";
   } else {
-    // If no matching movie is found, show the image filename.
     heroTitle.textContent = image.name.replace(/\.[^.]+$/, "");
     watchButton.style.display = "none";
-
-    console.warn("No matching movie found for Hero image:", image.name);
   }
 
   heroPoster.style.opacity = "0";
@@ -1502,7 +1551,6 @@ function showHeroSlide(index) {
   const nextImage = new Image();
 
   nextImage.onload = function() {
-    // Ignore an old image request if the slideshow has moved on.
     if (heroImages[heroIndex] !== image) return;
 
     heroPoster.src = image.url;
