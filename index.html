@@ -226,6 +226,24 @@ main {
   font-weight: 700;
 }
 
+.recently-added-heading {
+  color: var(--text);
+  font-size: 20px;
+}
+
+.recently-added-heading::after {
+  content: "  NEW";
+  display: inline-block;
+  margin-left: 7px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  vertical-align: 3px;
+  letter-spacing: .5px;
+}
+
 .row-shell {
   position: relative;
   width: 100%;
@@ -1053,7 +1071,7 @@ function optimizeDriveImageUrl(url, size) {
 
 // LOAD GOOGLE DRIVE LIBRARY
 
-const MOVIE_CACHE_KEY = "adrashyaInoxMovieCache_v5";
+const MOVIE_CACHE_KEY = "adrashyaInoxMovieCache_v6";
 const MOVIE_CACHE_TTL = 5 * 60 * 1000;
 let apiRequestInProgress = false;
 
@@ -1300,6 +1318,9 @@ function renderCatalogue(movies) {
 
     const rowHeading = document.createElement("h3");
     rowHeading.className = "row-heading";
+    if (label === "Recently Added") {
+      rowHeading.classList.add("recently-added-heading");
+    }
     rowHeading.textContent = label;
 
     const rowShell = document.createElement("div");
@@ -1345,6 +1366,15 @@ function renderCatalogue(movies) {
 
     return rowBlock;
   }
+
+  // One common row: newest Drive uploads across all categories.
+  // createdTime is supplied by Google Apps Script in milliseconds.
+  const recentlyAdded = [...movies]
+    .sort((a, b) => Number(b.createdTime || 0) - Number(a.createdTime || 0))
+    .slice(0, 12);
+
+  const recentlyAddedRow = createMovieRow(recentlyAdded, "Recently Added");
+  if (recentlyAddedRow) catalogue.appendChild(recentlyAddedRow);
 
   categories.forEach(category => {
     const categoryMovies = movies.filter(movie =>
