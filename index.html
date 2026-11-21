@@ -1871,7 +1871,8 @@ function renderRecommendations(currentMovie) {
     : "";
   const currentWords = new Set(titleWords(currentMovie));
 
-  const recommendations = allMovies
+  // First show matching titles (same series / overlapping title words).
+  const similarRecommendations = allMovies
     .filter(movie => movie.id !== currentMovie.id)
     .map(movie => {
       const category = normalizeCategory(movie.category);
@@ -1890,12 +1891,30 @@ function renderRecommendations(currentMovie) {
       Number(b.movie.createdTime || 0) - Number(a.movie.createdTime || 0))
     .map(item => item.movie);
 
+  // If fewer than 20 similar titles exist, fill the remaining spaces randomly
+  // from the rest of the library. Similar titles always stay at the beginning.
+  const similarIds = new Set(similarRecommendations.map(movie => movie.id));
+  const randomRecommendations = allMovies.filter(movie =>
+    movie.id !== currentMovie.id && !similarIds.has(movie.id)
+  );
+
+  // Fisher-Yates shuffle for a genuinely random fallback order.
+  for (let i = randomRecommendations.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [randomRecommendations[i], randomRecommendations[j]] =
+      [randomRecommendations[j], randomRecommendations[i]];
+  }
+
+  const recommendations = [
+    ...similarRecommendations,
+    ...randomRecommendations
+  ];
   const selected = recommendations.slice(0, 20);
 
   if (!selected.length) {
     const empty = document.createElement("div");
     empty.className = "status";
-    empty.textContent = "No similar titles found in your library.";
+    empty.textContent = "No other videos available.";
     row.appendChild(empty);
     return;
   }
