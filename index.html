@@ -464,6 +464,23 @@ main {
 .selection-modal.show {
   display: flex;
   animation: modalFade .25s ease;
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.selection-modal {
+  z-index: 99999;
+  pointer-events: none;
+}
+
+.selection-modal.show {
+  pointer-events: auto;
+}
+
+.selection-modal .premium-box,
+.selection-modal .premium-box * {
+  pointer-events: auto;
 }
 
 @keyframes modalFade {
@@ -708,6 +725,7 @@ main {
   gap: 10px;
 }
 
+.episode-item.active { outline: 2px solid var(--accent, #7c5cff); background: rgba(124,92,255,.12); }
 .episode-item {
   display: flex;
   align-items: center;
@@ -1024,6 +1042,230 @@ body.light .hero {
     height: 55vh;
   }
 }
+
+
+/* =========================================================
+   ADRASHYA INOX — iOS / Apple TV inspired visual refresh
+   Keeps the existing Google Drive catalogue and playback JS.
+   ========================================================= */
+:root {
+  color-scheme: dark;
+  --bg: #08090d;
+  --text: #f5f5f7;
+  --muted: #a1a1aa;
+  --accent: #0a84ff;
+  --card: #17191f;
+  --surface: rgba(30,32,39,.82);
+  --surface-border: rgba(255,255,255,.09);
+  --header-bg: rgba(10,11,15,.78);
+  --soft-shadow: 0 18px 55px rgba(0,0,0,.28);
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  letter-spacing: -.015em;
+  transition: background .28s ease, color .28s ease;
+}
+header {
+  padding: 14px clamp(18px,4.5vw,68px);
+  gap: 22px;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--surface-border);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+}
+.logo { color: var(--text); font-size: 23px; letter-spacing: -.8px; }
+.tagline { letter-spacing: 1.6px; font-size: 9px; opacity: .7; }
+.header-nav { gap: clamp(8px,1.5vw,22px); }
+.nav-link {
+  color: var(--muted);
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 650;
+}
+.nav-link:hover,.nav-link.active {
+  color: var(--text);
+  background: rgba(128,128,140,.16);
+  border: 0;
+}
+.search {
+  width: clamp(150px,18vw,230px);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: 999px;
+  padding: 11px 16px;
+  font-size: 14px;
+  backdrop-filter: blur(15px);
+}
+.search:focus { border-color: var(--accent); }
+.theme-btn {
+  width: 42px; height: 42px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--surface);
+  border: 1px solid var(--surface-border); color: var(--text);
+  font-size: 17px; transition: transform .2s, background .2s;
+}
+.theme-btn:hover { transform: rotate(12deg) scale(1.05); }
+.hero {
+  min-height: clamp(320px,45vw,590px);
+  height: clamp(320px,45vw,590px);
+  padding: 30px clamp(22px,7vw,100px);
+  background-color: #10131b;
+}
+.hero::before {
+  background: linear-gradient(90deg,rgba(0,0,0,.76),rgba(0,0,0,.08) 72%),
+              linear-gradient(0deg,rgba(0,0,0,.68),transparent 58%);
+}
+.hero-content { left: clamp(22px,7vw,100px); bottom: clamp(24px,5vw,62px); max-width: 680px; }
+.hero h1 { font-size: clamp(30px,5vw,58px); letter-spacing: -1.8px; }
+.hero-watch-btn,.premium-play {
+  background: var(--accent); border-radius: 999px; padding: 13px 23px;
+  box-shadow: 0 7px 22px rgba(10,132,255,.24);
+}
+.hero-watch-btn:hover,.premium-play:hover { background: #006bd6; }
+main { padding: 12px 0 65px; }
+.category-section { margin: 32px 0 42px; }
+.category-title,.row-heading { padding-left: clamp(18px,4.5vw,68px); padding-right: clamp(18px,4.5vw,68px); }
+.category-title { font-size: clamp(21px,2.2vw,28px); font-weight: 760; letter-spacing: -.7px; }
+.row-heading { color: var(--muted); font-size: 16px; font-weight: 650; }
+.recently-added-heading { color: var(--text); }
+.recently-added-heading::after { border-radius: 999px; background: var(--accent); padding: 4px 8px; }
+.movie-row { padding-left: clamp(18px,4.5vw,68px); padding-right: clamp(18px,4.5vw,68px); gap: 16px; }
+.movie-card { flex-basis: clamp(135px,13vw,190px); }
+.poster { height: auto; aspect-ratio: 2 / 3; border-radius: 13px; background: var(--card); box-shadow: 0 8px 24px rgba(0,0,0,.16); }
+.poster img { transition: transform .45s cubic-bezier(.2,.7,.2,1); }
+.movie-card:hover .poster img { transform: scale(1.045); }
+.movie-card:hover { transform: translateY(-4px); }
+.movie-title { color: var(--text); font-size: 14px; font-weight: 650; margin-top: 10px; }
+.play-icon { background: rgba(10,132,255,.94); backdrop-filter: blur(10px); }
+.category-page-grid { padding-left: clamp(18px,4.5vw,68px); padding-right: clamp(18px,4.5vw,68px); gap: 28px 19px; }
+.category-page-grid .poster { border-radius: 13px; }
+.selection-modal { background: rgba(0,0,0,.62); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); padding: 22px; }
+.premium-box {
+  background: #15171d; border: 1px solid rgba(255,255,255,.12);
+  border-radius: 25px; box-shadow: 0 30px 100px rgba(0,0,0,.55);
+}
+.premium-hero { border-radius: 25px 25px 0 0; min-height: 420px; padding: clamp(22px,4vw,48px); }
+.premium-hero::before { background: linear-gradient(90deg,rgba(0,0,0,.91),rgba(0,0,0,.54) 55%,rgba(0,0,0,.15)),linear-gradient(0deg,#15171d 0%,transparent 75%); }
+.premium-close,.close-btn { width: 42px; height: 42px; border-radius: 50%; background: rgba(35,37,44,.78); backdrop-filter: blur(15px); }
+.premium-poster { border-radius: 15px; }
+.premium-title { letter-spacing: -1px; }
+.premium-actions { gap: 10px; }
+.premium-list { border-radius: 50%; width: 48px; height: 48px; background: rgba(255,255,255,.13); border-color: rgba(255,255,255,.24); }
+.premium-recommendations { padding: 22px clamp(20px,3vw,34px) 30px; }
+.recommendation-poster { border-radius: 12px; }
+.episode-section { padding-left: clamp(20px,3vw,34px); padding-right: clamp(20px,3vw,34px); }
+.season-select { border-radius: 12px; background: #242731; border: 1px solid rgba(255,255,255,.12); padding: 11px 13px; }
+.episode-item { border-radius: 14px; background: rgba(128,128,140,.12); padding: 12px; }
+.episode-item:hover { background: rgba(128,128,140,.2); }
+.episode-play { background: var(--accent); }
+.player-box { border-radius: 20px; box-shadow: var(--soft-shadow); }
+footer { border-color: var(--surface-border); color: var(--muted); }
+
+/* LIGHT APPEARANCE */
+body.light {
+  color-scheme: light;
+  --bg: #f2f3f7;
+  --text: #17181d;
+  --muted: #747680;
+  --accent: #007aff;
+  --card: #ffffff;
+  --surface: rgba(255,255,255,.78);
+  --surface-border: rgba(25,28,38,.09);
+  --header-bg: rgba(248,249,252,.82);
+  --soft-shadow: 0 18px 55px rgba(35,45,70,.12);
+  background: var(--bg);
+  color: var(--text);
+}
+body.light header { background: var(--header-bg); border-bottom-color: var(--surface-border); }
+body.light .logo { color: #17181d; }
+body.light .nav-link { color: #666a75; }
+body.light .nav-link:hover,body.light .nav-link.active { color: #17181d; background: rgba(70,80,100,.09); }
+body.light .search { background: rgba(255,255,255,.88); color: #17181d; border-color: rgba(25,28,38,.12); }
+body.light .theme-btn { background: #fff; color: #20222a; border-color: rgba(25,28,38,.1); }
+body.light .hero { background-color: #d8dce5; }
+body.light .category-title,body.light .recently-added-heading,body.light .movie-title,body.light .row-heading { color: var(--text); }
+body.light .poster { background: #e1e3e9; }
+body.light .premium-box { background: #f8f9fc; border-color: rgba(20,25,35,.12); }
+body.light .premium-hero::before { background: linear-gradient(90deg,rgba(0,0,0,.86),rgba(0,0,0,.48) 55%,rgba(0,0,0,.12)),linear-gradient(0deg,#f8f9fc 0%,transparent 75%); }
+body.light .premium-description { color: #e9e9ed; }
+body.light .premium-list { color: #fff; }
+body.light .episode-item { background: #e9ebf1; color: #20222a; }
+body.light .episode-item:hover { background: #dfe2ea; }
+body.light .episode-number { color: #6d7180; }
+body.light .season-select { background: #fff; color: #20222a; border-color: #d5d8e1; }
+body.light footer { border-color: var(--surface-border); color: var(--muted); }
+
+@media (max-width: 650px) {
+  header { padding: 12px 16px; gap: 10px; }
+  .logo { font-size: 20px; }
+  .tagline { font-size: 8px; }
+  .header-nav { gap: 5px; padding: 3px 0 5px; }
+  .nav-link { font-size: 12px; padding: 8px 11px; }
+  .header-right { gap: 8px; }
+  .search { min-width: 0; padding: 10px 13px; }
+  .theme-btn { width: 40px; height: 40px; flex: 0 0 40px; }
+  .hero { min-height: 285px; height: 285px; }
+  .hero-content { left: 18px; bottom: 22px; }
+  .hero h1 { font-size: clamp(25px,7vw,36px); }
+  .movie-card { flex-basis: 132px; }
+  .category-section { margin: 24px 0 30px; }
+  .category-page-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px 13px; }
+  .premium-hero { min-height: 0; padding: 65px 20px 24px; background-position: center; }
+  .premium-content { align-items: flex-end; gap: 15px; }
+  .premium-poster-wrap { flex: 0 0 105px; }
+  .premium-poster { width: 105px; height: 155px; border-radius: 11px; }
+  .premium-title { font-size: clamp(19px,5vw,27px); }
+  .premium-actions { gap: 8px; margin-top: 14px; }
+  .premium-play { padding: 11px 15px; font-size: 12px; }
+  .premium-list { width: 42px; height: 42px; }
+  .episode-list { grid-template-columns: 1fr; }
+  .episode-header { align-items: flex-start; flex-direction: column; }
+  .episode-selectors { width: 100%; }
+  .episode-select { min-width: 0; flex: 1; }
+  .selection-modal { padding: 10px; }
+  .premium-box { max-height: 95vh; border-radius: 20px; }
+  .premium-hero { border-radius: 20px 20px 0 0; }
+}
+
+/* iOS-style selector and interaction refinements */
+.season-select {
+  color: var(--text);
+  font: inherit;
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.season-select:focus-visible,
+.search:focus-visible,
+button:focus-visible,
+.episode-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.episode-item { cursor: pointer; transition: background .2s ease, transform .2s ease, outline-color .2s ease; }
+.episode-item:active, button:active { transform: scale(.985); }
+body.light .season-select { color-scheme: light; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* Keep the hero movie title readable in both colour themes */
+#heroTitle {
+  color: #ffffff !important;
+  text-shadow: 0 3px 14px rgba(0, 0, 0, .98), 0 1px 3px rgba(0, 0, 0, .95);
+  position: relative;
+  z-index: 4;
+}
+body.light #heroTitle {
+  color: #ffffff !important;
+  text-shadow: 0 3px 14px rgba(0, 0, 0, .98), 0 1px 3px rgba(0, 0, 0, .95);
+}
+
 </style>
 </head>
 
@@ -1040,12 +1282,13 @@ body.light .hero {
     <button class="nav-link" type="button" data-category="Movies">Movies</button>
     <button class="nav-link" type="button" data-category="Web Series">Web Series</button>
     <button class="nav-link" type="button" data-category="Animation">Animation</button>
+    <button class="nav-link" type="button" data-category="Favourite">Favourite</button>
   </nav>
 
   <div class="header-right">
     <input type="search" id="searchBox" class="search"
       placeholder="Search movies..." autocomplete="off">
-    <button class="theme-btn" id="themeBtn">☀ / ☾</button>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch colour theme" title="Switch Light / Dark Mode">☀️</button>
   </div>
 </header>
 
@@ -1076,7 +1319,7 @@ body.light .hero {
 
 <!-- CINEMATIC PREMIUM DETAILS POPUP -->
 
-<div class="selection-modal" id="selectionModal">
+<div class="selection-modal" id="selectionModal" aria-hidden="true">
   <div class="premium-box">
 
     <button class="premium-close" id="closeSelection"
@@ -1096,11 +1339,11 @@ body.light .hero {
 
           <div class="premium-actions">
             <button class="premium-play" id="selectionPlay" type="button">
-              ▶ PLAY NOW
+              ▶ WATCH NOW
             </button>
 
             <button class="premium-list" id="myListButton"
-              type="button" title="Add to My List">＋</button>
+              type="button" title="Add to Favourite">+</button>
           </div>
 
           <div class="premium-list-note" id="myListNote"></div>
@@ -1108,16 +1351,7 @@ body.light .hero {
       </div>
     </section>
 
-    <section class="episode-section" id="episodeSection">
-      <div class="episode-header">
-        <h3>Episodes</h3>
-        <div class="episode-selectors">
-          <select class="season-select" id="seasonSelect" aria-label="Select season"></select>
-          <select class="season-select episode-select" id="episodeSelect" aria-label="Select episode"></select>
-        </div>
-      </div>
-      <div class="episode-list" id="episodeList"></div>
-    </section>
+
 
     <section class="premium-recommendations">
       <h3 class="premium-section-title">More Like This</h3>
@@ -1348,12 +1582,14 @@ function cleanSeriesName(title) {
 }
 
 function getSeasonNumber(title) {
-  const text = String(title || "");
-  let match = text.match(/\bS(?:eason)?\s*0*(\d{1,2})\s*E(?:P)?\s*0*\d{1,3}\b/i);
+  const text = String(title || '').replace(/[._-]+/g, ' ');
+  // Supports S01E01, S01 (E-01), S01 E 01, Season 1 Episode 1,
+  // and complete-season names such as "Gullak Season 1 (2020)".
+  let match = text.match(/\bS(?:eason)?\s*0*(\d{1,2})\s*(?:\(\s*)?E\s*0*\d{1,3}\s*\)?/i);
   if (!match) match = text.match(/\bSeason\s*0*(\d{1,2})\b/i);
   if (!match) match = text.match(/\bS\s*0*(\d{1,2})\b/i);
   if (!match) match = text.match(/\b(\d{1,2})\s*[xX]\s*0*\d{1,3}\b/);
-  return match ? String(match[1]).padStart(2, "0") : null;
+  return match ? String(match[1]).padStart(2, '0') : null;
 }
 
 function getSeasonPosterKey(movie) {
@@ -1415,7 +1651,10 @@ function renderCatalogue(movies) {
     String(movie.title || "").toLowerCase().includes(query)
   );
 
-  if (activeCategory !== "Home") {
+  if (activeCategory === "Favourite") {
+    const savedIds = new Set(getMyList().map(id => String(id)));
+    visibleMovies = visibleMovies.filter(movie => savedIds.has(String(movie.id)));
+  } else if (activeCategory !== "Home") {
     visibleMovies = visibleMovies.filter(movie =>
       normalizeCategory(movie.category) === activeCategory
     );
@@ -1432,7 +1671,9 @@ function renderCatalogue(movies) {
         ...CATEGORIES,
         ...visibleMovies.map(movie => normalizeCategory(movie.category))
       ])]
-    : [activeCategory];
+    : activeCategory === "Favourite"
+      ? ["Favourite"]
+      : [activeCategory];
 
   movies = visibleMovies;
 
@@ -1505,9 +1746,9 @@ function renderCatalogue(movies) {
   }
 
   categories.forEach(category => {
-    const categoryMovies = movies.filter(movie =>
-      normalizeCategory(movie.category) === category
-    );
+    const categoryMovies = category === "Favourite"
+      ? movies
+      : movies.filter(movie => normalizeCategory(movie.category) === category);
 
     if (!categoryMovies.length) return;
 
@@ -1521,6 +1762,7 @@ function renderCatalogue(movies) {
     section.appendChild(heading);
 
     const rowLabel =
+      category === "Favourite" ? "Your Favourite Videos" :
       category === "Movies" ? "All Movies" :
       category === "Web Series" ? "All Web Series" :
       category === "Animation" ? "All Animation" :
@@ -1613,7 +1855,7 @@ function normalizeHeroName(name) {
     .replace(/\.(jpg|jpeg|png|webp|gif|bmp)$/i, "")
     .replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
     .replace(/\b(480p|720p|1080p|2160p|4k|8k|hevc|h264|h265|web.?dl|webrip|bluray|hdr|x264|x265)\b/gi, " ")
-    .replace(/\b(19|20)\d{2}\b/g, " ")
+    .replace(/\b(19|20)\d{2,3}\b/g, " ")
     .replace(/\b(poster|hero|banner|official|movie|series)\b/gi, " ")
     .replace(/\bS(?:eason)?[\s._-]*\d{1,2}\b/gi, " ")
     .replace(/\b(?:EP?|Episode)[\s._-]*\d{1,3}\b/gi, " ")
@@ -1886,13 +2128,28 @@ document.getElementById("heroWatchBtn")
 // PREMIUM POPUP
 
 function openSelection(list, index) {
-  selectionMovies = list || [];
-  selectionIndex = index || 0;
+  selectionMovies = Array.isArray(list) ? list : [];
+  selectionIndex = Number.isInteger(index) ? index : 0;
 
-  showSelection();
+  const modal = document.getElementById("selectionModal");
+  if (!modal || !selectionMovies.length) return;
 
-  document.getElementById("selectionModal").classList.add("show");
+  // Show the popup first. If any optional detail (poster, recommendations,
+  // or episode metadata) fails to load, the main movie popup still opens.
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
+
+  try {
+    showSelection();
+  } catch (error) {
+    console.error("Movie popup detail rendering failed:", error);
+    const title = document.getElementById("selectionTitle");
+    const description = document.getElementById("selectionDescription");
+    const movie = selectionMovies[selectionIndex];
+    if (title) title.textContent = getDisplayTitle(movie);
+    if (description) description.textContent = "";
+  }
 }
 
 function showSelection() {
@@ -1923,13 +2180,17 @@ function showSelection() {
 
   updateMyListButton(movie);
   renderRecommendations(movie);
-  renderSeriesEpisodes(movie);
 }
 
 function closeSelection() {
-  document.getElementById("selectionModal").classList.remove("show");
+  const modal = document.getElementById("selectionModal");
+  if (modal) {
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+  }
 
-  if (!document.getElementById("playerModal").classList.contains("show")) {
+  const playerModal = document.getElementById("playerModal");
+  if (!playerModal || !playerModal.classList.contains("show")) {
     document.body.style.overflow = "";
   }
 }
@@ -1942,14 +2203,19 @@ document.getElementById("selectionModal")
     if (event.target.id === "selectionModal") closeSelection();
   });
 
+function getSelectedPlaybackItem() {
+  // The popup now has one clear action: play the video whose details are open.
+  return currentSelectedVideo || selectionMovies[selectionIndex] || null;
+}
+
 document.getElementById("selectionPlay")
   .addEventListener("click", () => {
-    const movie = currentSelectedVideo || selectionMovies[selectionIndex];
+    // Resolve the currently visible selection at click time, not from stale state.
+    const movie = getSelectedPlaybackItem();
+    if (!movie) return;
 
-    if (movie) {
-      closeSelection();
-      playMovie(movie);
-    }
+    closeSelection();
+    playMovie(movie);
   });
 
 // MY LIST
@@ -1963,7 +2229,7 @@ function getMyList() {
 }
 
 function isInMyList(movie) {
-  return getMyList().includes(movie.id);
+  return getMyList().some(id => String(id) === String(movie.id));
 }
 
 function updateMyListButton(movie) {
@@ -1972,9 +2238,9 @@ function updateMyListButton(movie) {
   const saved = isInMyList(movie);
 
   button.classList.toggle("active", saved);
-  button.textContent = saved ? "✓" : "＋";
-  button.title = saved ? "Remove from My List" : "Add to My List";
-  note.textContent = saved ? "Added to My List" : "";
+  button.textContent = "+";
+  button.title = saved ? "Remove from Favourite" : "Add to Favourite";
+  note.textContent = saved ? "Added to Favourite" : "";
 }
 
 document.getElementById("myListButton")
@@ -1983,16 +2249,17 @@ document.getElementById("myListButton")
     if (!movie || !movie.id) return;
 
     const list = getMyList();
-    const index = list.indexOf(movie.id);
+    const index = list.findIndex(id => String(id) === String(movie.id));
 
     if (index >= 0) {
       list.splice(index, 1);
     } else {
-      list.push(movie.id);
+      list.push(String(movie.id));
     }
 
     localStorage.setItem("inoxMyList", JSON.stringify(list));
     updateMyListButton(movie);
+    if (activeCategory === "Favourite") renderCatalogue(allMovies);
   });
 
 // MORE LIKE THIS
@@ -2112,20 +2379,19 @@ function renderRecommendations(currentMovie) {
 // WEB SERIES SEASON / EPISODE SELECTOR
 
 function getSeriesName(title) {
-  // Normalize common Drive naming styles so every episode of a series
-  // (for example: Halo S01E01, Halo.S01.E02, Halo - Season 1 Episode 3)
-  // receives the same grouping key.
+  // Strip both episode-style and complete-season suffixes while keeping
+  // the actual series name identical across all its files.
   return String(title || "")
     .replace(/\.(mp4|mkv|avi|mov|webm|m4v)$/i, "")
     .replace(/[._]+/g, " ")
-    .replace(/\bS(?:eason)?\s*0*\d{1,2}\s*E(?:P)?\s*0*\d{1,3}\b/ig, " ")
-    .replace(/\bSeason\s*0*\d{1,2}\s*(?:Episode|Ep|E)\s*0*\d{1,3}\b/ig, " ")
+    .replace(/\bS(?:eason)?\s*0*\d{1,2}\s*(?:\(\s*)?E[\s._-]*0*\d{1,3}\s*\)?/ig, " ")
+    .replace(/\bSeason\s*0*\d{1,2}\s*(?:Episode|Ep|E)[\s._-]*0*\d{1,3}\b/ig, " ")
     .replace(/\b\d{1,2}\s*[xX]\s*0*\d{1,3}\b/g, " ")
     .replace(/\bS(?:eason)?\s*0*\d{1,2}\b/ig, " ")
     .replace(/\bSeason\s*0*\d{1,2}\b/ig, " ")
-    .replace(/\b(?:Episode|Ep|E)\s*0*\d{1,3}\b/ig, " ")
+    .replace(/\b(?:Episode|Ep|E)[\s._-]*0*\d{1,3}\b/ig, " ")
     .replace(/\b(480p|720p|1080p|2160p|4k|HEVC|WEB[ ._-]?DL|Blu[ ._-]?Ray|HDR|ESub)\b/ig, " ")
-    .replace(/\b(19|20)\d{2}\b/g, " ")
+    .replace(/\b(19|20)\d{2,3}\b/g, " ")
     .replace(/[()[\]{}_-]+/g, " ")
     .replace(/\s+/g, " ")
     .trim()
@@ -2134,86 +2400,135 @@ function getSeriesName(title) {
 
 function getEpisodeNumber(title) {
   const text = String(title || "");
-  let match = text.match(/\bS(?:eason)?\s*0*\d{1,2}\s*E(?:P)?\s*0*(\d{1,3})\b/i);
+  let match = text.match(/\bS(?:eason)?\s*0*\d{1,2}\s*(?:\(\s*)?E[\s._-]*0*(\d{1,3})\s*\)?/i);
   if (!match) match = text.match(/\b\d{1,2}\s*[xX]\s*0*(\d{1,3})\b/);
-  if (!match) match = text.match(/\b(?:Episode|Ep|E)\s*0*(\d{1,3})\b/i);
+  if (!match) match = text.match(/\b(?:Episode|Ep|E)[\s._-]*0*(\d{1,3})\b/i);
   return match ? parseInt(match[1], 10) : 9999;
 }
 
 function getSeasonGroup(movie) {
-  const season = getSeasonNumber(movie.title);
+  const season = getSeasonNumber(movie && movie.title);
   return season || "01";
 }
 
-function renderSeriesEpisodes(movie) {
-  const section = document.getElementById("episodeSection");
-  const seasonSelect = document.getElementById("seasonSelect");
-  const episodeSelect = document.getElementById("episodeSelect");
-  const episodeList = document.getElementById("episodeList");
+function isCompleteSeasonFile(item) {
+  const title = String(item && item.title || "");
+  return !!getSeasonNumber(title) && getEpisodeNumber(title) === 9999 &&
+    /\bseason\s*0*\d{1,2}\b/i.test(title);
+}
 
-  section.classList.remove("show");
-  seasonSelect.innerHTML = "";
-  episodeSelect.innerHTML = "";
-  episodeList.innerHTML = "";
+function isWebSeriesMovie(item) {
+  if (!item) return false;
+  const categoryValues = [item.category, item.type, item.folder, item.folderName,
+    item.categoryName, item.parentFolder].filter(Boolean);
+  const isCategorizedSeries = categoryValues.some(value => {
+    const key = String(value).toLowerCase().replace(/[^a-z0-9]/g, '');
+    return key === 'webseries' || key === 'series';
+  });
+  if (isCategorizedSeries) return true;
+
+  // Fallback for records whose API category field is missing but whose
+  // filename clearly follows a TV-series naming convention.
+  const title = String(item.title || '');
+  return /\bS\s*0*\d{1,2}\s*(?:\(\s*)?E[\s._-]*0*\d{1,3}/i.test(title) ||
+    /\bSeason\s*0*\d{1,2}\b/i.test(title) ||
+    /\b\d{1,2}\s*[xX]\s*0*\d{1,3}\b/.test(title);
+}
+
+function renderSeriesEpisodes(movie) {
+  const section = document.getElementById('episodeSection');
+  const seasonSelect = document.getElementById('seasonSelect');
+  const episodeSelect = document.getElementById('episodeSelect');
+  const episodeList = document.getElementById('episodeList');
+
+  section.classList.remove('show');
+  seasonSelect.innerHTML = '';
+  episodeSelect.innerHTML = '';
+  episodeList.innerHTML = '';
   currentSelectedVideo = movie;
 
-  if (normalizeCategory(movie.category) !== "Web Series") return;
+  // The season/episode controls belong only to Web Series items.
+  if (!isWebSeriesMovie(movie)) return;
 
   const seriesName = getSeriesName(movie.title);
-  const episodes = allMovies.filter(item =>
-    normalizeCategory(item.category) === "Web Series" &&
-    getSeriesName(item.title) === seriesName
-  );
-  if (!episodes.length) return;
+  const allSeriesItems = [...(Array.isArray(allMovies) ? allMovies : []),
+    ...(Array.isArray(selectionMovies) ? selectionMovies : [])];
+  const uniqueItems = new Map();
+  allSeriesItems.forEach(item => {
+    if (isWebSeriesMovie(item) && getSeriesName(item.title) === seriesName) {
+      uniqueItems.set(String(item.id), item);
+    }
+  });
+  // Always retain the selected item, even if the API/cache list is temporarily stale.
+  if (movie && movie.id != null) uniqueItems.set(String(movie.id), movie);
+  const episodes = [...uniqueItems.values()];
+
+  if (!episodes.length) {
+    console.warn('INOX: No Web Series items found for:', movie.title, movie.category);
+    return;
+  }
 
   const seasons = [...new Set(episodes.map(getSeasonGroup))]
     .sort((a, b) => Number(a) - Number(b));
 
   seasons.forEach(season => {
-    const option = document.createElement("option");
+    const option = document.createElement('option');
     option.value = season;
-    option.textContent = "Season " + Number(season);
+    option.textContent = 'Season ' + Number(season);
     seasonSelect.appendChild(option);
   });
 
-  function renderEpisodesForSeason(season, preferredEpisode) {
-    episodeList.innerHTML = "";
-    episodeSelect.innerHTML = "";
+  function setSelectedEpisode(episode) {
+    currentSelectedVideo = episode;
+    document.getElementById('selectionPlay').textContent = '▶ PLAY EPISODE';
+    episodeList.querySelectorAll('.episode-item').forEach(item => {
+      const active = item.dataset.episodeId === String(episode.id);
+      item.classList.toggle('active', active);
+      item.setAttribute('aria-current', active ? 'true' : 'false');
+    });
+    episodeSelect.value = String(episode.id);
+  }
+
+  function renderEpisodesForSeason(season, preferredEpisodeId) {
+    episodeList.innerHTML = '';
+    episodeSelect.innerHTML = '';
 
     const seasonEpisodes = episodes
-      .filter(item => getSeasonGroup(item) === season)
+      .filter(item => getSeasonGroup(item) === String(season))
       .sort((a, b) => getEpisodeNumber(a.title) - getEpisodeNumber(b.title));
 
     seasonEpisodes.forEach((episode, index) => {
-      const option = document.createElement("option");
+      const option = document.createElement('option');
       option.value = String(episode.id);
       const episodeNumber = getEpisodeNumber(episode.title);
-      option.textContent = "Episode " +
-        (episodeNumber === 9999 ? index + 1 : episodeNumber) +
-        " — " + getEpisodeDisplayName(episode.title);
+      option.textContent = isCompleteSeasonFile(episode)
+        ? 'Season ' + Number(getSeasonGroup(episode)) + ' (Complete)'
+        : 'Episode ' + (episodeNumber === 9999 ? index + 1 : episodeNumber) +
+          ' — ' + getEpisodeDisplayName(episode.title);
       episodeSelect.appendChild(option);
 
-      const item = document.createElement("div");
-      item.className = "episode-item";
+      const item = document.createElement('div');
+      item.className = 'episode-item';
       item.tabIndex = 0;
-      const number = document.createElement("div");
-      number.className = "episode-number";
-      number.textContent = String(index + 1).padStart(2, "0");
-      const name = document.createElement("div");
-      name.className = "episode-name";
-      name.textContent = getEpisodeDisplayName(episode.title);
-      const play = document.createElement("div");
-      play.className = "episode-play";
-      play.textContent = "▶";
+      item.dataset.episodeId = String(episode.id);
+
+      const number = document.createElement('div');
+      number.className = 'episode-number';
+      number.textContent = String(index + 1).padStart(2, '0');
+      const name = document.createElement('div');
+      name.className = 'episode-name';
+      name.textContent = isCompleteSeasonFile(episode)
+        ? 'Season ' + Number(getSeasonGroup(episode)) + ' (Complete)'
+        : getEpisodeDisplayName(episode.title);
+      const play = document.createElement('div');
+      play.className = 'episode-play';
+      play.textContent = '▶';
       item.append(number, name, play);
-      const chooseEpisode = () => {
-        episodeSelect.value = String(episode.id);
-        currentSelectedVideo = episode;
-        document.getElementById("selectionPlay").textContent = "▶ PLAY EPISODE";
-      };
-      item.addEventListener("click", chooseEpisode);
-      item.addEventListener("keydown", event => {
-        if (event.key === "Enter" || event.key === " ") {
+
+      const chooseEpisode = () => setSelectedEpisode(episode);
+      item.addEventListener('click', chooseEpisode);
+      item.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
           chooseEpisode();
         }
@@ -2221,41 +2536,26 @@ function renderSeriesEpisodes(movie) {
       episodeList.appendChild(item);
     });
 
-    if (!seasonEpisodes.length) {
-      currentSelectedVideo = movie;
-      return;
-    }
+    const selectedEpisode =
+      seasonEpisodes.find(item => String(item.id) === String(preferredEpisodeId)) ||
+      seasonEpisodes.find(item => String(item.id) === String(movie.id)) ||
+      seasonEpisodes[0];
 
-    let selectedEpisode = preferredEpisode
-      ? seasonEpisodes.find(item => String(item.id) === String(preferredEpisode.id))
-      : null;
-    if (!selectedEpisode) {
-      selectedEpisode = seasonEpisodes.find(item =>
-        String(item.id) === String(movie.id)
-      ) || seasonEpisodes[0];
-    }
-
-    episodeSelect.value = String(selectedEpisode.id);
-    currentSelectedVideo = selectedEpisode;
-    document.getElementById("selectionPlay").textContent = "▶ PLAY EPISODE";
-
-    episodeSelect.onchange = () => {
-      const chosen = seasonEpisodes.find(item =>
-        String(item.id) === String(episodeSelect.value)
-      );
-      if (chosen) currentSelectedVideo = chosen;
-      document.getElementById("selectionPlay").textContent = "▶ PLAY EPISODE";
-    };
+    if (selectedEpisode) setSelectedEpisode(selectedEpisode);
+    else currentSelectedVideo = movie;
   }
+
+  seasonSelect.onchange = () => renderEpisodesForSeason(seasonSelect.value, null);
+  episodeSelect.onchange = () => {
+    const chosen = episodes.find(item => String(item.id) === String(episodeSelect.value)) ||
+      allMovies.find(item => String(item.id) === String(episodeSelect.value));
+    if (chosen) setSelectedEpisode(chosen);
+  };
 
   const initialSeason = getSeasonGroup(movie);
   seasonSelect.value = seasons.includes(initialSeason) ? initialSeason : seasons[0];
-  seasonSelect.onchange = () => {
-    renderEpisodesForSeason(seasonSelect.value, null);
-  };
-
-  renderEpisodesForSeason(seasonSelect.value, movie);
-  section.classList.add("show");
+  renderEpisodesForSeason(seasonSelect.value, movie.id);
+  section.classList.add('show');
 }
 
 function getEpisodeDisplayName(title) {
@@ -2266,6 +2566,7 @@ function getEpisodeDisplayName(title) {
     .replace(/\bS\d{1,2}\b/ig, "")
     .replace(/\bSeason[\s._-]*\d{1,2}\b/ig, "")
     .replace(/\b(?:EP?|Episode)[\s._-]*\d{1,3}\b/ig, "")
+    .replace(/\b(19|20)\d{2,3}\b/g, "")
     .replace(/\b\d{1,2}x\d{1,3}\b/ig, "")
     .replace(/\b(480p|720p|1080p|2160p|4k|HEVC|WEB-DL|BluRay|HDR|ESub)\b/ig, "")
     .replace(/[()[\]_.-]+/g, " ")
@@ -2365,12 +2666,35 @@ document.querySelectorAll("#categoryNav [data-category]")
     });
   });
 
-// THEME
+// THEME — remember the visitor's choice on this browser
+const THEME_STORAGE_KEY = "adrashyaInoxTheme_v1";
+const themeButton = document.getElementById("themeBtn");
 
-document.getElementById("themeBtn")
-  .addEventListener("click", function() {
-    document.body.classList.toggle("light");
-  });
+function applyTheme(theme) {
+  const isLight = theme === "light";
+  document.body.classList.toggle("light", isLight);
+  themeButton.textContent = isLight ? "🌙" : "☀️";
+  themeButton.setAttribute("aria-label", isLight ? "Switch to Dark Mode" : "Switch to Light Mode");
+  themeButton.title = isLight ? "Switch to Dark Mode" : "Switch to Light Mode";
+}
+
+let savedTheme = "dark";
+try {
+  savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || "dark";
+} catch (error) {
+  console.warn("Theme preference could not be read:", error);
+}
+applyTheme(savedTheme === "light" ? "light" : "dark");
+
+themeButton.addEventListener("click", function() {
+  const nextTheme = document.body.classList.contains("light") ? "dark" : "light";
+  applyTheme(nextTheme);
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+  } catch (error) {
+    console.warn("Theme preference could not be saved:", error);
+  }
+});
 
 // KEYBOARD
 
