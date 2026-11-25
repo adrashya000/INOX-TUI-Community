@@ -1738,7 +1738,7 @@ function renderCatalogue(movies) {
   // createdTime is supplied by Google Apps Script in milliseconds.
   const recentlyAdded = [...movies]
     .sort((a, b) => Number(b.createdTime || 0) - Number(a.createdTime || 0))
-    .slice(0, 23);
+    .slice(0, 24);
 
   if (activeCategory === "Home" && !query) {
     const recentlyAddedRow = createMovieRow(recentlyAdded, "Recently Added");
