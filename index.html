@@ -1075,7 +1075,14 @@ header {
   backdrop-filter: saturate(180%) blur(24px);
   -webkit-backdrop-filter: saturate(180%) blur(24px);
 }
-.logo { color: var(--text); font-size: 23px; letter-spacing: -.8px; }
+
+/* LOGO: Netflix red in both themes */
+.logo {
+  color: #E50914 !important;
+  font-size: 23px;
+  letter-spacing: -.8px;
+}
+
 .tagline { letter-spacing: 1.6px; font-size: 9px; opacity: .7; }
 .header-nav { gap: clamp(8px,1.5vw,22px); }
 .nav-link {
@@ -1182,7 +1189,12 @@ body.light {
   color: var(--text);
 }
 body.light header { background: var(--header-bg); border-bottom-color: var(--surface-border); }
-body.light .logo { color: #17181d; }
+
+/* Keep logo red in light mode too */
+body.light .logo {
+  color: #E50914 !important;
+}
+
 body.light .nav-link { color: #666a75; }
 body.light .nav-link:hover,body.light .nav-link.active { color: #17181d; background: rgba(70,80,100,.09); }
 body.light .search { background: rgba(255,255,255,.88); color: #17181d; border-color: rgba(25,28,38,.12); }
@@ -2057,18 +2069,22 @@ function showHeroSlide(index) {
 
   const requestToken = ++heroRequestToken;
 
+  // Find the matching movie for playback.
+  // The displayed title is taken separately from the Hero folder image filename.
   currentHeroMovie = findHeroMovie(image);
 
+  // Always display the name from the Hero folder image filename.
+  // Example: "The Odyssey.jpg" displays "The Odyssey".
+  heroTitle.textContent = String(image.name || "Featured Movie")
+    .replace(/\.(jpg|jpeg|png|webp|gif|bmp)$/i, "")
+    .replace(/[_\-.]+/g, " ")
+    .trim();
+
+  // Keep the existing movie matching and Watch Now functionality.
   if (currentHeroMovie) {
-    heroTitle.textContent = getDisplayTitle(currentHeroMovie);
     watchButton.style.display = "inline-block";
     watchButton.disabled = false;
   } else {
-    heroTitle.textContent = String(image.name || "Featured Movie")
-      .replace(/\.(jpg|jpeg|png|webp|gif|bmp)$/i, "")
-      .replace(/[_\-.]+/g, " ")
-      .trim();
-
     watchButton.style.display = "none";
   }
 
