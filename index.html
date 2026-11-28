@@ -1285,7 +1285,7 @@ body.light #heroTitle {
 
 <header>
   <div>
-    <a href="./" class="logo" title="Go to Homepage">ADRASHYA INOX</a>
+    <a href="#" class="logo" id="logoRefresh" title="Refresh Catalogue">ADRASHYA INOX</a>
     <div class="tagline">UNLIMITED ENTERTAINMENT</div>
   </div>
 
@@ -1476,8 +1476,17 @@ function displayMovies(movies, images) {
   startHeroSlideshow();
 }
 
-function loadMovies() {
-  const cache = readMovieCache();
+function loadMovies(forceRefresh = false) {
+  // A logo click forces a fresh Google Drive fetch instead of using cached data.
+  if (forceRefresh) {
+    try {
+      localStorage.removeItem(MOVIE_CACHE_KEY);
+    } catch (error) {
+      console.warn("Movie cache could not be cleared:", error);
+    }
+  }
+
+  const cache = forceRefresh ? null : readMovieCache();
 
   const cacheIsFresh = cache &&
     (Date.now() - cache.savedAt) < MOVIE_CACHE_TTL;
@@ -2720,6 +2729,30 @@ document.addEventListener("keydown", function(event) {
     closeSelection();
   }
 });
+
+// LOGO CLICK: RETURN HOME, CLEAR CATALOGUE CACHE AND FETCH LATEST DRIVE DATA
+const logoRefresh = document.getElementById("logoRefresh");
+
+if (logoRefresh) {
+  logoRefresh.addEventListener("click", function(event) {
+    event.preventDefault();
+
+    activeCategory = "Home";
+
+    const searchBox = document.getElementById("searchBox");
+    if (searchBox) searchBox.value = "";
+
+    document.querySelectorAll("#categoryNav .nav-link").forEach(button => {
+      button.classList.toggle(
+        "active",
+        button.dataset.category === "Home"
+      );
+    });
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    loadMovies(true);
+  });
+}
 
 // START
 
